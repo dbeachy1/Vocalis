@@ -1,0 +1,43 @@
+# Dependencies for the isolated neural-enhance venv (resemble-enhance).
+#
+# THIS FILE EXISTS SO THERE IS NOTHING TO MIRROR BY HAND. setup.sh and setup.bat both
+# `pip install -r` it. Vocalis's own setup.sh:154 / setup.bat:68 keep two copies of their
+# dependency list in sync manually, nothing in the test suite guards the pair, and a
+# careless merge silently drops one side. Do not repeat that here.
+#
+# DELIBERATELY ABSENT, all three for reasons that will bite you if you "fix" them:
+#
+#   torch / torchaudio — installed separately, BEFORE resemble-enhance, from a
+#     vendor-specific index (cu124 / rocm7.2 / cpu). They cannot be pinned here because
+#     the right wheel depends on the box.
+#
+#   deepspeed — resemble-enhance imports it at module scope from its *training* module,
+#     which its *inference* module imports for two class definitions, and then never
+#     calls a single symbol from it. enhance_audio.py stubs it in sys.modules. Building
+#     DeepSpeed against ROCm to satisfy an unused import is not a price worth paying.
+#
+#   a numpy<2 pin — resemble-enhance has a genuine numpy-2 bug (float() on a 1-element
+#     fsolve result). Pinning numpy<2 does NOT fix it: it moves the break, because modern
+#     scipy is built against numpy 2 and reaches for np.long, which numpy 1.26 does not
+#     have. enhance_audio.py patches the affected function instead, where a reinstall cannot
+#     silently undo it.
+
+# numba must resolve before librosa, or pip picks numba 0.53 — whose llvmlite will not
+# build on Python 3.12.
+numba>=0.60
+
+numpy>=2.0.0
+scipy
+librosa
+soundfile
+huggingface-hub
+einops
+omegaconf
+celluloid
+matplotlib
+pandas
+ptflops
+rich
+resampy
+tabulate
+tqdm

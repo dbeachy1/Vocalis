@@ -1,0 +1,23 @@
+// Test sources use a separate config because their global types differ from `src/`: tests need Jest's
+// `describe`, `test` and `expect`, while plugin code must not see those globals. Checking tests against the
+// declared source API also exposes mocks and fixtures that no longer match the fork's actual shapes.
+{
+  "extends": "./tsconfig.json",
+
+  "compilerOptions": {
+    // Jest's globals are injected by the runner (`--injectGlobals`), so they are ambient here and nowhere else.
+    "types": ["node", "jest"]
+  },
+
+  "include": [
+    "tests/**/*.js",
+    "types/*.d.ts"
+  ],
+
+  // 🔴 `src` IS EXCLUDED EXPLICITLY, AND THE EXCLUSION IS LOAD-BEARING FOR THE MEASUREMENT RATHER THAN FOR THE
+  // CHECK. `include` seeds; it does not bound. Every `src/` module a test imports is pulled in and checked
+  // regardless, so without this line a per-directory count here silently reports `tests` + `src` added
+  // together — which is exactly the error the 1,726 figure in the first commit turned out to be. The files are
+  // still type-checked as imports; they are simply attributed to the config that owns them.
+  "exclude": ["node_modules", "src", "tools", "temp", "out", "tmp"]
+}

@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "scope": {
+    "purpose": "Where the FFmpeg 8.0.1 source comes from. The image's FFmpeg is built from the FFmpeg 8.0.1 release tarball (packaging/ffmpeg/build-contract.json). This record also lists the Ubuntu source package whose original tarball is byte-for-byte the same file, with the other files of that package.",
+    "officialRelease": {
+      "url": "https://ffmpeg.org/releases/ffmpeg-8.0.1.tar.xz",
+      "bytes": 11388848,
+      "sha256": "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41",
+      "check": "Downloaded on 2026-10-11 and compared: the size and SHA-256 equal those of ffmpeg_8.0.1.orig.tar.xz in the Ubuntu source package below, which is the file the Dockerfile checks."
+    },
+    "ubuntuSourcePackage": {
+      "package": "ffmpeg",
+      "version": "7:8.0.1-3ubuntu2",
+      "distribution": "Ubuntu 26.04 Resolute",
+      "component": "universe"
+    },
+    "note": "Ubuntu's own ffmpeg binary package of this version is GPL-enabled and is not installed in any image; the images contain the custom LGPL-only build described in packaging/licenses/NOTICE.md."
+  },
+  "authenticatedSourceMetadata": {
+    "distribution": "Ubuntu 26.04 Resolute",
+    "component": "universe",
+    "inReleaseUrl": "https://archive.ubuntu.com/ubuntu/dists/resolute/InRelease",
+    "inReleaseSha256": "45f95ce276cdba3e41870516a130e03c58b8b7a79e9546b0efe9e526d255740c",
+    "sourcesIndexUrl": "https://archive.ubuntu.com/ubuntu/dists/resolute/universe/source/Sources.xz",
+    "sourcesIndexSha256": "9c732321580ae2824f7d8cb936e12cca435a60a252d0654b8cc2a0011dc82903",
+    "sourcesIndexBytes": 13374880,
+    "verification": {
+      "method": "gpgv against the existing WSL Ubuntu archive keyring; Sources.xz SHA-256 and size matched the signed InRelease SHA256 section.",
+      "signingKey": "Ubuntu Archive Automatic Signing Key (2018)",
+      "signingKeyFingerprint": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+      "keyringPath": "/usr/share/keyrings/ubuntu-archive-keyring.gpg",
+      "keyringSha256": "1a4dd63e5c76728960a2edddae22e2e0fc53df8e8b87806deb971030ac704eb0"
+    },
+    "sourceRecord": {
+      "package": "ffmpeg",
+      "version": "7:8.0.1-3ubuntu2",
+      "directory": "pool/universe/f/ffmpeg"
+    }
+  },
+  "sourceFiles": [
+    {
+      "filename": "ffmpeg_8.0.1-3ubuntu2.dsc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/f/ffmpeg/ffmpeg_8.0.1-3ubuntu2.dsc",
+      "bytes": 6104,
+      "sha256": "70ac30ebbb7e89fc4ebc4438457fab7c1deea5b62986577bfb1c866fee72436e",
+      "signatureStatus": "The .dsc is clear-signed; its file hash is authenticated by the Ubuntu signed Sources index. Its OpenPGP signature was not independently verified."
+    },
+    {
+      "filename": "ffmpeg_8.0.1.orig.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/f/ffmpeg/ffmpeg_8.0.1.orig.tar.xz",
+      "bytes": 11388848,
+      "sha256": "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41",
+      "inspection": "10,005 tar entries; single top-level directory ffmpeg-8.0.1; no absolute or parent-traversal paths."
+    },
+    {
+      "filename": "ffmpeg_8.0.1-3ubuntu2.debian.tar.xz",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/f/ffmpeg/ffmpeg_8.0.1-3ubuntu2.debian.tar.xz",
+      "bytes": 58084,
+      "sha256": "a32bd75677bca735105b04a0ebd190a3481e0d8c2fcacd7d9f17524e240ee879",
+      "inspection": "71 tar entries; debian/rules, debian/control, and debian/copyright were hash-checked in memory; no absolute or parent-traversal paths."
+    },
+    {
+      "filename": "ffmpeg_8.0.1.orig.tar.xz.asc",
+      "url": "https://archive.ubuntu.com/ubuntu/pool/universe/f/ffmpeg/ffmpeg_8.0.1.orig.tar.xz.asc",
+      "bytes": 520,
+      "sha256": "54ab4020bb4eb280444da74d7aabc282acf6e8500cf6feaefd9821373fa9e72c",
+      "signatureStatus": "Detached upstream signature file is retained and authenticated by the Ubuntu signed Sources index; signer key was not separately verified."
+    }
+  ],
+  "debianBuildMetadata": {
+    "files": [
+      {
+        "path": "debian/rules",
+        "bytes": 10062,
+        "mode": "0775",
+        "sha256": "1adfcb5f0f2b87b5ee3a4c432732a9396a8baecce8cdde458417ecf437eaf513"
+      },
+      {
+        "path": "debian/control",
+        "bytes": 27592,
+        "mode": "0664",
+        "sha256": "0e0713cdc582c33293b851bc7ab6f2b4851816eac9c425842c03f1334206b43b"
+      },
+      {
+        "path": "debian/copyright",
+        "bytes": 49188,
+        "mode": "0664",
+        "sha256": "3a48e975751c49cc38db6f7254afba9f1065062b12cf65941c400f1009012cf3"
+      },
+      {
+        "path": "debian/changelog",
+        "bytes": 95648,
+        "mode": "0664",
+        "sha256": "3c15c17c8554e89c4bfbcdbee73ff26ca432c47374170792ee0661360b0fb7d0"
+      }
+    ],
+    "inspection": "Named file contents were hashed in memory from the authenticated Debian source archive; no build rules were executed."
+  }
+}

@@ -1,0 +1,580 @@
+  <section data-panel="sillytavern" style="display:none">
+    <div class="tabs" id="stTabs">
+      <button data-sttab="logs" class="active">Logs</button>
+      <!-- Keep voice assignment and card editing as distinct navigation items. -->
+      <button data-sttab="characters" title="Which voice speaks for each character">Character Voices</button>
+      <button data-sttab="cards" title="Edit every field of a character card, by hand or by LLM pass">Character Cards</button>
+      <button data-sttab="books" title="The same, for worldbooks">World Books</button>
+      <!-- Personas are the active user's name, avatar, and self-description. SillyTavern stores
+           them in `settings.json`; import them through the extension sync action. -->
+      <button data-sttab="personas" title="Edit your own personas — the description SillyTavern injects as you">Personas</button>
+      <!-- Scene Clips collects audio scenes and other clips under SillyTavern. -->
+      <button data-sttab="clips" title="Audio scenes — and every other clip in one place">Scene Clips</button>
+      <button data-sttab="extension-settings" title="Configure the Vocalis extension inside SillyTavern">Vocalis Extension Settings</button>
+    </div>
+    <div class="stwrap">
+
+    <!-- ST ▸ LOGS: a live tail of the server log, so narration requests are
+         visible as they land from SillyTavern (and everything else the server does). -->
+    <div data-stpanel="logs">
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Server log</h2>
+          <div style="flex:1"></div>
+          <input class="filter" id="stLogFilter" placeholder="filter (e.g. v1, stream, ERROR)…" style="margin-right:8px">
+          <button class="sm logbtn" id="stLogPause" title="Stop / resume the live tail. The server keeps logging either way; Resume catches up on everything you missed.">⏸ Pause</button>
+          <button class="sm" id="stLogClear" style="margin-left:6px" title="Clear the on-screen view. Does not touch the log file.">Clear</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Live tail of <code id="stLogPath">logs/vocalis.log</code><span id="stLogPathWhere"></span> — new lines stream in about once a second. Every request the server handles shows here: SillyTavern narration (<code>/v1/audio/stream</code>), character pushes, renders, warnings and errors. Scroll up to read back; return to the bottom to resume following.</div>
+        <pre id="stLogView" class="stlog"></pre>
+      </div>
+    </div>
+
+    <!-- ST ▸ CHARACTERS: the per-character voice/param map (unchanged from 3.x). -->
+    <div data-stpanel="characters" style="display:none">
+      <div class="panel">
+        <!-- Give refresh an explicit label and tooltip so it is distinguishable from a loading indicator. -->
+        <div class="logwrap"><h2 style="margin:0">SillyTavern characters</h2><button class="sm" id="stRefresh" aria-label="Refresh the character list" title="Re-read this list — the characters SillyTavern has registered here, and their faces from the Library.&#10;&#10;It does NOT fetch anything from SillyTavern: a character with no face needs ⟳ Import from SillyTavern, on the Character cards tab.">↻ Refresh list</button></div>
+        <div class="small muted" style="margin-bottom:8px">Characters appear here when you open their chat in SillyTavern (with the Vocalis extension enabled). Assign each a voice and delivery — narration streams with these settings. Saved server-side (per character).</div>
+        <div id="stDefaultWrap" style="border-left:3px solid var(--acc);padding-left:10px;margin:8px 0 4px">
+          <div class="small" style="margin-bottom:2px"><b>Default voice</b> <span class="muted">— speaks for every character with no assignment (at default delivery). Knobs here are audition-only; the voice choice is saved by the Save button below.</span></div>
+          <div id="stDefaultCluster"></div>
+        </div>
+        <div id="stList"><span class="muted">Loading…</span></div>
+        <div class="row" style="margin-top:10px;align-items:center">
+          <div style="flex:1"></div>
+          <button class="sm" id="stReset" style="margin-right:8px" title="Revert every row to the last saved state">↺ Reset</button>
+          <button class="primary" id="stSave">Save</button>
+        </div>
+      </div>
+      {% include 'partials/panel-sillytavern-voicecache.html' %}
+    </div>
+
+    <!-- Cards and books share the editor implementation while retaining separate sub-tabs. -->
+    <div data-stpanel="cards" style="display:none">
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Character Cards</h2>
+          <span id="wbModel_cards" class="small muted" title="Which model a pass would run under. A pass run under another model is not the same pass (§3.1), so it is recorded on the pass."></span>
+          <select id="wbSort_cards" class="sm" style="margin-left:10px" title="Order the list. Newest first is the default because the thing you just imported is almost always the thing you want."><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select>
+          <!-- Filter characters by their associated world book so users can narrow the roster to one book. -->
+          <select id="wbBook_cards" class="sm" style="display:none;margin-left:10px" title="Show only the characters associated with one worldbook. Matched on the book itself, so renaming it keeps the association."></select>
+          <input type="file" accept=".json,.png,application/json,image/png" id="wbFile_cards" style="display:none">
+          <!-- One extension sync action imports the registered characters and worldbooks together. -->
+          <button class="sm" id="wbStSweep_cards" style="margin-left:6px" title="Pull every worldbook and character straight out of SillyTavern. Needs a SillyTavern tab open with the Vocalis extension paired.">⟳ Import from SillyTavern</button>
+          <button class="sm" id="wbImportBtn_cards" style="margin-left:6px" title="Import a character card from a file — a .png card (the picture comes with it) or a .json exported from SillyTavern">⬆ Import file…</button><button class="sm" id="wbExportFile_cards" style="margin-left:6px" title="Save the character card you have open as the .png SillyTavern imports — the picture and the character in one file, at the revision on screen. Importing it again makes a NEW card here rather than landing on this one: two different characters can share a display name, so a card is never merged by name the way a World Book is — use ⇄ Import &amp; merge…, on the open card's own header beside ⬇ Export, to land an update on THIS card. Nothing here changes and SillyTavern is not affected.">⬇ Export file…</button><button class="sm" id="wbNewCard_cards" style="margin-left:6px" title="Create a character card here in Vocalis, empty — type the name, then the description and the rest, and give it a face with ⬆ Upload PNG. It has no world book attached and it is not in SillyTavern until you press Save to SillyTavern.">✚ New Character Card…</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Every field of a character card on one page — edit by hand, or tick a set of fields and run one plain-language instruction across them with the model chosen on the LLM tab. Imported documents live in Vocalis's encrypted store and every edit mints a new revision — the version you started from is always recoverable.</div>
+
+        <div id="wbMsg_cards" class="small muted" style="min-height:1.2em;margin-bottom:6px"></div>
+        <div id="wbLib_cards"><span class="muted">Loading…</span></div>
+      </div>
+
+      <!-- ── EDITOR (§6.1.2): every field on ONE scrollable page, each individually editable.
+           This is the pane that exists because ST's own editors do not. -->
+      <div class="panel" id="wbEditor_cards" style="display:none">
+        <div class="logwrap">
+          <h2 style="margin:0"><span id="wbDocName_cards"></span></h2>
+          <span class="small muted" id="wbRevLabel_cards" style="margin-left:10px"></span>
+          <label class="small muted" id="wbWorldWrap_cards" style="display:none;align-items:center;gap:5px;margin-left:10px" title="The World Book this character is associated with. SillyTavern loads it in any chat with them, and the Cards pane can filter by it. Renaming a book keeps the association, because the link is by identity and not by name. Changing this is saved immediately and does not mint a revision — press ⬆ Save to SillyTavern to carry it over there."><span aria-hidden="true">📖</span><select id="wbWorldPick_cards" class="sm"></select></label><!-- §9a.34: replaces 7.5.20's read-only caption. Cards only (a World Book has no World Book); option VALUES are document ids, never names, because §8.2 links by identity. Reasoning lives beside the code in `wbShowWorld` — duplicating it here is the growth `test_webui_size` watches for. -->
+          <button class="sm" id="wbRename_cards" style="margin-left:10px" title="Rename this document in Vocalis. SillyTavern is not touched — and an import never renames it back, so the name here stays yours.">✎ Rename</button>
+          <button class="sm" id="wbAll_cards" style="margin-left:14px" title="Tick every field, including X-prefixed ones.">tick all</button>
+          <button class="sm" id="wbNone_cards" style="margin-left:4px" title="Untick every field.">tick none</button>
+          <button class="sm" id="wbInvert_cards" style="margin-left:4px" title="Flip every tick. Untick the one field you want to work on, press this, and it becomes the only one ticked.">⇄ toggle all</button>
+          <button class="sm" id="wbFold_cards" style="margin-left:4px" title="Hide the body of every UNTICKED field. The header row stays, so ticking one brings its text straight back.">⊟ collapse unticked</button>
+          <!-- §9a.31. On a CARD these reach the embedded lorebook's entries and nothing else — the
+               card's own description, personality and greetings are never folded (§6.1.2). Both
+               buttons stay hidden unless this card actually carries an embedded book. -->
+          <button class="sm" id="wbExpandAll_cards" style="margin-left:10px" title="Open every entry in this document, so all of them show their text at once.">⊕ expand all</button>
+          <button class="sm" id="wbCollapseAll_cards" style="margin-left:4px" title="Close every entry down to its title row. This changes what you can SEE and nothing else — a closed entry is still ticked and is still included in a pass.">⊖ collapse all</button>
+          <div style="flex:1"></div>
+          <label class="small muted inlab" title="Every revision is a FULL snapshot, so rolling back is selecting one — it never reconstructs and never deletes history."><span>revision</span><select id="wbRevPick_cards" class="sm"></select></label>
+          <button class="sm" id="wbRollback_cards" style="margin-left:6px" title="Mint a NEW revision equal to this one. History is never rewound.">↺ Roll back to this</button>
+          <!-- Place the external SillyTavern save action before local export and keep it available while status updates. -->
+          <!-- Keep the save action beside the top-level controls so it is available without scrolling to the footer. -->
+          <!-- Provide a visible Find control in addition to the standard Ctrl+F shortcut. -->
+          <button class="sm" style="margin-left:6px" id="wbFindOpen_cards" title="Find &amp; replace across every field of this document — or press Ctrl+F.">🔍 Find</button>
+          <button class="primary sm" style="margin-left:6px" id="wbSaveTop_cards" disabled title="Save your hand edits as a new revision inside Vocalis. Nothing is sent to SillyTavern.">Save as new revision</button>
+          <!-- Keep Revert visible beside Save and disabled when there are no edits; amber denotes recovery, not failure. -->
+          <button class="sm recover" style="margin-left:6px" id="wbRevertTop_cards" disabled>↺ Revert changes</button>
+          <button class="sm ok" style="margin-left:6px" id="wbSend_cards" title="Write THIS revision back into the live character card in SillyTavern, overwriting what is there. Needs a SillyTavern tab open with the Vocalis extension paired.">⬆ Save to SillyTavern</button>
+          <button class="sm" id="wbExport_cards" style="margin-left:6px" title="Save THIS revision as the file SillyTavern imports — a .png card with its picture, or a .json worldbook. Chrome and Edge ask where to put it; other browsers use your downloads folder.">⬇ Export</button><button class="sm" id="wbMergeImport_cards" style="margin-left:6px" title="Import an updated version of the character card you have open and MERGE it into this one, instead of creating a second card. Fields you have not edited take the file's version; fields you have edited keep yours; anything you have both changed is shown side by side for you to pick. Nothing is written until you press Apply, and the version you had stays in the revision picker.">⇄ Import &amp; merge…</button><input type="file" accept=".json,.png,application/json,image/png" id="wbMergeFile_cards" style="display:none">
+          <button class="sm" id="wbClose_cards" style="margin-left:6px">✕ Close</button>
+        </div>
+
+        <!-- The picture beside the fields (§4.3, m2a). The wrapper is hidden outright when the
+             document has none — a worldbook always, a card imported as .json — so this collapses
+             to exactly the single-column layout it replaced. -->
+        <!-- Find and replace operates literally across every field, including existing text that needs repair. -->
+        <div class="wbfind" id="wbFind_cards" style="display:none">
+          <input type="search" id="wbFindQ_cards" class="filter" placeholder="Find in every field…" autocomplete="off" spellcheck="false">
+          <input type="search" id="wbFindR_cards" class="filter" placeholder="Replace with…" autocomplete="off" spellcheck="false">
+          <label class="small muted" title="Match capital letters exactly."><input type="checkbox" id="wbFindCase_cards"> Aa</label>
+          <label class="small muted" title="Only match whole words."><input type="checkbox" id="wbFindWord_cards"> word</label>
+          <button class="sm" id="wbFindPrev_cards" title="Previous match — Ctrl+Shift+F3 anywhere, or Shift+Enter while the cursor is in the search box. (Enter cannot work once Find has put the cursor in an entry: there it types a newline.)">‹</button>
+          <button class="sm" id="wbFindNext_cards" title="Next match — Ctrl+F3 anywhere, or Enter while the cursor is in the search box. (Enter cannot work once Find has put the cursor in an entry: there it types a newline.)">›</button>
+          <button class="sm primary" id="wbFindOne_cards" title="Replace the match on screen, then go to the next.">Replace</button>
+          <button class="sm primary" id="wbFindAll_cards" title="Replace every match in every field.">Replace all</button>
+          <span class="small" id="wbFindCount_cards"></span>
+          <span class="small muted" style="margin-left:10px" title="Enter only steps to the next match while the cursor is still in the search box. Once Find moves the cursor into an entry, Enter types a newline there — so the shortcut that always works is Ctrl+F3.">Ctrl+F3 / Ctrl+Shift+F3 to step</span>
+          <div style="flex:1"></div>
+          <button class="sm" id="wbFindClose_cards" title="Close (Esc)">✕</button>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div id="wbCardWrap_cards" style="display:none;flex:0 0 auto">
+            <img id="wbCard_cards" class="wbcard" alt="">
+            <div id="wbCardNote_cards" class="small muted" style="max-width:220px;margin-top:5px"></div>
+            <!-- Store face framing as a focus rectangle; cropping changes the displayed region without rewriting the source image. -->
+            <div id="wbPicWrap_cards" style="max-width:220px;margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">
+              <input type="file" id="wbPicFile_cards" accept="image/png" style="display:none">
+              <button class="xs" id="wbPicUpload_cards" title="Replace this picture with a PNG from your machine. It is stored whole — Vocalis never re-encodes it, so an animated PNG stays animated.">⬆ Upload PNG</button>
+              <button class="xs" id="wbPicFocus_cards" title="Choose which part of the picture is the round avatar. The square starts centered; drag it to move it and its corners to resize, then press ✓ Apply face. Nothing is cropped — the square is a setting, and SillyTavern reads the same one.">◎ Set face</button>
+              <button class="xs" id="wbPicFocusClear_cards" style="display:none" title="Back to the largest centered square, which is what a card with no face square gets.">✕ Clear face</button>
+              <button class="xs ok" id="wbPicApply_cards" style="display:none" title="Store this square as the face. It is a setting, not a crop — press Save to SillyTavern afterward to send it.">✓ Apply face</button>
+              <button class="xs" id="wbPicCancel_cards" style="display:none" title="Leave the face exactly as it was. Nothing has been written yet.">✕ Cancel</button>
+            </div>
+          </div>
+          <div id="wbFields_cards" class="wbfields" style="flex:1;min-width:0"></div>
+        </div>
+
+        <div class="row" id="wbSaveWrap_cards" style="display:none;margin-top:8px;align-items:center">
+          <span class="small muted" id="wbSaveHint_cards">Edited by hand — saving mints a new revision.</span>
+          <div style="flex:1"></div>
+          <button class="sm recover" id="wbRevert_cards" style="margin-right:6px">↺ Revert changes</button>
+          <button class="primary" id="wbSave_cards">Save as new revision</button>
+        </div>
+
+        <!-- The pass (§6.2). ONE instruction box, at the BOTTOM of the field list: the fields
+             are what you are choosing between, and the instruction is what you do to them. -->
+        <div class="wbpass" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+          <div class="row" style="align-items:center;margin-bottom:6px">
+            <b>Run an instruction over the ticked fields</b>
+            <div style="flex:1"></div>
+            <span class="small muted" id="wbPreflight_cards"></span>
+          </div>
+          <div class="row" style="align-items:center;gap:6px;margin-bottom:6px">
+            <select id="wbInsPick_cards" class="sm" style="min-width:240px"><option value="">— saved instructions —</option></select>
+            <button class="sm" id="wbInsSave_cards" title="Save to the shared library. Pass quality is almost entirely determined by the instruction, so a library with past results attached is worth more than anything else here.">★ Save</button>
+            <button class="sm" id="wbInsDel_cards" title="Delete the selected saved instruction">🗑</button>
+          </div>
+          <textarea id="wbIns_cards" rows="4" placeholder="e.g. Rename Test Character 1 to Renamed Character 1. Change every reference to that character, including obliques such as 'the character'. Change nothing else."></textarea>
+          <div class="small muted" style="margin:4px 0 8px">List the subject's oblique forms so the model can distinguish how the subject is referenced. This instruction is fixed when a pass starts; edit it before starting another pass.</div>
+          <div class="row" style="align-items:center">
+            <button class="sm primary" id="wbPreview_cards" title="Run against ONE ticked field and look at the result before committing to the whole document.">👁 Preview one</button>
+            <!-- §6.1.3 item 7 — WHICH field. `Preview one` used to take the first ticked
+                 field in document order and say nothing, so the answer it gave could not be
+                 judged: the whole point is deciding whether to commit to a ~35-minute pass,
+                 and that is undecidable without knowing what it ran against. -->
+            <select id="wbPreviewPick_cards" class="sm" style="margin-left:6px;max-width:320px" title="Which field Preview one will run against."></select>
+            <div style="flex:1"></div>
+            <button class="sm" id="wbCancel_cards" style="display:none;margin-right:6px">■ Stop</button>
+            <button class="go" id="wbRun_cards">▶ Run pass</button>
+          </div>
+          <div id="wbProgress_cards" class="small muted" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+
+      <!-- Place the model log after the library and editor, immediately before Review. -->
+      <div class="panel" id="wbLog_cards" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Model log <span id="wbLogCount_cards" class="small muted"></span></h2>
+          <div style="flex:1"></div>
+          <button class="sm" id="wbLogCollapse_cards" title="Collapse the log. The row stays put.">▾ Collapse</button>
+        </div>
+        <div id="wbLogWrap_cards">
+          <div class="small muted" style="margin:4px 0 8px">The exact request body and the exact reply, including the system prompt and few-shot pairs that are otherwise invisible.</div>
+          <div id="wbLogBody_cards" class="wblog"></div>
+        </div>
+      </div>
+
+      <!-- ── REVIEW (§6.3): proposals stream in as they arrive (§6.3.1). -->
+      <div class="panel" id="wbReview_cards" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Review <span id="wbReviewCount_cards" class="small muted"></span></h2>
+          <div style="flex:1"></div>
+          <button class="sm primary" id="wbApproveAll_cards">✓ Approve all changed</button>
+          <button class="sm danger" id="wbRejectAll_cards" style="margin-left:6px">✕ Reject all</button>
+          <button class="go" id="wbApply_cards" style="margin-left:10px">Apply → new revision</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Nothing is written until you press Apply. Approving marks a row; the document changes only when a revision is minted from the marked rows — and the revision you started from stays exactly as it is.</div>
+        <div id="wbProposals_cards"></div>
+      </div>
+    </div>
+
+    <!-- Cards and books share the editor implementation while retaining separate sub-tabs. -->
+    <div data-stpanel="books" style="display:none">
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">World Books</h2>
+          <span id="wbModel_books" class="small muted" title="Which model a pass would run under. A pass run under another model is not the same pass (§3.1), so it is recorded on the pass."></span>
+          <select id="wbSort_books" class="sm" style="margin-left:10px" title="Order the list. Newest first is the default because the thing you just imported is almost always the thing you want."><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select>
+          <input type="file" accept=".json,application/json" id="wbFile_books" style="display:none">
+          <input type="file" accept=".json,application/json" id="wbSecFiles_books" multiple style="display:none"><button class="sm" id="wbAssembleBtn_books" style="margin-left:10px" title="Build ONE worldbook from a folder of section chunks — select them all, plus build-config.json if you have one. Filename order (A_, B_, … X_) decides uid assignment and the server sorts them for you.">⊞ Assemble sections…</button><button class="sm" id="wbStSweep_books" style="margin-left:6px" title="Pull every worldbook and character straight out of SillyTavern. Needs a SillyTavern tab open with the Vocalis extension paired.">⟳ Import from SillyTavern</button><button class="sm" id="wbImportBtn_books" style="margin-left:6px" title="Import one compiled .json worldbook from a file">⬆ Import file…</button><button class="sm" id="wbExportFile_books" style="margin-left:6px" title="Save the World Book you have open as the .json file SillyTavern imports — the revision that is on screen, not necessarily the latest. Chrome and Edge ask where to put it; other browsers use your downloads folder. Import it again here or in SillyTavern; a file whose name matches a book already in this list lands on it as a new revision rather than making a second row. Nothing here changes and SillyTavern is not affected.">⬇ Export file…</button><button class="sm" id="wbNewBook_books" style="margin-left:6px" title="Create an empty World Book here in Vocalis, then add entries to it. It is not in SillyTavern until you press Save to SillyTavern — and it cannot be sent while it is empty, because that would REPLACE a book over there with nothing.">✚ New World Book…</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">The same, for worldbooks. A 110-entry book needing a rename or a terminology sweep is hours by hand; here it is one instruction and a review queue. Imported documents live in Vocalis's encrypted store and every edit mints a new revision — the version you started from is always recoverable.</div>
+
+        <div id="wbMsg_books" class="small muted" style="min-height:1.2em;margin-bottom:6px"></div>
+        <div id="wbLib_books"><span class="muted">Loading…</span></div>
+      </div>
+
+      <!-- ── EDITOR (§6.1.2): every field on ONE scrollable page, each individually editable.
+           This is the pane that exists because ST's own editors do not. -->
+      <div class="panel" id="wbEditor_books" style="display:none">
+        <div class="logwrap">
+          <h2 style="margin:0"><span id="wbDocName_books"></span></h2>
+          <span class="small muted" id="wbRevLabel_books" style="margin-left:10px"></span>
+          <button class="sm" id="wbRename_books" style="margin-left:10px" title="Rename this document in Vocalis. SillyTavern is not touched — and an import never renames it back, so the name here stays yours.">✎ Rename</button>
+          <button class="sm" id="wbAll_books" style="margin-left:14px" title="Tick every field, including X-prefixed ones.">tick all</button>
+          <button class="sm" id="wbNone_books" style="margin-left:4px" title="Untick every field.">tick none</button>
+          <button class="sm" id="wbInvert_books" style="margin-left:4px" title="Flip every tick. Untick the one field you want to work on, press this, and it becomes the only one ticked.">⇄ toggle all</button>
+          <button class="sm" id="wbFold_books" style="margin-left:4px" title="Hide the body of every UNTICKED field. The header row stays, so ticking one brings its text straight back.">⊟ collapse unticked</button>
+          <!-- Keep bulk entry controls beside the entry visibility toggle they operate on. -->
+          <button class="sm" id="wbExpandAll_books" style="margin-left:10px" title="Open every entry in this document, so all of them show their text at once.">⊕ expand all</button>
+          <button class="sm" id="wbCollapseAll_books" style="margin-left:4px" title="Close every entry down to its title row. This changes what you can SEE and nothing else — a closed entry is still ticked and is still included in a pass.">⊖ collapse all</button>
+          <!-- 🔴 m4z / §9a.19 — IN THE TOOLBAR, NOT AT THE END OF THE FIELD LIST. A book with no
+               entries renders "This document has no editable fields", so a button living among the
+               fields would only exist once there was already something to add to. -->
+          <!-- 🔴 11.1.8 — ⬇ Export… MOVED INTO THIS GROUP from the Save/Send/Close one below: why, and the browser-spec assertion it replaced, are in `wire.js` beside `exportOpenDoc`. -->
+          <button class="sm" id="wbAddEntry_books" style="margin-left:10px" title="Add a new entry to this World Book. It mints a revision immediately — the entry has to exist before it can be edited — and opens with placeholder text for you to replace.">✚ Add entry</button><button class="sm" id="wbImportEntry_books" style="margin-left:6px" title="Merge an entry from a .json file into this World Book — one SillyTavern entry, or a worldbook file holding one or more. Its uid is reassigned to a free one in THIS book, so nothing already here can be overwritten. Mints a revision immediately, like ✚ Add entry.">⬆ Import entry…</button><input type="file" accept=".json,application/json" id="wbEntryFile_books" style="display:none"><button class="sm" id="wbMergeImport_books" style="margin-left:6px" title="Import an updated version of this World Book and MERGE it, instead of replacing what is here. Entries you have not edited take the file's version; entries you have edited keep yours; anything you have both changed is shown side by side for you to pick. Nothing is written until you press Apply, and the version you had stays in the revision picker.">⇄ Import &amp; merge…</button><input type="file" accept=".json,application/json" id="wbMergeFile_books" style="display:none"><button class="sm" id="wbFixDepths_books" style="margin-left:6px" title="Move this book's conditional entries off the top of the prompt and down to &quot;At depth&quot;. SillyTavern puts World Info near the TOP, the set of active entries changes every turn, and a prompt cache is only good up to the first byte that changes — so everything below the block is reprocessed every turn. Moving these entries can reduce repeated prompt processing when active world information changes between turns. It shows you the counts first and mints a revision, so this one stays in the picker to roll back to. Only position, depth and role are written.">⇊ Fix positions…</button><button class="sm" id="wbExport_books" style="margin-left:6px" title="Save this World Book to a file — the standard SillyTavern worldbook JSON, at THIS revision. Chrome and Edge ask where to put it, so a backup can go straight into the folder you keep them in; other browsers use your downloads folder. Import it again here or in SillyTavern; a file whose name matches a book already in this list lands on it as a new revision rather than making a second row. Nothing here changes and SillyTavern is not affected.">⬇ Export…</button>
+          <!-- m4y / §9a.4. ⚠️ THIS NARROWS THE ENTRIES INSIDE THIS BOOK, not which books are
+               listed — the Library's own worldbook filter (§8.2) narrows CARDS. Two filters on one
+               page, so both labels have to say which is which. -->
+          <!-- Label the entry visibility selector as Show so it describes the displayed entries. -->
+          <label id="wbEntryModeWrap_books" class="small muted inlab" style="margin-left:10px" title="Show only the entries in one injection mode. This narrows what you can SEE and what a pass reaches — hidden entries are never included, and the preflight says how many are hidden."><span>show</span><select id="wbEntryMode_books" class="sm">
+            <option value="">all entries</option>
+            <option value="constant">🔵 always injected</option>
+            <option value="normal">🟢 normal (keyword)</option>
+            <option value="vectorized">🔗 vectorized</option>
+            <option value="disabled">⛔ disabled</option>
+          </select></label>
+          <div style="flex:1"></div>
+          <label class="small muted inlab" title="Every revision is a FULL snapshot, so rolling back is selecting one — it never reconstructs and never deletes history."><span>revision</span><select id="wbRevPick_books" class="sm"></select></label>
+          <button class="sm" id="wbRollback_books" style="margin-left:6px" title="Mint a NEW revision equal to this one. History is never rewound.">↺ Roll back to this</button>
+          <!-- Place the external SillyTavern save action before local export and keep it available while status updates. -->
+          <!-- Keep the save action beside the top-level controls so it is available without scrolling to the footer. -->
+          <!-- 7.3.9b — see the note on the cards pane: Ctrl+F needs a visible way in, on all three. -->
+          <button class="sm" style="margin-left:6px" id="wbFindOpen_books" title="Find &amp; replace across every field of this document — or press Ctrl+F.">🔍 Find</button>
+          <button class="primary sm" style="margin-left:6px" id="wbSaveTop_books" disabled title="Save your hand edits as a new revision inside Vocalis. Nothing is sent to SillyTavern.">Save as new revision</button>
+          <!-- Keep Revert visible beside Save and disabled when there are no edits; amber denotes recovery, not failure. -->
+          <button class="sm recover" style="margin-left:6px" id="wbRevertTop_books" disabled>↺ Revert changes</button>
+          <button class="sm ok" style="margin-left:6px" id="wbSend_books" title="Write THIS revision back into the live World Book in SillyTavern, overwriting what is there. Needs a SillyTavern tab open with the Vocalis extension paired.">⬆ Save to SillyTavern</button>
+          <button class="sm" id="wbClose_books" style="margin-left:6px">✕ Close</button>
+        </div>
+
+        <!-- The picture beside the fields (§4.3, m2a). The wrapper is hidden outright when the
+             document has none — a worldbook always, a card imported as .json — so this collapses
+             to exactly the single-column layout it replaced. -->
+        <!-- Find and replace operates literally across every field, including existing text that needs repair. -->
+        <div class="wbfind" id="wbFind_books" style="display:none">
+          <input type="search" id="wbFindQ_books" class="filter" placeholder="Find in every field…" autocomplete="off" spellcheck="false">
+          <input type="search" id="wbFindR_books" class="filter" placeholder="Replace with…" autocomplete="off" spellcheck="false">
+          <label class="small muted" title="Match capital letters exactly."><input type="checkbox" id="wbFindCase_books"> Aa</label>
+          <label class="small muted" title="Only match whole words."><input type="checkbox" id="wbFindWord_books"> word</label>
+          <button class="sm" id="wbFindPrev_books" title="Previous match — Ctrl+Shift+F3 anywhere, or Shift+Enter while the cursor is in the search box. (Enter cannot work once Find has put the cursor in an entry: there it types a newline.)">‹</button>
+          <button class="sm" id="wbFindNext_books" title="Next match — Ctrl+F3 anywhere, or Enter while the cursor is in the search box. (Enter cannot work once Find has put the cursor in an entry: there it types a newline.)">›</button>
+          <button class="sm primary" id="wbFindOne_books" title="Replace the match on screen, then go to the next.">Replace</button>
+          <button class="sm primary" id="wbFindAll_books" title="Replace every match in every field.">Replace all</button>
+          <span class="small" id="wbFindCount_books"></span>
+          <span class="small muted" style="margin-left:10px" title="Enter only steps to the next match while the cursor is still in the search box. Once Find moves the cursor into an entry, Enter types a newline there — so the shortcut that always works is Ctrl+F3.">Ctrl+F3 / Ctrl+Shift+F3 to step</span>
+          <div style="flex:1"></div>
+          <button class="sm" id="wbFindClose_books" title="Close (Esc)">✕</button>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div id="wbCardWrap_books" style="display:none;flex:0 0 auto">
+            <img id="wbCard_books" class="wbcard" alt="">
+            <div id="wbCardNote_books" class="small muted" style="max-width:220px;margin-top:5px"></div>
+          </div>
+          <div id="wbFields_books" class="wbfields" style="flex:1;min-width:0"></div>
+        </div>
+
+        <div class="row" id="wbSaveWrap_books" style="display:none;margin-top:8px;align-items:center">
+          <span class="small muted" id="wbSaveHint_books">Edited by hand — saving mints a new revision.</span>
+          <div style="flex:1"></div>
+          <button class="sm recover" id="wbRevert_books" style="margin-right:6px">↺ Revert changes</button>
+          <button class="primary" id="wbSave_books">Save as new revision</button>
+        </div>
+
+        <!-- The pass (§6.2). ONE instruction box, at the BOTTOM of the field list: the fields
+             are what you are choosing between, and the instruction is what you do to them. -->
+        <div class="wbpass" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+          <div class="row" style="align-items:center;margin-bottom:6px">
+            <b>Run an instruction over the ticked fields</b>
+            <div style="flex:1"></div>
+            <span class="small muted" id="wbPreflight_books"></span>
+          </div>
+          <div class="row" style="align-items:center;gap:6px;margin-bottom:6px">
+            <select id="wbInsPick_books" class="sm" style="min-width:240px"><option value="">— saved instructions —</option></select>
+            <button class="sm" id="wbInsSave_books" title="Save to the shared library. Pass quality is almost entirely determined by the instruction, so a library with past results attached is worth more than anything else here.">★ Save</button>
+            <button class="sm" id="wbInsDel_books" title="Delete the selected saved instruction">🗑</button>
+          </div>
+          <textarea id="wbIns_books" rows="4" placeholder="e.g. Rename Test Character 1 to Renamed Character 1. Change every reference to that character, including obliques such as 'the character'. Change nothing else."></textarea>
+          <div class="small muted" style="margin:4px 0 8px">List the subject's oblique forms so the model can distinguish how the subject is referenced. This instruction is fixed when a pass starts; edit it before starting another pass.</div>
+          <div class="row" style="align-items:center">
+            <button class="sm primary" id="wbPreview_books" title="Run against ONE ticked field and look at the result before committing to the whole document.">👁 Preview one</button>
+            <!-- §6.1.3 item 7 — WHICH field. `Preview one` used to take the first ticked
+                 field in document order and say nothing, so the answer it gave could not be
+                 judged: the whole point is deciding whether to commit to a ~35-minute pass,
+                 and that is undecidable without knowing what it ran against. -->
+            <select id="wbPreviewPick_books" class="sm" style="margin-left:6px;max-width:320px" title="Which field Preview one will run against."></select>
+            <div style="flex:1"></div>
+            <button class="sm" id="wbCancel_books" style="display:none;margin-right:6px">■ Stop</button>
+            <button class="go" id="wbRun_books">▶ Run pass</button>
+          </div>
+          <div id="wbProgress_books" class="small muted" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+
+      <!-- Place the model log after the library and editor, immediately before Review. -->
+      <div class="panel" id="wbLog_books" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Model log <span id="wbLogCount_books" class="small muted"></span></h2>
+          <div style="flex:1"></div>
+          <button class="sm" id="wbLogCollapse_books" title="Collapse the log. The row stays put.">▾ Collapse</button>
+        </div>
+        <div id="wbLogWrap_books">
+          <div class="small muted" style="margin:4px 0 8px">The exact request body and the exact reply, including the system prompt and few-shot pairs that are otherwise invisible.</div>
+          <div id="wbLogBody_books" class="wblog"></div>
+        </div>
+      </div>
+
+      <!-- ── REVIEW (§6.3): proposals stream in as they arrive (§6.3.1). -->
+      <div class="panel" id="wbReview_books" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Review <span id="wbReviewCount_books" class="small muted"></span></h2>
+          <div style="flex:1"></div>
+          <button class="sm primary" id="wbApproveAll_books">✓ Approve all changed</button>
+          <button class="sm danger" id="wbRejectAll_books" style="margin-left:6px">✕ Reject all</button>
+          <button class="go" id="wbApply_books" style="margin-left:10px">Apply → new revision</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Nothing is written until you press Apply. Approving marks a row; the document changes only when a revision is minted from the marked rows — and the revision you started from stays exactly as it is.</div>
+        <div id="wbProposals_books"></div>
+      </div>
+    </div>
+
+    <!-- Personas use the same editor structure as cards and books while storing identity in SillyTavern settings. -->
+
+    <div data-stpanel="personas" style="display:none">
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Personas</h2>
+          <span id="wbModel_personas" class="small muted" title="Which model a pass would run under. A pass run under another model is not the same pass (§3.1), so it is recorded on the pass."></span>
+          <select id="wbSort_personas" class="sm" style="margin-left:10px" title="Order the list. Newest first is the default because the thing you just imported is almost always the thing you want."><option value="new">Newest first</option><option value="old">Oldest first</option><option value="az">Name A–Z</option><option value="za">Name Z–A</option></select>
+          <input type="file" accept=".json,.md,.markdown,.txt,application/json,text/markdown,text/plain" id="wbFile_personas" style="display:none"><button class="sm" id="wbStSweep_personas" style="margin-left:6px" title="Pull every persona straight out of SillyTavern. Needs a SillyTavern tab open with the Vocalis extension paired.">⟳ Import from SillyTavern</button><button class="sm" id="wbImportBtn_personas" style="margin-left:6px" title="Import a persona from a file — a .json persona (one exported from here, or one written for you elsewhere) or a .md/.txt document, whose whole text becomes the description for you to trim. It has no picture until you give it one with ⬆ Upload PNG, and it is not in SillyTavern until you press Save to SillyTavern. A persona PNG holds only the picture, so it is not a way in on its own.">⬆ Import file…</button><button class="sm" id="wbNewPersona_personas" style="margin-left:6px" title="Create a persona here in Vocalis, empty — type the name and description, then give it a face with ⬆ Upload PNG. This is also how you import a persona from a picture: a persona avatar carries no data in the PNG (unlike a character card), so the face comes from the file and the words come from you. It is not in SillyTavern until you press Save to SillyTavern.">✚ New Persona…</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Your own personas — the name, picture and self-description SillyTavern injects into the prompt as you. In SillyTavern a persona is not a file — it lives in two maps inside its <code>settings.json</code> — so an existing one arrives by ⟳ <b>Import from SillyTavern</b>. Here it is an ordinary document: ⬆ <b>Import file…</b> takes a .json persona or a .md/.txt write-up, and ✚ <b>New Persona</b> starts an empty one. All three arrive without a face, because a persona avatar carries no data in the PNG the way a character card does; ⬆ <b>Upload PNG</b> under the picture gives them one. Only the description and title are offered to a model. Personas live in Vocalis's encrypted store and every edit mints a new revision.</div>
+
+        <div id="wbMsg_personas" class="small muted" style="min-height:1.2em;margin-bottom:6px"></div>
+        <div id="wbLib_personas"><span class="muted">Loading…</span></div>
+      </div>
+
+      <!-- ── EDITOR (§6.1.2): every field on ONE scrollable page, each individually editable.
+           This is the pane that exists because ST's own editors do not. -->
+      <div class="panel" id="wbEditor_personas" style="display:none">
+        <div class="logwrap">
+          <h2 style="margin:0"><span id="wbDocName_personas"></span></h2>
+          <span class="small muted" id="wbRevLabel_personas" style="margin-left:10px"></span>
+          <button class="sm" id="wbRename_personas" style="margin-left:10px" title="Rename this document in Vocalis. SillyTavern is not touched — and an import never renames it back, so the name here stays yours.">✎ Rename</button>
+          <button class="sm" id="wbAll_personas" style="margin-left:14px" title="Tick every field, including X-prefixed ones.">tick all</button>
+          <button class="sm" id="wbNone_personas" style="margin-left:4px" title="Untick every field.">tick none</button>
+          <button class="sm" id="wbInvert_personas" style="margin-left:4px" title="Flip every tick. Untick the one field you want to work on, press this, and it becomes the only one ticked.">⇄ toggle all</button>
+          <button class="sm" id="wbFold_personas" style="margin-left:4px" title="Hide the body of every UNTICKED field. The header row stays, so ticking one brings its text straight back.">⊟ collapse unticked</button>
+          <!-- §9a.31. A persona has no entries, so these are present for structural symmetry with
+               the other two panes and `wbEntryCtl` keeps them hidden. Built rather than omitted so
+               `wbEl(kind,'wbExpandAll')` is never null for one kind out of three. -->
+          <button class="sm" id="wbExpandAll_personas" style="margin-left:10px" title="Open every entry in this document, so all of them show their text at once.">⊕ expand all</button>
+          <button class="sm" id="wbCollapseAll_personas" style="margin-left:4px" title="Close every entry down to its title row. This changes what you can SEE and nothing else — a closed entry is still ticked and is still included in a pass.">⊖ collapse all</button>
+          <div style="flex:1"></div>
+          <label class="small muted inlab" title="Every revision is a FULL snapshot, so rolling back is selecting one — it never reconstructs and never deletes history."><span>revision</span><select id="wbRevPick_personas" class="sm"></select></label>
+          <button class="sm" id="wbRollback_personas" style="margin-left:6px" title="Mint a NEW revision equal to this one. History is never rewound.">↺ Roll back to this</button>
+          <!-- Place the external SillyTavern save action before local export and keep it available while status updates. -->
+          <!-- Keep the save action beside the top-level controls so it is available without scrolling to the footer. -->
+          <!-- 7.3.9b — see the note on the cards pane: Ctrl+F needs a visible way in, on all three. -->
+          <button class="sm" style="margin-left:6px" id="wbFindOpen_personas" title="Find &amp; replace across every field of this document — or press Ctrl+F.">🔍 Find</button>
+          <button class="primary sm" style="margin-left:6px" id="wbSaveTop_personas" disabled title="Save your hand edits as a new revision inside Vocalis. Nothing is sent to SillyTavern.">Save as new revision</button>
+          <!-- Keep Revert visible beside Save and disabled when there are no edits; amber denotes recovery, not failure. -->
+          <button class="sm recover" style="margin-left:6px" id="wbRevertTop_personas" disabled>↺ Revert changes</button>
+          <button class="sm ok" style="margin-left:6px" id="wbSend_personas" title="Write this persona's description and title back into SillyTavern, overwriting what is there. Needs a SillyTavern tab open with the Vocalis extension paired.">⬆ Save to SillyTavern</button>
+          <button class="sm" id="wbExport_personas" style="margin-left:6px" title="Save THIS revision as the file SillyTavern imports — a .png card with its picture, or a .json worldbook. Chrome and Edge ask where to put it; other browsers use your downloads folder.">⬇ Export</button>
+          <button class="sm" id="wbClose_personas" style="margin-left:6px">✕ Close</button>
+        </div>
+
+        <!-- The picture beside the fields (§4.3, m2a). The wrapper is hidden outright when the
+             document has none — a worldbook always, a card imported as .json — so this collapses
+             to exactly the single-column layout it replaced. -->
+        <!-- Find and replace operates literally across every field, including existing text that needs repair. -->
+        <div class="wbfind" id="wbFind_personas" style="display:none">
+          <input type="search" id="wbFindQ_personas" class="filter" placeholder="Find in every field…" autocomplete="off" spellcheck="false">
+          <input type="search" id="wbFindR_personas" class="filter" placeholder="Replace with…" autocomplete="off" spellcheck="false">
+          <label class="small muted" title="Match capital letters exactly."><input type="checkbox" id="wbFindCase_personas"> Aa</label>
+          <label class="small muted" title="Only match whole words."><input type="checkbox" id="wbFindWord_personas"> word</label>
+          <button class="sm" id="wbFindPrev_personas" title="Previous match — Ctrl+Shift+F3 anywhere, or Shift+Enter while the cursor is in the search box. (Enter cannot work once Find has put the cursor in an entry: there it types a newline.)">‹</button>
+          <button class="sm" id="wbFindNext_personas" title="Next match — Ctrl+F3 anywhere, or Enter while the cursor is in the search box. (Enter cannot work once Find has put the cursor in an entry: there it types a newline.)">›</button>
+          <button class="sm primary" id="wbFindOne_personas" title="Replace the match on screen, then go to the next.">Replace</button>
+          <button class="sm primary" id="wbFindAll_personas" title="Replace every match in every field.">Replace all</button>
+          <span class="small" id="wbFindCount_personas"></span>
+          <span class="small muted" style="margin-left:10px" title="Enter only steps to the next match while the cursor is still in the search box. Once Find moves the cursor into an entry, Enter types a newline there — so the shortcut that always works is Ctrl+F3.">Ctrl+F3 / Ctrl+Shift+F3 to step</span>
+          <div style="flex:1"></div>
+          <button class="sm" id="wbFindClose_personas" title="Close (Esc)">✕</button>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start">
+          <div id="wbCardWrap_personas" style="display:none;flex:0 0 auto">
+            <img id="wbCard_personas" class="wbcard" alt="">
+            <div id="wbCardNote_personas" class="small muted" style="max-width:220px;margin-top:5px"></div>
+            <!-- Store face framing as a focus rectangle; cropping changes the displayed region without rewriting the source image. -->
+            <div id="wbPicWrap_personas" style="max-width:220px;margin-top:6px;display:flex;gap:5px;flex-wrap:wrap">
+              <input type="file" id="wbPicFile_personas" accept="image/png" style="display:none">
+              <button class="xs" id="wbPicUpload_personas" title="Replace this picture with a PNG from your machine. It is stored whole — Vocalis never re-encodes it, so an animated PNG stays animated.">⬆ Upload PNG</button>
+              <button class="xs" id="wbPicFocus_personas" title="Choose which part of the picture is the round avatar. The square starts centered; drag it to move it and its corners to resize, then press ✓ Apply face. Nothing is cropped — the square is a setting, and SillyTavern reads the same one.">◎ Set face</button>
+              <button class="xs" id="wbPicFocusClear_personas" style="display:none" title="Back to the largest centered square, which is what a card with no face square gets.">✕ Clear face</button>
+              <button class="xs ok" id="wbPicApply_personas" style="display:none" title="Store this square as the face. It is a setting, not a crop — press Save to SillyTavern afterward to send it.">✓ Apply face</button>
+              <button class="xs" id="wbPicCancel_personas" style="display:none" title="Leave the face exactly as it was. Nothing has been written yet.">✕ Cancel</button>
+            </div>
+          </div>
+          <div id="wbFields_personas" class="wbfields" style="flex:1;min-width:0"></div>
+        </div>
+
+        <div class="row" id="wbSaveWrap_personas" style="display:none;margin-top:8px;align-items:center">
+          <span class="small muted" id="wbSaveHint_personas">Edited by hand — saving mints a new revision.</span>
+          <div style="flex:1"></div>
+          <button class="sm recover" id="wbRevert_personas" style="margin-right:6px">↺ Revert changes</button>
+          <button class="primary" id="wbSave_personas">Save as new revision</button>
+        </div>
+
+        <!-- The pass (§6.2). ONE instruction box, at the BOTTOM of the field list: the fields
+             are what you are choosing between, and the instruction is what you do to them. -->
+        <div class="wbpass" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+          <div class="row" style="align-items:center;margin-bottom:6px">
+            <b>Run an instruction over the ticked fields</b>
+            <div style="flex:1"></div>
+            <span class="small muted" id="wbPreflight_personas"></span>
+          </div>
+          <div class="row" style="align-items:center;gap:6px;margin-bottom:6px">
+            <select id="wbInsPick_personas" class="sm" style="min-width:240px"><option value="">— saved instructions —</option></select>
+            <button class="sm" id="wbInsSave_personas" title="Save to the shared library. Pass quality is almost entirely determined by the instruction, so a library with past results attached is worth more than anything else here.">★ Save</button>
+            <button class="sm" id="wbInsDel_personas" title="Delete the selected saved instruction">🗑</button>
+          </div>
+          <textarea id="wbIns_personas" rows="4" placeholder="e.g. Rename Test Character 1 to Renamed Character 1. Change every reference to that character, including obliques such as 'the character'. Change nothing else."></textarea>
+          <div class="small muted" style="margin:4px 0 8px">List the subject's oblique forms so the model can distinguish how the subject is referenced. This instruction is fixed when a pass starts; edit it before starting another pass.</div>
+          <div class="row" style="align-items:center">
+            <button class="sm primary" id="wbPreview_personas" title="Run against ONE ticked field and look at the result before committing to the whole document.">👁 Preview one</button>
+            <!-- §6.1.3 item 7 — WHICH field. `Preview one` used to take the first ticked
+                 field in document order and say nothing, so the answer it gave could not be
+                 judged: the whole point is deciding whether to commit to a ~35-minute pass,
+                 and that is undecidable without knowing what it ran against. -->
+            <select id="wbPreviewPick_personas" class="sm" style="margin-left:6px;max-width:320px" title="Which field Preview one will run against."></select>
+            <div style="flex:1"></div>
+            <button class="sm" id="wbCancel_personas" style="display:none;margin-right:6px">■ Stop</button>
+            <button class="go" id="wbRun_personas">▶ Run pass</button>
+          </div>
+          <div id="wbProgress_personas" class="small muted" style="margin-top:8px"></div>
+        </div>
+      </div>
+
+
+      <!-- Place the model log after the library and editor, immediately before Review. -->
+      <div class="panel" id="wbLog_personas" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Model log <span id="wbLogCount_personas" class="small muted"></span></h2>
+          <div style="flex:1"></div>
+          <button class="sm" id="wbLogCollapse_personas" title="Collapse the log. The row stays put.">▾ Collapse</button>
+        </div>
+        <div id="wbLogWrap_personas">
+          <div class="small muted" style="margin:4px 0 8px">The exact request body and the exact reply, including the system prompt and few-shot pairs that are otherwise invisible.</div>
+          <div id="wbLogBody_personas" class="wblog"></div>
+        </div>
+      </div>
+
+      <!-- ── REVIEW (§6.3): proposals stream in as they arrive (§6.3.1). -->
+      <div class="panel" id="wbReview_personas" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Review <span id="wbReviewCount_personas" class="small muted"></span></h2>
+          <div style="flex:1"></div>
+          <button class="sm primary" id="wbApproveAll_personas">✓ Approve all changed</button>
+          <button class="sm danger" id="wbRejectAll_personas" style="margin-left:6px">✕ Reject all</button>
+          <button class="go" id="wbApply_personas" style="margin-left:10px">Apply → new revision</button>
+        </div>
+        <div class="small muted" style="margin-bottom:8px">Nothing is written until you press Apply. Approving marks a row; the document changes only when a revision is minted from the marked rows — and the revision you started from stays exactly as it is.</div>
+        <div id="wbProposals_personas"></div>
+      </div>
+    </div>
+
+    <!-- Clips remain a SillyTavern sub-tab alongside logs, characters, and world books. -->
+    <div data-stpanel="clips" style="display:none">
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Clips <span id="scTotals" class="small muted"></span></h2>
+          <div style="display:flex;gap:10px;align-items:center">
+            <!-- 6.0-m2 §7: everything that produces audio ends up here — scenes, Playground
+                 renders and the Speech store's uploads. A VIEW over the three, not a fourth
+                 store, so each kind keeps its own home for renaming and deleting. -->
+            <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Which store to show. Scenes are built here; Playground clips and uploads are listed so you can Join them — manage those in their own tabs."><span>kind</span><select id="scKindFilter" class="sm"><option value="">all</option><option value="scene">scenes</option><option value="playground">playground</option><option value="upload">uploads</option></select></label>
+            <!-- Populate the character filter from the current chat rather than the full roster. -->
+            <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Show only clips a given character speaks in. Built from the characters actually present in these clips."><span>character</span><select id="scCharFilter" class="sm"><option value="">all</option></select></label>
+            <!-- §7.1, the same control as the Playground library's, because §3.5a keeps BOTH
+                 takes of every build and the two jobs that follow are cleaning up the raw ones
+                 and grabbing only the enhanced ones. -->
+            <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Every scene lands raw first and enhanced a few minutes later, and both are kept. Filter to the un-enhanced ones to clean them up, or to the enhanced ones to download just those."><span>enhanced</span><select id="scEnhFilter" class="sm"><option value="">all</option><option value="1">enhanced</option><option value="0">not enhanced</option></select></label>
+            <!-- Favorite filtering composes with the other filters, so it remains a separate checkbox. -->
+            <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Show only the clips you have starred. Adds to the other filters rather than replacing them."><input type="checkbox" id="scFavOnly"><span>★ favorites only</span></label>
+            <input id="scSearch" class="filter" type="search" placeholder="Filter name or chat…" autocomplete="off" spellcheck="false"
+                   title="Show only the clips that match. Every word you type has to appear in the name, or where it came from.">
+            <button class="sm" id="scRefresh">↻ Refresh</button></div></div>
+        <div class="row">
+          <div style="flex:0"><button class="sm primary" id="scJoinBtn" disabled title="Join the ticked clips, in the order shown below, into one new scene.">⛓ Join selected</button></div>
+          <!-- 9.2.2 — it ADDS TO THE QUEUE rather than starting anything: 8.2.4's queue is what
+               runs enhancements, and a second way to start them would be a second answer to "how many at once". -->
+          <div style="flex:0"><button class="sm" id="scEnhSel" disabled title="Add every ticked raw scene to the enhancement queue, in the order you ticked them. Rows that are already enhanced, already queued, or already running are skipped — the number on the button is what would actually be added.">✨ Enhance selected</button></div>
+          <div style="flex:0"><button class="sm ok" id="scDlSel" disabled title="Download every selected scene as one zip. Stored, not compressed — an MP3 does not deflate.">⬇ Download selected</button></div>
+          <div style="flex:0"><button class="sm danger" id="scDelSel" disabled title="Scenes only. A Playground clip is deleted in the Playground tab and an upload in the Speech tab — each has its own consequences, and this tab is a view.">Delete selected</button></div>
+        </div>
+        <!-- 6.1-m1b §3.4 — what "Copy clip" put on the page's clipboard. Hidden until there is
+           something on it, because an empty clipboard notice is just a line of chrome. -->
+      <div id="scClipBar" class="small" style="display:none;margin-top:8px;padding:6px 8px;border-left:3px solid var(--acc)"></div>
+      <!-- 6.1-m2 §10.5 — the FALLBACK home for the one player, not its normal one. The player
+           normally lives in a row directly under the clip it is playing (scPlayerRow); this is
+           where it goes when that row is not on screen at all, which happens when Search or a
+           kind filter hides the playing clip mid-playback. Hidden whenever it is empty. -->
+      <div id="scPlayer" style="margin-top:8px;display:none"></div>
+        <div id="scList" style="margin-top:8px"><span class="muted">No clips yet — build a scene from SillyTavern (shift-click a ▶ button), or render something in the Playground.</span></div>
+      </div>
+
+      <!-- Join uses an explicit ordered list; selection order is the default and arrows can reorder it. -->
+      <div class="panel" id="scJoinPanel" style="display:none">
+        <div class="logwrap"><h2 style="margin:0">Join <span id="scJoinTotals" class="small muted"></span></h2>
+          <div><button class="sm" id="scJoinClear">Clear</button></div></div>
+        <div class="small muted" style="margin:-2px 0 8px">In this order, top to bottom, with a gap between each. The result is a <b>new scene</b> — the clips it was made from are untouched.</div>
+        <div id="scJoinList"></div>
+        <div class="row" style="margin-top:8px;align-items:center">
+          <div style="flex:1"><input id="scJoinName" type="text" placeholder="Name the joined scene…" style="width:100%" autocomplete="off"></div>
+          <div style="flex:0;white-space:nowrap"><label class="small muted" style="display:inline-flex;align-items:center;gap:5px" title="Silence inserted between each clip. 0 joins them back to back.">gap <input id="scJoinGap" type="number" min="0" max="10" step="0.1" value="0.7" style="width:64px"> s</label></div>
+          <div style="flex:0"><button class="sm primary" id="scJoinGo">Join</button></div>
+          <!-- 🔴 Not decoration. `clip_join.running()` 409s every new join while one is in
+               flight, so a join that wedges — a huge re-encode, a stalled ffmpeg — would block
+               the verb until the server restarts. This is the way out, and it is why the cancel
+               route exists. Hidden until there is something to cancel. -->
+          <div style="flex:0"><button class="sm danger" id="scJoinCancel" style="display:none">Cancel</button></div>
+        </div>
+        <div id="scJoinStatus" class="small muted" style="margin-top:6px"></div>
+      </div>
+      <!-- Render chapter links inline with their scene rows so they can seek within the associated audio. -->
+    </div>
+    </div>
+
+    {% include 'partials/panel-sillytavern-extension.html' %}
+    <!-- Show the extra prompt context sent with the user's instruction so the request is transparent. -->
+    <div class="panel" id="wbPromptCard" style="display:none">
+      <div class="logwrap"><h2 style="margin:0">What Vocalis sends with your instruction <span class="small muted" id="wbPromptState"></span></h2>
+        <div style="flex:1"></div>
+        <!-- 🔴 m5a / §9a.12 — every save and every Reset is now recoverable. The help text below
+             tells him to press Reset when a pass misbehaves, i.e. the product asks him to destroy
+             an hour of tuning at the moment he is least likely to have copied it anywhere. -->
+        <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;cursor:pointer" title="Every save and every Reset mints a revision of this prompt. Picking one shows it; Restore puts it back as a NEW revision, so nothing is ever rewound."><span>revision</span><select id="wbPromptRev" class="sm"></select></label>
+        <button class="sm" id="wbPromptRestore" style="margin-left:6px;display:none" title="Put this revision back. It is minted as a NEW revision — the history is never rewound.">↺ Restore this</button>
+        <button class="sm" id="wbPromptReset" style="margin-left:10px" title="Back to the prompt the code ships with. What is in effect now is recorded as a revision first, so this is recoverable.">↺ Reset to the shipped prompt</button>
+        <button class="sm primary" id="wbPromptSave" style="margin-left:6px">Save prompt</button>
+      </div>
+      <div class="small muted" style="margin:4px 0 10px">Every field you run a pass over is sent as: this system prompt, then the few-shot pairs, then your instruction wrapped in the template below. Saved here and used by every pass from then on — it survives a restart and there is no rebuild. The few-shot pairs are not decoration: they are what stop this model writing ~200 tokens of its own reasoning into your text. If a pass starts pasting its thinking into a field, press Reset.</div>
+
+      <div class="small muted" style="margin-bottom:3px"><b>System prompt</b> — the standing instructions, sent first, every time.</div>
+      <textarea id="wbPromptSys" rows="10" spellcheck="false"></textarea>
+
+      <div class="small muted" style="margin:10px 0 3px"><b>Your instruction, wrapped</b> — <code>{instruction}</code> is what you type; <code>{field}</code> is the field's current text; <code>{context}</code> is the metadata block; <code>{nochange}</code> is the no-change sentinel. <b>{instruction} and {field} are required</b> — without them the model is asked to edit text it was never sent, and it will answer anyway.</div>
+      <textarea id="wbPromptWrap" rows="10" spellcheck="false"></textarea>
+
+      <div class="small muted" style="margin:10px 0 3px"><b>Few-shot pairs</b> — one exchange per block, a blank line between the user half and the assistant half, and <code>---</code> on its own line between pairs.</div>
+      <textarea id="wbPromptShots" rows="8" spellcheck="false"></textarea>
+      <div class="small" id="wbPromptMsg" style="min-height:1.2em;margin-top:6px"></div>
+    </div>
+
+  </section>

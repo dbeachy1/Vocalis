@@ -1,0 +1,36 @@
+{
+  "project": "panns-inference",
+  "version": "0.1.1",
+  "files": [
+    {
+      "filename": "panns_inference-0.1.1-py3-none-any.whl",
+      "bytes": 8267,
+      "sha256": "97f6b56b6c9467cf00e21f041e1f88933188c65c1b5ca64eeb3c92e37fb27fc2",
+      "url": "https://files.pythonhosted.org/packages/ad/ac/0558484d9b5383125912b1cedeb95b1f7e928c2b0781f52d77b068f0ba3d/panns_inference-0.1.1-py3-none-any.whl"
+    },
+    {
+      "filename": "panns-inference-0.1.1.tar.gz",
+      "bytes": 6340,
+      "sha256": "f8074268513571775e154294729b66fc0ccbdbeceb5c8f6eaa9670664e40c03d",
+      "url": "https://files.pythonhosted.org/packages/42/aa/308a94956501bf8a9a3d389e2c0e5cb405acc81780f7c16ba3898ae08fc3/panns-inference-0.1.1.tar.gz"
+    }
+  ],
+  "capBytes": 20000,
+  "metadataSha256": "b453aea1e6caeed205658de45d5264a74499cbf0626cefcd611b1bc3d1be6beb",
+  "status": "verified-private-inference-inputs",
+  "license": "MIT",
+  "upstreamSource": "https://github.com/qiuqiangkong/panns_inference",
+  "runtimeOverlay": "packaging/trim/local-inputs.patch",
+  "runtimeOverlaySha256": "71b579eefc3afd255ca0484c036e300430f62a3f87130a632020fc380168e60c",
+  "patchedSource": {
+    "config.py": {
+      "upstreamSha256": "1510a0a04a68b3e179617f7e01d9c14df5326e120b4c04a9810921f556feba28",
+      "patchedSha256": "8e8b58fb8503a4e6b064a8639b07d3581d2b8bb924d6c1e1fe218308fc6d30d3"
+    },
+    "inference.py": {
+      "upstreamSha256": "f0c3343ab5d10616f8e44ce436ab52529f7d856e11bc6953f688b5485f86d28a",
+      "patchedSha256": "4293ddce865bdf00dbfc4c067c596940619162dea2e1f40d15e337ebf890e775"
+    }
+  },
+  "runtimeAccepted": false
+}

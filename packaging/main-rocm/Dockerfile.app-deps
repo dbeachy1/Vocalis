@@ -1,0 +1,107 @@
+# syntax=docker/dockerfile:1.6
+# Add only the main web-server dependency closure to the proven ROCm image.
+# The protected Chatterbox/ROCm graph is checked before and after installation.
+ARG AMD_DEPENDENCY_IMAGE=vocalis-g1-chatterbox-rocm:20261008
+FROM ${AMD_DEPENDENCY_IMAGE} AS vocalis-app-deps
+
+# The AMD runtime applies this process-wide before application/model imports.
+ENV VOCALIS_ROCM_DISABLE_MIOPEN=1
+
+COPY requirements-app.lock /usr/share/vocalis-g1/requirements-app.lock
+COPY licenses/ /usr/share/licenses/vocalis-g1/python/
+
+RUN --mount=type=bind,from=appwheels,target=/appwheels,readonly \
+    python - <<'PY'
+import importlib.metadata as metadata
+import subprocess
+import sys
+
+protected = {
+    "chatterbox-tts": "0.1.7+vocalis.1",
+    "librosa": "0.11.0",
+    "numpy": "1.26.4",
+    "resemble-perth": "1.0.1",
+    "soundfile": "0.14.0",
+    "sympy": "1.13.3",
+    "torch": "2.10.0+rocm7.14.1",
+    "torchaudio": "2.10.0+rocm7.14.1",
+    "transformers": "5.2.0",
+    "triton": "3.6.0+rocm7.14.1",
+}
+
+if sys.executable != "/opt/venv/chatterbox/bin/python":
+    raise SystemExit(f"unexpected Python executable: {sys.executable}")
+if sys.version_info[:3] != (3, 12, 15):
+    raise SystemExit(f"unexpected Python version: {sys.version}")
+
+def assert_protected_versions():
+    actual = {name: metadata.version(name) for name in protected}
+    if actual != protected:
+        raise SystemExit(f"protected AMD package versions changed: {actual}")
+
+assert_protected_versions()
+try:
+    metadata.version("EbookLib")
+except metadata.PackageNotFoundError:
+    pass
+else:
+    raise SystemExit("excluded EbookLib distribution is present in the application image")
+
+license_hashes = {
+    "/usr/share/licenses/vocalis-g1/python/flask-cors-LICENSE.txt": "134a20d852c0cf9e0f3c228767921b76f4bfc4af4a2fc7c4cc90f6b4fd407b5c",
+    "/usr/share/licenses/vocalis-g1/python/loguru-LICENSE.txt": "b35d026cc7aca9d5859a02eb87ddf7a386a24c986838651bd1f283f94e003327",
+}
+for path, expected_hash in license_hashes.items():
+    import hashlib
+
+    with open(path, "rb") as license_file:
+        actual_hash = hashlib.sha256(license_file.read()).hexdigest()
+    if actual_hash != expected_hash:
+        raise SystemExit(f"third-party license hash mismatch: {path}")
+subprocess.run(
+    [
+        sys.executable,
+        "-m",
+        "pip",
+        "install",
+        "--no-index",
+        "--no-cache-dir",
+        "--no-deps",
+        "--require-hashes",
+        "--only-binary=:all:",
+        "--find-links=/appwheels",
+        "-r",
+        "/usr/share/vocalis-g1/requirements-app.lock",
+    ],
+    check=True,
+)
+check = subprocess.run(
+    [sys.executable, "-m", "pip", "check"], capture_output=True, text=True
+)
+check_lines = {line for line in check.stdout.splitlines() if line}
+expected_rocm_override = {
+    'chatterbox-tts 0.1.7+vocalis.1 has requirement torch==2.6.0; python_version < "3.14", but you have torch 2.10.0+rocm7.14.1.',
+    'chatterbox-tts 0.1.7+vocalis.1 has requirement torchaudio==2.6.0; python_version < "3.14", but you have torchaudio 2.10.0+rocm7.14.1.',
+}
+# Chatterbox publishes CUDA-specific metadata pins; the frozen AMD build has
+# separately passed a real ROCm render on the newer matched Torch pair.
+if check.returncode != 1 or check_lines != expected_rocm_override:
+    raise SystemExit(
+        f"pip check reported unexpected dependency conflicts: {sorted(check_lines)}"
+    )
+assert_protected_versions()
+
+import argon2
+import cryptography
+import docx
+import flask
+import flask_cors
+import loguru
+import ruamel.yaml
+from lxml import etree
+
+print("PIP_CHECK=PASS_WITH_TWO_DOCUMENTED_ROCM_OVERRIDE_LINES")
+print("AMD_APPLICATION_DEPENDENCIES=PASS")
+print("EXTERNAL_LICENSE_TEXTS=PASS")
+print("PROTECTED_ROCM_GRAPH=UNCHANGED")
+PY

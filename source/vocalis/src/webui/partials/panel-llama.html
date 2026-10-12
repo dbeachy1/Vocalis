@@ -1,0 +1,25 @@
+    <div data-llmpanel="llama">
+      <!-- Behavior is js/sys/llama.js, whose header
+           carries the three things this panel must not get wrong. #llaSingle is NOT an error
+           card: a llama-server started with -m is a working server with no management API. -->
+      <div class="panel" id="llaUnavail" style="display:none">
+        <h2>llama.cpp</h2>
+        <div class="small" id="llaUnavailMsg" style="margin-top:6px"></div>
+      </div>
+      <div class="panel" id="llaMain" style="display:none">
+        <h2>Model</h2>
+        <div class="small muted" style="margin:-4px 0 8px" id="llaHostLine">—</div>
+        <!-- Model selection and Load/Unload controls follow the KoboldCpp panel pattern. -->
+        <div class="row">
+          <div style="flex:1;min-width:280px"><label>Model</label><select id="llaSel"></select></div>
+          <div style="flex:0;align-self:flex-end"><button class="primary" id="llaLoad">Load</button></div>
+          <div style="flex:0;align-self:flex-end"><button id="llaUnload" style="display:none">Unload</button></div>
+        </div>
+        <div class="small muted" style="margin-top:8px" id="llaDetail">—</div>
+        <div class="small muted" id="llaSingle" style="margin-top:8px;display:none"></div>
+        <div id="llaStatusBox" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+          <div id="llaStatus" class="small">—</div>
+          <div id="llaVram" class="small muted" style="margin-top:4px"></div>
+        </div>
+      </div>
+    </div>

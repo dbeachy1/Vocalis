@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "status": "recipes-and-input-identities-promoted-from-successful-private-builds",
+  "upstream": {
+    "repository": "ACE-Step/Ace-Step",
+    "revision": "6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0",
+    "archive": "External --source-archive input; staged as input/ACE-Step-1.5-6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0.tar.gz",
+    "archiveBytes": 8421774,
+    "archiveSha256": "fc563d1e5c2f17733668692d2ff1a4507e44c903857b11e22108233fb3636b12",
+    "sourceTree": "External --source-tree input; validated file-by-file against sourceTreeManifest",
+    "sourceTreeManifest": "inputs/source-tree-manifest.json",
+    "sourceTreeManifestSha256": "60b40fad48d8bc78208b404d9b2eccb7b503fe23f3d69fafe7c0ef27bc6f73cd",
+    "sourceTreeSha256": "71e2fbd4c6e121999f33305fe7acfd7a34684277796c5bd50be4ba8b86b00e9b",
+    "sourceTreeFileCount": 1217,
+    "sourceTreeBytes": 19119131,
+    "upstreamLicense": "inputs/ACE-Step-upstream-license.txt",
+    "upstreamLicenseSha256": "05a6bce42a62636d2cfb24139cc008b6b899754e244175814bb5dd2f4a485357",
+    "patches": {
+      "api-widening.patch": "22c73bbfdfa36b2292bb56822e4dd265306eb075719c9c9e0421b4b9c6a43a4e",
+      "lm-dtype.patch": "820c8b4f959e0c4a4d5a673df30e47584318f4dc051c5e0b265f362544c9d66e",
+      "local-model-root.patch": "0294ac8b7b4ed8ce95df4f341622648e105a70919869f750770781b96c87526a",
+      "tempdir-cache.patch": "cdedc2928b4eaf004d66e23f29761b00cebc35d2ba12f73c3f3d0cbeb5cced43"
+    }
+  },
+  "models": {
+    "lockPath": "../models/acestep/model-file-lock.json",
+    "lockSha256": "56c7133e9d9e578b8e97b162a8a9e4dcd4ae9e2b8ca430edc097787f468386bc",
+    "acquisitionEvidence": "inputs/model-acquisition-verification.json",
+    "acquisitionEvidenceSha256": "b4454aabbb56bf296cb0a581082d07093e9a268629fdc85bc97ef1df3d28cdda",
+    "weightsAreBuildInputs": false,
+    "note": "The engine image contains source and environment only. The separately mounted, hash-locked model files are not copied into the image or this source package."
+  },
+  "nativeAudio": {
+    "sharedAuthority": "../main-cuda/ffmpeg-native.lock",
+    "sharedAuthoritySha256AtPromotion": "66f323b366626880b20632d847c508a0c68bf53d36fdc958688342561450625d",
+    "testedAceSubset": "native/ace-tested-ffmpeg-runtime.lock",
+    "testedAceSubsetSha256": "f7151022d023a423c65c748dd46ef78aba53655c37a61d29a7f072381e21aed9",
+    "testedAcePackages": [
+      "libflac14",
+      "libmp3lame0",
+      "libmpg123-0t64",
+      "libogg0",
+      "libopus0",
+      "libsndfile1",
+      "libvorbis0a",
+      "libvorbisenc2"
+    ],
+    "excludedFromAceSubset": {
+      "libsamplerate0": "Present in the shared nine-row main audio runtime lock for LeadVocal; it was not in either successful ACE build input set."
+    },
+    "ffmpegArtifactManifest": "inputs/ffmpeg-output-artifact-manifest.json",
+    "ffmpegArtifactManifestSha256": "39a441507c46b52ce5e5401bacae07e106bf0374b7c781df0643e75cdecd5cfc",
+    "artifactSource": "A verified output directory from the shared packaging/ffmpeg source build, supplied to the context-preparation command."
+  },
+  "wheelhouse": {
+    "commonManifest": "inputs/common-wheelhouse-manifest.json",
+    "commonManifestSha256": "3bd3a453bbfb4fd578213375f51ede813c70df0b0b64802ef6762f88f8b21f06",
+    "note": "Wheel binaries are external build inputs. The context preparer verifies the exact profile wheel set and hashes; it does not acquire or include wheels in Git."
+  },
+  "profiles": {
+    "cuda": {
+      "dockerfile": "Dockerfile.cuda",
+      "baseImage": "vocalis-g1-main-cuda-deps:20261008-vocalis-0.1.7.1",
+      "baseImageId": "sha256:00c74576a8d14dd533a5f56d6289d132cc837f42911ee17831b962afe6d422e0",
+      "requirementsLock": "locks/cuda-ace-environment-requirements.lock.txt",
+      "requirementsLockSha256": "adf3f74303ce43f7f78df6914f36252d467b48c4661e5f7cc52b17c023109665",
+      "environmentManifest": "locks/cuda-environment-manifest.json",
+      "environmentManifestSha256": "3719990999c58e36a8cfb20d1a689a3a10b82739be8c708c3c842e41b06f9df3",
+      "wheelCount": 117,
+      "successfulImageId": "sha256:9ca25a5af71382f0f605e2373d14d5235d88f4c06b806c9d8f0c28a9069102df",
+      "successfulRecipeSha256": "07e01f17113ea6d9dbbdc6211a1a59f8c37dc662f3a39673eb40a6f4d2a61b9b",
+      "promotedRecipeSha256": "0ae5ed26f86de3121a5615af34c890a8793137e6bc17ebe66cb7d7af4256a55c",
+      "recipeNormalization": "The promoted recipe uses the profile's current LF-canonical manifest hash and CUDA lock defaults. The recorded successfulRecipeSha256 is the historical raw recipe hash; the context preparer normalizes profile defaults and the source-tree pin before comparing."
+    },
+    "rocm": {
+      "dockerfile": "Dockerfile.rocm",
+      "baseImage": "vocalis-g1-main-rocm-app-deps:20261008-vocalis-0.1.7.1",
+      "baseImageId": "sha256:8286bb78f73af7e8065bcf58c8e8022bee604f063e21f406149c7966b5a7d86a",
+      "requirementsLock": "locks/rocm-ace-environment-requirements.lock.txt",
+      "requirementsLockSha256": "c6ac7bb82d6f9e1511facd0d8f81bd8204cccbf0777cd1d303b7f3096c40b510",
+      "environmentManifest": "locks/rocm-environment-manifest.json",
+      "environmentManifestSha256": "b0a2e54c987c7ac4b3a14b07df9d4bd13bfe7ae3c49338edf1da20db4088910b",
+      "wheelCount": 107,
+      "successfulImageId": "sha256:de002351cc306d4295823e35fb094367c6c6d611b1faf53f56af03d5188a9fb6",
+      "successfulRecipeSha256": "d59efa5bc8729a630b2a793565b8806e8f666ae9f620dde084ea22533d849440",
+      "promotedRecipeSha256": "5b017a8adc35860a1944bd4a0de8f2df5471b3c93a55dfacdf0b08237d18e5ce",
+      "recipeNormalization": "The promoted recipe uses the LF-canonical ROCm manifest hash. The recorded successfulRecipeSha256 is the historical raw recipe hash; the context preparer normalizes this manifest default and the source-tree pin before comparing."
+    }
+  },
+  "sourceDelivery": {
+    "status": "partial",
+    "aceUpstreamSourceDelivery": {
+      "status": "included-in-engine-image",
+      "sourceTreeImagePath": "/opt/acestep",
+      "sourceArchiveImagePath": "/usr/share/licenses/vocalis/acestep/ACE-Step-source.tar.gz",
+      "licenseImagePath": "/usr/share/licenses/vocalis/acestep/LICENSE",
+      "license": "MIT",
+      "scope": "The pinned ACE-Step source tree, matching source archive, and upstream MIT license are copied into the tested CUDA and ROCm engine images. This is image-content evidence, not a recipient-delivery claim for the separate build inputs below."
+    },
+    "knownCopyleftNativeSources": [
+      {
+        "runtimePackage": "FFmpeg 8.0.1",
+        "license": "LGPL-2.1-or-later under the retained configure options",
+        "sourceArchive": ".codex/redistribution-sources/ffmpeg-7_8.0.1-3ubuntu2/ffmpeg_8.0.1.orig.tar.xz",
+        "sourceArchiveSha256": "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41",
+        "delivery": "The exact source archive and build inputs are retained in ignored acquisition/build contexts, not in a recipient source bundle. The image's ACE source archive is not FFmpeg corresponding source."
+      },
+      {
+        "runtimePackage": "libsndfile1 1.2.2-4",
+        "sourcePackage": "libsndfile 1.2.2-4",
+        "license": "LGPL source association",
+        "archiveManifest": "../licenses/apt-runtime-source-artifacts.json",
+        "archiveDelivery": "Exact Ubuntu source archives are in the ignored apt source acquisition set; recipient source-offer integration remains pending."
+      },
+      {
+        "runtimePackage": "libmp3lame0 3.101~svn6525+dfsg-2ubuntu0.1",
+        "sourcePackage": "lame 3.101~svn6525+dfsg-2ubuntu0.1",
+        "license": "Packaged LGPL grant; retain Ubuntu copyright notice",
+        "archiveManifest": "../licenses/apt-runtime-source-artifacts.json",
+        "archiveDelivery": "Exact Ubuntu source archives are in the ignored apt source acquisition set; recipient source-offer integration remains pending."
+      },
+      {
+        "runtimePackage": "libmpg123-0t64 1.33.3-2",
+        "sourcePackage": "mpg123 1.33.3-2",
+        "license": "LGPL shared-library grant; retain Ubuntu copyright notice",
+        "archiveManifest": "../licenses/apt-runtime-source-artifacts.json",
+        "archiveDelivery": "Exact Ubuntu source archives are in the ignored apt source acquisition set; recipient source-offer integration remains pending."
+      }
+    ],
+    "gplNativeDisposition": "No GPL FFmpeg feature or GPL video codec is selected in the preserved build configuration. This is limited to the reviewed ACE native payload, not a complete transitive license determination for the Python wheel graphs.",
+    "notClaimed": [
+      "Recipient-delivery of the corresponding FFmpeg, libsndfile, LAME, and mpg123 source/build materials; acquired Ubuntu source archives remain in ignored storage.",
+      "A complete applicable license-notice review for both ACE Python wheel graphs. This does not imply that every permissively licensed wheel requires its full source archive.",
+      "Recipient-delivery of the ACE wheelhouse, FFmpeg output binaries, and native package archives; these remain separately acquired build inputs.",
+      "Final source-offer or distribution compliance approval."
+    ],
+    "confirmedNativeSourceRecords": "../licenses/apt-runtime-source-artifacts.json",
+    "note": "The tested engine images contain the ACE source tree/archive and its MIT license. This package preserves the pinned source, patches, requirements, wheel hashes, native-lock relationship, and build recipes. Ignored source-acquisition records are not recipient delivery. Applicable notices for permissive dependencies and corresponding-source/relink materials for copyleft runtime components remain separate obligations; this inventory is not a compliance determination."
+  },
+  "historicalSuccessfulBuildInputHashes": {
+    "note": "These are exact raw CRLF JSON hashes from the successful image build contexts. Current promoted copies use LF line endings with unchanged parsed JSON; they are distinct current artifact hashes, not replacements for the historical records.",
+    "commonWheelhouseManifestCrlfSha256": "2c6d093edd8cdf071ed6a8cbe06958cb23619428891b8fb78cc4722cd2f275a0",
+    "ffmpegOutputArtifactManifestCrlfSha256": "511954317e715bbe5fc72212800fd979922f047b34bb5d49114c3c54644ed0bb",
+    "modelAcquisitionVerificationCrlfSha256": "d8dda65a0c88f396d5d237588330d10fbba4f24bb228598f802653224d121186",
+    "sourceTreeManifestCrlfSha256": "cd7d337d389fa0753d05f07800f93df29fb17de1bffcd45cca78e0afa29ac207",
+    "cudaEnvironmentManifestCrlfSha256": "142e50a68bd544ffa9b174be303f99a0f5e6091b6adcb942039bc350015b3395",
+    "rocmEnvironmentManifestCrlfSha256": "6bdaed28ef6c66a5ff283ef08c4e6a965321ac9d235a31c4d7de3851e04517ef"
+  }
+}

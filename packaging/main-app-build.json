@@ -1,0 +1,188 @@
+{
+  "schemaVersion": 1,
+  "recipe": "packaging/main-cuda/Dockerfile.app",
+  "dockerignore": "packaging/main-cuda/Dockerfile.app.dockerignore",
+  "platform": "linux/amd64",
+  "builder": "desktop-linux",
+  "profiles": {
+    "cuda": {
+      "primaryPython": "/opt/venv/3.12/bin/python",
+      "pythonVersion": "3.12.15"
+    },
+    "rocm": {
+      "primaryPython": "/opt/venv/chatterbox/bin/python",
+      "pythonVersion": "3.12.15"
+    }
+  },
+  "sourceInputs": [
+    "packaging/main-app-build.json",
+    "packaging/main-cuda/Dockerfile.app",
+    "packaging/main-cuda/Dockerfile.app.dockerignore",
+    "packaging/main-cuda/ffmpeg-build.lock",
+    "packaging/main-cuda/ffmpeg-native.lock",
+    "packaging/ffmpeg/build-contract.json",
+    "packaging/licenses/ffmpeg-source-artifacts.json",
+    "packaging/licenses/GPL-3.0.txt",
+    "packaging/licenses/LGPL-2.1.txt",
+    "packaging/licenses/LGPL-3.0.txt",
+    "packaging/models/chatterbox/manifest.json",
+    "packaging/models/chatterbox/NOTICE.md",
+    "packaging/models/fetch_models.py",
+    "packaging/models/voxcpm2/model-file-lock.json",
+    "packaging/models/voxcpm2/NOTICE.md",
+    "packaging/models/voxcpm2/LICENSE-source.txt",
+    "packaging/models/enhance/model-files.lock.json",
+    "packaging/models/enhance/LICENSE",
+    "packaging/models/enhance/README.md",
+    "packaging/models/trim/model-files.lock.json",
+    "packaging/models/trim/class-labels.lock.json",
+    "packaging/models/trim/NOTICE.md",
+    "packaging/models/trim/CC-BY-4.0.txt",
+    "packaging/models/acestep/model-file-lock.json",
+    "packaging/models/acestep/NOTICE.md",
+    "packaging/models/acestep/ACE-Step-source-MIT.txt",
+    "packaging/models/acestep/Apache-2.0.txt",
+    "packaging/models/dfn3/model-file-lock.json",
+    "packaging/models/dfn3/NOTICE.md",
+    "packaging/models/stems/model-file-lock.json",
+    "packaging/models/stems/NOTICE.md",
+    "packaging/models/leadvocal/model-file-lock.json",
+    "packaging/models/leadvocal/NOTICE.md",
+    "packaging/dfn/notices",
+    "packaging/voxcpm/source",
+    "packaging/voxcpm/source-artifact.json",
+    "source/vocalis/src",
+    "source/vocalis/scripts",
+    "source/vocalis/nomi/chrome_extension",
+    "source/vocalis/sillytavern/extension",
+    "source/vocalis/vocalis.py",
+    "source/vocalis/satellite/vocalis_stream_core.py",
+    "source/vocalis/satellite/vocalis_satellite_protocol.py",
+    "source/vocalis/satellite/vocalis_torch_backend.py",
+    "source/vocalis/satellite/vocalis_satellite_gpustats.py",
+    "packaging/nvml/nvidia_ml_py-13.615.71-py3-none-any.whl",
+    "packaging/nvml/requirements.lock",
+    "packaging/nvml/LICENSE-nvidia-ml-py.txt",
+    "source/vocalis/LICENSE",
+    "source/vocalis/reference/wbedit-baseline/prompts/Section-Editor.json"
+  ],
+  "imageContexts": {
+    "voxcpm-engine": {
+      "component": "voxcpm2",
+      "paths": [
+        "/opt/vocalis/venvs/voxcpm2"
+      ]
+    },
+    "enhance-engine": {
+      "component": "enhance",
+      "paths": [
+        "/opt/vocalis/venvs/enhance",
+        "/usr/share/licenses/vocalis/enhance"
+      ]
+    },
+    "trim-engine": {
+      "component": "trim",
+      "paths": [
+        "/opt/vocalis/venvs/trim",
+        "/usr/share/licenses/vocalis/trim"
+      ]
+    },
+    "stems-engine": {
+      "component": "stems",
+      "paths": [
+        "/opt/vocalis/venvs/stems",
+        "/usr/share/licenses/vocalis/stems"
+      ]
+    },
+    "leadvocal-engine": {
+      "component": "leadvocal",
+      "paths": [
+        "/opt/vocalis/venvs/leadvocal",
+        "/usr/share/licenses/vocalis/leadvocal"
+      ]
+    },
+    "acestep-engine": {
+      "component": "acestep",
+      "paths": [
+        "/opt/venvs/acestep",
+        "/opt/acestep",
+        "/usr/share/licenses/vocalis/acestep"
+      ]
+    },
+    "dfn-engine": {
+      "component": "dfn3",
+      "paths": [
+        "/opt/dfn-venv",
+        "/opt/python/bin/python3.11",
+        "/opt/python/lib"
+      ]
+    }
+  },
+  "directoryContexts": {
+    "appsrc": "source/vocalis/src",
+    "engine-scripts": "source/vocalis/scripts",
+    "nomi-extension": "source/vocalis/nomi/chrome_extension",
+    "st-extension": "source/vocalis/sillytavern/extension",
+    "wbedit-card": "source/vocalis/reference/wbedit-baseline/prompts",
+    "chatterbox-assets": "packaging/models/chatterbox",
+    "dfn-notices": "packaging/dfn/notices",
+    "voxcpm-source": "packaging/voxcpm",
+    "license-texts": "packaging/licenses"
+  },
+  "modelAcquisition": {
+    "context": "model-acquisition",
+    "root": "packaging/models",
+    "codeFiles": [
+      "fetch_models.py",
+      "voxcpm2/model-file-lock.json",
+      "enhance/model-files.lock.json",
+      "trim/model-files.lock.json",
+      "trim/class-labels.lock.json",
+      "acestep/model-file-lock.json",
+      "dfn3/model-file-lock.json",
+      "stems/model-file-lock.json",
+      "leadvocal/model-file-lock.json"
+    ],
+    "noticeFiles": [
+      "voxcpm2/NOTICE.md",
+      "voxcpm2/LICENSE-source.txt",
+      "enhance/LICENSE",
+      "enhance/README.md",
+      "trim/NOTICE.md",
+      "trim/CC-BY-4.0.txt",
+      "acestep/NOTICE.md",
+      "acestep/ACE-Step-source-MIT.txt",
+      "acestep/Apache-2.0.txt",
+      "dfn3/NOTICE.md",
+      "stems/NOTICE.md",
+      "leadvocal/NOTICE.md"
+    ]
+  },
+  "nvmlContext": {
+    "context": "nvml",
+    "root": "packaging/nvml",
+    "files": [
+      "nvidia_ml_py-13.615.71-py3-none-any.whl",
+      "requirements.lock",
+      "LICENSE-nvidia-ml-py.txt"
+    ]
+  },
+  "constructedContexts": [
+    "model-acquisition",
+    "nvml",
+    "vocalis-license",
+    "ffmpeg-source",
+    "ffmpeg-debs"
+  ],
+  "runtimePackages": [
+    "libflac14",
+    "libmp3lame0",
+    "libmpg123-0t64",
+    "libogg0",
+    "libopus0",
+    "libsamplerate0",
+    "libsndfile1",
+    "libvorbis0a",
+    "libvorbisenc2"
+  ]
+}

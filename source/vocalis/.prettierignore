@@ -1,0 +1,45 @@
+# 8.3.2 — what Prettier must NOT touch. Paired with `npm run format`, which names the scope
+# positively; this file is the second belt, for anyone who runs `npx prettier --write .` by hand.
+
+# ── vendored / installed ────────────────────────────────────────────────────────────────────
+node_modules/
+venv/
+.venv/
+
+# ── transient ───────────────────────────────────────────────────────────────────────────────
+temp/
+output/
+sliced_audios/
+.pytest_cache/
+
+# ── 🔴 GENERATED. tools/build_webui.mjs writes this from the modules under src/webui/js/. ────
+# Reformatting it would be undone by the next `npm run build`, and while it sat reformatted the
+# `--check` mode would report the bundle as stale against a tree that had not changed.
+src/webui/bundle/
+
+# ── 🔴 src/webui/index.html IS EXACTLY AT A HARD TEST CEILING. ───────────────────────────────
+# tests/test_webui_size.py:94 sets PAGE_LINE_CEILING = 2_000 and asserts `n <= PAGE_LINE_CEILING`;
+# the file is at 2000 lines right now, so ONE added line is a red suite. Prettier reformats HTML
+# and its embedded <script>, so running it here is an instant failure. There is almost nothing to
+# win either way — the 7.3 frontend split moved the code out into src/webui/js/, and only four
+# dense `keyword(` hits remain in the page. Raising that ceiling is a deliberate decision about
+# page weight (DESIGN §1.1 item 3) and needs its own argument, not a bump to get green.
+src/webui/index.html
+
+# ── types/*.d.ts — hand-written TypeScript declarations, deliberately NOT reformatted. ───────
+# They are not "the JavaScript source" this pass is about; they were hand-formatted with their
+# arguments in comments beside each widening, and test_webui_types.py counts the members of
+# dom-permissive.d.ts LINE BY LINE as a ratchet. Re-wrapping there buys nothing and can only move
+# a number that exists to be hard to move.
+types/
+
+# ── everything Prettier also knows how to format, and which nobody asked it to ───────────────
+# This formatting pass targets JavaScript source only; documentation and data files stay unchanged.
+*.md
+*.json
+*.jsonc
+*.yaml
+*.yml
+*.css
+*.scss
+*.html

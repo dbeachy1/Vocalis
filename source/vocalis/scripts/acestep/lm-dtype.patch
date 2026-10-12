@@ -1,0 +1,17 @@
+Load the 5 Hz language model at its target dtype to avoid an fp32 allocation before casting.
+Active overlay: apply-overlay.sh applies this patch independently and verify-overlay.py checks it.
+Upstream base: 6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0.
+
+--- a/acestep/llm_inference.py
++++ b/acestep/llm_inference.py
+@@ -401,7 +401,9 @@
+     def _load_pytorch_model(self, model_path: str, device: str) -> Tuple[bool, str]:
+         """Load PyTorch model from path and return (success, status_message)"""
+         try:
+-            self.llm = AutoModelForCausalLM.from_pretrained(model_path, trust_remote_code=True)
++            self.llm = AutoModelForCausalLM.from_pretrained(
++                model_path, trust_remote_code=True, torch_dtype=self.dtype
++            )
+             if not self.offload_to_cpu:
+                 self.llm = self.llm.to(device).to(self.dtype)
+             else:

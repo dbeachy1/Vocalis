@@ -1,0 +1,69 @@
+{
+  "ace_contract": {
+    "forward": "DWT1DForward(J=1, mode=\"zero\", wave=wavelet)",
+    "inverse": "DWT1DInverse(mode=\"zero\", wave=wavelet)",
+    "required_dependencies": [
+      "torch",
+      "numpy",
+      "PyWavelets"
+    ],
+    "retained_padding": [
+      "zero"
+    ]
+  },
+  "artifact_id": "pytorch-wavelets-1.3.0-vocalis-dwt1d.1",
+  "artifact_status": "derived source tree; static allowlist and bounded CPU numerical/import proof passed",
+  "derived_from": "Exact DWT1D source files from the pinned wheel; analysis and synthesis algorithms are unchanged.",
+  "downstream_changes": [
+    "Root package exports only version, DWT1DForward/DWT1DInverse and DWT1D/IDWT1D aliases.",
+    "Removed DWT low-level reflect import from excluded utils.py.",
+    "Removed symmetric-padding implementation and reject symmetric mode explicitly."
+  ],
+  "evidence": {
+    "cpu_proof_result_path": ".codex/runtime-tests/g2-ace-dwt1d-20261008/attempt-3/evidence-20261008T160646Z/result.json",
+    "cpu_proof_result_sha256": "36ed080b1fe7cb6c221b9932b549273cf31867f45f3570ae27c1e1fc9fcf36ad",
+    "cpu_proof_stdout_path": ".codex/runtime-tests/g2-ace-dwt1d-20261008/attempt-3/evidence-20261008T160646Z/stdout.txt",
+    "cpu_proof_stdout_sha256": "9a44f994d35bbbe2ac7add0b72f06de1df87312c0ffa49699847a77b2a262dd9",
+    "derivation_notice_path": "packaging/acestep/dwt1d-derivation.md",
+    "derivation_notice_sha256": "0e8d444e722ef89f55713c19569ed0e0c85cffe95b5de4cb5543222cfd3729d0",
+    "license_path": "packaging/acestep/dwt1d-source/pytorch_wavelets/LICENSE",
+    "license_sha256": "c3c7ee2b22e1ca88126c5e91345a60ba555f5c58b29ec223b59859db248f9df6",
+    "patch_path": "packaging/acestep/dwt1d-package.patch",
+    "patch_sha256": "abaf78d0d16a66675a0b4f33ce305c260e8162b95bb81345ded384dd7494cee7",
+    "pinned_ace_loader_path": ".codex/runtime-tests/g2-ace-dwt1d-20261008/dcw_loader.py",
+    "pinned_ace_loader_sha256": "34cb5c60ed7cb46439ddeea620d6cec6947f04f0530a129f5579348aa4900308",
+    "runtime_proof_script_path": ".codex/runtime-tests/g2-ace-dwt1d-20261008/verify_dwt1d.py",
+    "runtime_proof_script_sha256": "dc4f7fd7f12e5fa3c7af5d6109c88d03597b2c944e583c11b60eb1510955b26a",
+    "source_wheel_manifest_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/runtime-wheel-plan-candidate.json",
+    "source_wheel_manifest_sha256": "7d50838b2d6d5c30fd9b29066ad9c3277d394f2858ff910c1d577bff795ac432"
+  },
+  "excluded_paths": [
+    "pytorch_wavelets/dtcwt/",
+    "pytorch_wavelets/dtcwt/data/",
+    "pytorch_wavelets/scatternet/",
+    "pytorch_wavelets/utils.py",
+    "all *.npz coefficient files"
+  ],
+  "included_files": {
+    "LICENSE": "c3c7ee2b22e1ca88126c5e91345a60ba555f5c58b29ec223b59859db248f9df6",
+    "__init__.py": "382107e35f0a8f5345f10973cc72a9830c02126bb922eb22d2619fd8d610cf2b",
+    "_version.py": "97c82e977c782e8889711cad961b27fb1e599b3a87da564d93cc541cef160322",
+    "dwt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "dwt/lowlevel.py": "3320e48770e66fd0201875cf6b9287dc397986bb656b4cbfa1d7c9f5b1c8388b",
+    "dwt/transform1d.py": "bb4f0095566a5aaa12cc3ff9603516c0107846f6064bde3513e18d329fceb88a"
+  },
+  "schema_version": 1,
+  "source": {
+    "bytes": 54879,
+    "filename": "pytorch_wavelets-1.3.0-py3-none-any.whl",
+    "license": "MIT applies to DWT sections; full wheel includes DTCWT material with additional restrictions",
+    "name": "pytorch-wavelets",
+    "sha256": "e4f8635872370d8de640ef7548edef4ef60d5c565553c463210e939c7901ee69",
+    "url": "https://files.pythonhosted.org/packages/8d/65/b7da80705dc679999ef77c06ded71e060d4ea14ed80111c104223e130cc1/pytorch_wavelets-1.3.0-py3-none-any.whl",
+    "version": "1.3.0"
+  },
+  "verification_pending": [
+    "pip check in the full retained ACE dependency environment",
+    "pinned ACE loader import and numeric smoke using the installed derived wheel in that environment"
+  ]
+}

@@ -1,0 +1,134 @@
+<div class="flex-container flexFlowColumn justifyLeft flexGap10">
+    <div>
+        <h2 class="marginBot10 flex-container">
+            <span data-i18n="Hi,">Hi,</span><span class="userName margin0"></span>
+            <div data-require-accounts class="userChangeNameButton right_menu_button" title="Change display name.">
+                <i class="fa-fw fa-solid fa-pencil fa-xs"></i>
+            </div>
+        </h2>
+        <div class="accountsDisabledHint" style="display: none;">
+            <span data-i18n="To enable multi-account features, restart the SillyTavern server with">To enable multi-account features, restart the SillyTavern server with</span> <code>enableUserAccounts</code> <span data-i18n="set to true in the config.yaml file.">set to true in the config.yaml file.</span>
+        </div>
+    </div>
+    <div>
+        <h3 data-i18n="Account Info">
+            Account Info
+        </h3>
+        <div class="flex-container flexGap10">
+            <div class="flex-container flexFlowColumn alignItemsCenter flexNoGap">
+                <div class="avatar" data-i18n="[title]To change your user avatar, use the buttons below or select a default persona in the Persona Management menu." title="To change your user avatar, use the buttons below or select a default persona in the Persona Management menu.">
+                    <img src="img/ai4.png" alt="avatar">
+                </div>
+                <div class="flex-container alignItemsCenter">
+                    <div class="userAvatarChange right_menu_button" data-i18n="[title]Set your custom avatar." title="Set your custom avatar.">
+                        <i class="fa-fw fa-solid fa-image"></i>
+                    </div>
+                    <div class="userAvatarRemove right_menu_button" data-i18n="[title]Remove your custom avatar." title="Remove your custom avatar.">
+                        <i class="fa-fw fa-solid fa-trash"></i>
+                    </div>
+                </div>
+                <form>
+                    <input type="file" class="avatarUpload" accept="image/*" hidden>
+                </form>
+            </div>
+            <div class="flex1 flex-container flexGap10">
+                <div class="flex-container flexFlowColumn">
+                    <div>
+                        <span data-i18n="Handle:">Handle:</span>
+                        <span class="userHandle"></span>
+                    </div>
+                    <div>
+                        <span data-i18n="Role:">Role:</span>
+                        <span class="userRole"></span>
+                    </div>
+                </div>
+                <div class="flex-container flexFlowColumn">
+                    <div>
+                        <span data-i18n="Created:">Created:</span>
+                        <span class="userCreated"></span>
+                    </div>
+                    <div>
+                        <span data-i18n="Password:">Password:</span>
+                        <i class="hasPassword fa-fw fa-solid fa-lock" data-i18n="[title]This account is password protected." title="This account is password protected."></i>
+                        <i class="noPassword fa-fw fa-solid fa-lock-open" data-i18n="[title]This account is not password protected." title="This account is not password protected."></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 🔒 The idle lock. Hidden unless a storage provider owns this user, because with plain files there
+         is nothing to lock and the control would be a switch wired to nothing. Default is "Never": upstream
+         SillyTavern has no idle lock, and a fork that grows one uninvited signs people out of their own
+         machine mid-sentence. See users.js §THE IDLE LOCK. -->
+    <div class="idleLockSection" style="display: none;">
+        <h3 data-i18n="Storage Security">
+            Storage Security
+        </h3>
+        <label class="flex-container flexFlowColumn flexNoGap">
+            <span data-i18n="Lock my data after I have been inactive for:">Lock my data after I have been inactive for:</span>
+            <select class="idleLockSelect text_pole widthNatural margin0">
+                <option value="0" data-i18n="Never">Never</option>
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">1 hour</option>
+                <option value="120">2 hours</option>
+                <option value="240">4 hours</option>
+                <option value="480">8 hours</option>
+                <option value="1440">24 hours</option>
+                <option value="custom" data-i18n="Custom…">Custom…</option>
+            </select>
+        </label>
+        <label class="idleLockCustomRow flex-container alignItemsCenter" style="display: none;">
+            <input type="number" class="idleLockCustom text_pole widthNatural" min="1" max="40320" step="1" inputmode="numeric">
+            <span data-i18n="minutes">minutes</span>
+        </label>
+        <small class="idleLockHint opacity50p">
+            <span data-i18n="When it locks you will need to sign in again. Anything typed and unsent is lost.">When it locks you will need to sign in again. Anything typed and unsent is lost.</span>
+        </small>
+        <small class="idleLockRecommendation opacity50p" style="display: none;"></small>
+    </div>
+    <div>
+        <h3 data-i18n="Account Actions">
+            Account Actions
+        </h3>
+        <div class="flex-container flexFlowColumn flexNoGap">
+            <div data-require-accounts class="flex-container">
+                <div class="userChangePasswordButton menu_button menu_button_icon" title="Change your password.">
+                    <i class="fa-fw fa-solid fa-key"></i>
+                    <span data-i18n="Change Password">Change Password</span>
+                </div>
+                <!-- Only a storage provider can issue a recovery key, so this is hidden unless one says it
+                     can. With no provider installed it never appears, and SillyTavern is unchanged. -->
+                <div class="userNewRecoveryKeyButton menu_button menu_button_icon" style="display: none;" title="Issue a new recovery key and retire the old one.">
+                    <i class="fa-fw fa-solid fa-rotate"></i>
+                    <span data-i18n="New Recovery Key">New Recovery Key</span>
+                </div>
+            </div>
+            <div class="flex-container">
+                <div class="userSettingsSnapshotsButton menu_button menu_button_icon" data-i18n="[title]Manage your settings snapshots." title="Manage your settings snapshots.">
+                    <i class="fa-fw fa-solid fa-camera"></i>
+                    <span data-i18n="Settings Snapshots">Settings Snapshots</span>
+                </div>
+                <div class="userBackupButton menu_button menu_button_icon" data-i18n="[title]Download a complete backup of your user data." title="Download a complete backup of your user data.">
+                    <i class="fa-fw fa-solid fa-download"></i>
+                    <span data-i18n="Download Backup">Download Backup</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <h3 data-i18n="Danger Zone">
+            Danger Zone
+        </h3>
+        <div class="flex-container">
+            <div class="userResetSettingsButton menu_button menu_button_icon" data-i18n="[title]Reset your settings to factory defaults." title="Reset your settings to factory defaults.">
+                <i class="fa-fw fa-solid fa-cog warning"></i>
+                <span data-i18n="Reset Settings">Reset Settings</span>
+            </div>
+            <div class="userResetAllButton menu_button menu_button_icon" data-i18n="[title]Wipe all user data and reset your account to factory settings." title="Wipe all user data and reset your account to factory settings.">
+                <i class="fa-fw fa-solid fa-skull warning"></i>
+                <span data-i18n="Reset Everything">Reset Everything</span>
+            </div>
+        </div>
+    </div>
+</div>

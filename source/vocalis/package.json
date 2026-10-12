@@ -1,0 +1,18 @@
+{
+  "name": "vocalis-webui",
+  "private": true,
+  "license": "Apache-2.0",
+  "description": "Build tooling for the browser UI. The Python app is the project; this exists only to bundle src/webui/js into one file so a page load is a handful of requests instead of seventy-one.",
+  "scripts": {
+    "build": "node tools/build_webui.mjs",
+    "check": "node tools/build_webui.mjs --check && tsc --noEmit",
+    "types": "tsc --noEmit",
+    "format": "node tools/format.mjs",
+    "format:check": "prettier --check \"src/webui/js/**/*.js\" \"src/webui/vocalis_stream_player.js\" \"tests/**/*.{mjs,js}\" \"tools/*.mjs\" \"sillytavern/extension/*.js\" \"nomi/chrome_extension/*.js\""
+  },
+  "devDependencies": {
+    "esbuild": "0.25.9",
+    "prettier": "^3.9.6",
+    "typescript": "5.9"
+  }
+}

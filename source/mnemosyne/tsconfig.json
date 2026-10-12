@@ -1,0 +1,92 @@
+// TypeScript's CHECKER, over plain JavaScript. 0.2.0.
+//
+// 🔴 NOTHING IS COMPILED, TRANSPILED OR GENERATED. `noEmit` is the entire point. Mnemosyne is loaded by the
+// fork's plugin loader as ES modules straight off disk — `src/index.js` is `main`, and Node reads exactly the
+// bytes in this repository. There is no build step to hide a mistake in, and there must never be one: a
+// plugin that ships a build artifact is a plugin whose deployed code is not the code anyone reviewed, in a
+// process that holds a DEK-derived key.
+//
+// What this file buys is one thing, and it is worth having: **a JSDoc annotation stops being prose and
+// becomes a checked statement.** This tree already carried 400-odd `@param`/`@returns` tags before any of
+// this ran, and five of them were false — `@param {…} context` naming a parameter that did not exist,
+// `import('./store.js')` from a directory with no `store.js` in it, a `@param` order that no caller could
+// satisfy. Nobody had lied on purpose. Comments simply are not checked, so they drift, and a drifted comment
+// is worse than no comment because it is believed.
+//
+// 🔴 `include` IS AN ALLOWLIST, NOT A CONVENIENCE. `tests/` is absent from THIS config and covered by its own,
+// `tsconfig.tests.json` — a third config rather than a third `include` entry, because `src/` must not see
+// Jest's globals (`describe`, `test` and `expect` have no business resolving inside a plugin that loads into
+// somebody else's server) and `tests/` cannot be checked without them. One `types` array cannot be right for
+// both, exactly as one `lib` cannot be right for `src/` and `tools/`.
+//
+// ⚠️ `tests/` measured 1,636 under these flags AFTER `src/` reached zero, having measured ~1,450 while `src/`
+// was still moving. It went UP because a mock compared against `any` yesterday is compared against a real
+// shape today — see DESIGN_TYPES.md §7b. A test suite cannot be checked before the code it tests is.
+//
+// ⚠️ `tools/` is checked too, but by `tsconfig.tools.json`, because those files run half in Node and half
+// inside a browser page and therefore need `lib: DOM` — which `src/` must NOT have. See that file.
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
+
+    // Node 24 is the floor (`engines`, and tests/dependencies.test.js asserts it), so there is no reason to
+    // describe the language as older than it is. NodeNext is the honest module setting rather than a
+    // stylistic one: this package is `"type": "module"`, every relative import here carries its `.js`
+    // extension because Node requires it, and NodeNext is the resolver that agrees.
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    // 🔴 NO `DOM`, AND THE OMISSION IS LOAD-BEARING. Mnemosyne is a SERVER plugin. `panel-view.js` builds the
+    // panel's markup as strings and hands them to the host to inject — it has never had a `document` and must
+    // never reach for one, because the process it runs in is Node holding a decrypted store. With `DOM` in
+    // this list, `document.createElement(…)` in a renderer would type-check cleanly and fail at runtime on a
+    // user's install. Without it, that line is an error here, which is where an error is cheap.
+    "lib": ["ES2022"],
+
+    // The fork's `context` and the Express router it hands us are somebody else's objects, and neither ships
+    // types. `types/` declares the slice Mnemosyne actually touches, and only that slice — see
+    // types/fork-host.d.ts for why a narrow hand-written declaration is preferred to @types/express here.
+    "types": ["node"],
+
+    // ⚠️ THIS COMMENT USED TO SAY "nothing here consumes a typed npm package". THAT IS NO LONGER TRUE, and the
+    // change that made it false was the right one. `store.js` and `versions.js` now read
+    // `better-sqlite3-multiple-ciphers`'s own `index.d.ts`, which the package does ship — so `.get()` is
+    // `unknown` and `.all()` is `unknown[]`, and every row this plugin reads back out of SQLCipher becomes a
+    // value somebody has to prove something about before using it. Typing the handle as `any` instead had
+    // been hiding 79 errors inside one file.
+    //
+    // A hand-written local interface was tried first and rejected on the spot: it was incompatible with the
+    // real `Database` at `this.db = db`, so it would have needed a FALSE CAST to survive its own first
+    // assignment. A stub that has to lie about the thing it stands in for is worse than the dependency.
+    //
+    // `skipLibCheck` still earns its keep, and it is a different claim: it stops the run being spent
+    // type-checking node_modules' own declarations. That is not the same as refusing to read them.
+    "skipLibCheck": true,
+
+    // 🔴 FULL STRICT, FROM THE FIRST COMMIT, AND THAT WAS A MEASUREMENT RATHER THAN A PREFERENCE. The honest
+    // number for this tree was 460 errors — small enough to fix rather than ratchet toward, which is the
+    // opposite of the situation a staged rollout exists for. A `strict` that arrives in stages leaves a
+    // documented allowance for untrue annotations in the meantime, and an allowance is something a later
+    // commit spends. There is no allowance here: the annotations are true, or the run is red.
+    //
+    // ⚠️ Raising anything below is fine. LOWERING one of them is not a tidy-up and is not a way to clear a red
+    // run — it is a decision to let this file's central claim be false again, and it needs an argument in
+    // DESIGN_TYPES.md before it needs a commit.
+    "strict": true,
+
+    // ⚠️ These two are pure signal and cost nothing today: an unreachable branch or an unused label in this
+    // tree is a mistake, not a style choice.
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
+  },
+
+  "include": [
+    "src/**/*.js",
+    "types/*.d.ts"
+  ],
+
+  "exclude": ["node_modules", "tests", "tools", "temp", "out", "tmp"]
+}

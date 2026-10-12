@@ -1,0 +1,9 @@
+**
+!packaging
+!packaging/stems
+!packaging/stems/**
+!packaging/licenses
+!packaging/licenses/copy_locked_wheel_notices.py
+!packaging/licenses/rocm
+!packaging/licenses/rocm/**
+!packaging/licenses/rocm-notice-artifacts.json

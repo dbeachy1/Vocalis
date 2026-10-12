@@ -1,0 +1,219 @@
+--- a/pytorch_wavelets/__init__.py
++++ b/pytorch_wavelets/__init__.py
+@@ -1,36 +1,9 @@
+-__all__ = [
+-    '__version__',
+-    'DTCWTForward',
+-    'DTCWTInverse',
+-    'DWTForward',
+-    'DWTInverse',
+-    'DWT1DForward',
+-    'DWT1DInverse',
+-    'DTCWT',
+-    'IDTCWT',
+-    'DWT',
+-    'IDWT',
+-    'DWT1D',
+-    'DWT2D',
+-    'IDWT1D',
+-    'IDWT2D',
+-    'ScatLayer',
+-    'ScatLayerj2'
+-]
++"""DWT1D operations retained from pytorch-wavelets 1.3.0."""
+ 
+ from pytorch_wavelets._version import __version__
+-from pytorch_wavelets.dtcwt.transform2d import DTCWTForward, DTCWTInverse
+-from pytorch_wavelets.dwt.transform2d import DWTForward, DWTInverse
+ from pytorch_wavelets.dwt.transform1d import DWT1DForward, DWT1DInverse
+-from pytorch_wavelets.scatternet import ScatLayer, ScatLayerj2
+-
+-# Some aliases
+-DTCWT = DTCWTForward
+-IDTCWT = DTCWTInverse
+-DWT = DWTForward
+-IDWT = DWTInverse
+-DWT2D = DWT
+-IDWT2D = IDWT
+ 
+ DWT1D = DWT1DForward
+ IDWT1D = DWT1DInverse
++
++__all__ = ["__version__", "DWT1DForward", "DWT1DInverse", "DWT1D", "IDWT1D"]
+--- a/pytorch_wavelets/dwt/lowlevel.py
++++ b/pytorch_wavelets/dwt/lowlevel.py
+@@ -2,7 +2,6 @@
+ import torch.nn.functional as F
+ import numpy as np
+ from torch.autograd import Function
+-from pytorch_wavelets.utils import reflect
+ import pywt
+ 
+ 
+@@ -32,34 +31,9 @@
+     Inputs:
+         x (tensor): tensor to pad
+         pad (tuple): tuple of (left, right, top, bottom) pad sizes
+-        mode (str): 'symmetric', 'wrap', 'constant, 'reflect', 'replicate', or
+-            'zero'. The padding technique.
+-    """
+-    if mode == 'symmetric':
+-        # Vertical only
+-        if pad[0] == 0 and pad[1] == 0:
+-            m1, m2 = pad[2], pad[3]
+-            l = x.shape[-2]
+-            xe = reflect(np.arange(-m1, l+m2, dtype='int32'), -0.5, l-0.5)
+-            return x[:,:,xe]
+-        # horizontal only
+-        elif pad[2] == 0 and pad[3] == 0:
+-            m1, m2 = pad[0], pad[1]
+-            l = x.shape[-1]
+-            xe = reflect(np.arange(-m1, l+m2, dtype='int32'), -0.5, l-0.5)
+-            return x[:,:,:,xe]
+-        # Both
+-        else:
+-            m1, m2 = pad[0], pad[1]
+-            l1 = x.shape[-1]
+-            xe_row = reflect(np.arange(-m1, l1+m2, dtype='int32'), -0.5, l1-0.5)
+-            m1, m2 = pad[2], pad[3]
+-            l2 = x.shape[-2]
+-            xe_col = reflect(np.arange(-m1, l2+m2, dtype='int32'), -0.5, l2-0.5)
+-            i = np.outer(xe_col, np.ones(xe_row.shape[0]))
+-            j = np.outer(np.ones(xe_col.shape[0]), xe_row)
+-            return x[:,:,i,j]
+-    elif mode == 'periodic':
++        mode (str): 'periodic', 'constant', 'reflect', 'replicate', or 'zero'.
++    """
++    if mode == 'periodic':
+         # Vertical only
+         if pad[0] == 0 and pad[1] == 0:
+             xe = np.arange(x.shape[-2])
+@@ -162,7 +136,7 @@
+             pad = (p//2, 0) if d == 2 else (0, p//2)
+             # Calculate the high and lowpass
+             lohi = F.conv2d(x, h, padding=pad, stride=s, groups=C)
+-        elif mode == 'symmetric' or mode == 'reflect' or mode == 'periodic':
++        elif mode == 'reflect' or mode == 'periodic':
+             pad = (0, 0, p//2, (p+1)//2) if d == 2 else (p//2, (p+1)//2, 0, 0)
+             x = mypad(x, pad=pad, mode=mode)
+             lohi = F.conv2d(x, h, stride=s, groups=C)
+@@ -260,8 +234,7 @@
+             y = y[:,:,:,:N]
+         y = roll(y, 1-L//2, dim=dim)
+     else:
+-        if mode == 'zero' or mode == 'symmetric' or mode == 'reflect' or \
+-                mode == 'periodic':
++        if mode == 'zero' or mode == 'reflect' or mode == 'periodic':
+             pad = (L-2, 0) if d == 2 else (0, L-2)
+             y = F.conv_transpose2d(lo, g0, stride=s, padding=pad, groups=C) + \
+                 F.conv_transpose2d(hi, g1, stride=s, padding=pad, groups=C)
+@@ -275,7 +248,7 @@
+     if mode == 'zero':
+         return 0
+     elif mode == 'symmetric':
+-        return 1
++        raise ValueError("symmetric padding is not included in this DWT1D package")
+     elif mode == 'per' or mode == 'periodization':
+         return 2
+     elif mode == 'constant':
+@@ -294,7 +267,7 @@
+     if mode == 0:
+         return 'zero'
+     elif mode == 1:
+-        return 'symmetric'
++        raise ValueError("symmetric padding is not included in this DWT1D package")
+     elif mode == 2:
+         return 'periodization'
+     elif mode == 3:
+@@ -438,7 +411,7 @@
+             Otherwise, this function will prepare the filters to be of the right
+             form by calling
+             :py:func:`~pytorch_wavelets.dwt.lowlevel.prep_filt_afb2d`.
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. Which
++        mode (str): 'zero', 'reflect' or 'periodization'. Which
+             padding to use. If periodization, the output size will be half the
+             input size.  Otherwise, the output size will be slightly larger than
+             half.
+@@ -486,7 +459,7 @@
+             Otherwise, this function will prepare the filters to be of the right
+             form by calling
+             :py:func:`~pytorch_wavelets.dwt.lowlevel.prep_filt_afb2d`.
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. Which
++        mode (str): 'zero', 'reflect' or 'periodization'. Which
+             padding to use. If periodization, the output size will be half the
+             input size.  Otherwise, the output size will be slightly larger than
+             half.
+@@ -531,7 +504,7 @@
+             highpass filter banks. If a tensor is given, it should be of the
+             form created by
+             :py:func:`pytorch_wavelets.dwt.lowlevel.prep_filt_afb2d_nonsep`
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. Which
++        mode (str): 'zero', 'reflect' or 'periodization'. Which
+             padding to use. If periodization, the output size will be half the
+             input size.  Otherwise, the output size will be slightly larger than
+             half.
+@@ -568,7 +541,7 @@
+         y[:,:,:Ly//2] += y[:,:,Ny//2:Ny//2+Ly//2]
+         y[:,:,:,:Lx//2] += y[:,:,:,Nx//2:Nx//2+Lx//2]
+         y = y[:,:,:Ny//2, :Nx//2]
+-    elif mode == 'zero' or mode == 'symmetric' or mode == 'reflect':
++    elif mode == 'zero' or mode == 'reflect':
+         # Calculate the pad size
+         out1 = pywt.dwt_coeff_len(Ny, Ly, mode=mode)
+         out2 = pywt.dwt_coeff_len(Nx, Lx, mode=mode)
+@@ -587,7 +560,7 @@
+             # Calculate the high and lowpass
+             y = F.conv2d(
+                 x, f, padding=(p1//2, p2//2), stride=2, groups=C)
+-        elif mode == 'symmetric' or mode == 'reflect' or mode == 'periodic':
++        elif mode == 'reflect' or mode == 'periodic':
+             pad = (p2//2, (p2+1)//2, p1//2, (p1+1)//2)
+             x = mypad(x, pad=pad, mode=mode)
+             y = F.conv2d(x, f, stride=2, groups=C)
+@@ -614,7 +587,7 @@
+             Otherwise, this function will prepare the filters to be of the right
+             form by calling
+             :py:func:`~pytorch_wavelets.dwt.lowlevel.prep_filt_sfb2d`.
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. Which
++        mode (str): 'zero', 'reflect' or 'periodization'. Which
+             padding to use. If periodization, the output size will be half the
+             input size.  Otherwise, the output size will be slightly larger than
+             half.
+@@ -757,7 +730,7 @@
+             Otherwise, this function will prepare the filters to be of the right
+             form by calling
+             :py:func:`~pytorch_wavelets.dwt.lowlevel.prep_filt_sfb2d_nonsep`.
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. Which
++        mode (str): 'zero', 'reflect' or 'periodization'. Which
+             padding to use. If periodization, the output size will be half the
+             input size.  Otherwise, the output size will be slightly larger than
+             half.
+@@ -788,7 +761,7 @@
+         ll[:,:,:,:Lx-2] += ll[:,:,:,2*Nx:2*Nx+Lx-2]
+         ll = ll[:,:,:2*Ny,:2*Nx]
+         ll = roll(roll(ll, 1-Ly//2, dim=2), 1-Lx//2, dim=3)
+-    elif mode == 'symmetric' or mode == 'zero' or mode == 'reflect' or \
++    elif mode == 'zero' or mode == 'reflect' or \
+             mode == 'periodic':
+         pad = (Ly-2, Lx-2)
+         ll = F.conv_transpose2d(x, f, padding=pad, groups=C, stride=2)
+--- a/pytorch_wavelets/dwt/transform1d.py
++++ b/pytorch_wavelets/dwt/transform1d.py
+@@ -14,7 +14,7 @@
+             1) a string to pass to pywt.Wavelet constructor
+             2) a pywt.Wavelet class
+             3) a tuple of numpy arrays (h0, h1)
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. The
++        mode (str): 'zero', 'reflect' or 'periodization'. The
+             padding scheme
+         """
+     def __init__(self, J=1, wave='db1', mode='zero'):
+@@ -68,7 +68,7 @@
+             1) a string to pass to pywt.Wavelet constructor
+             2) a pywt.Wavelet class
+             3) a tuple of numpy arrays (h0, h1)
+-        mode (str): 'zero', 'symmetric', 'reflect' or 'periodization'. The
++        mode (str): 'zero', 'reflect' or 'periodization'. The
+             padding scheme
+     """
+     def __init__(self, wave='db1', mode='zero'):

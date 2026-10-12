@@ -1,0 +1,111 @@
+  <section data-panel="settings" style="display:none">
+    <div class="panel">
+      <h2>Devices <button id="devRefresh" class="small" style="float:right;margin:0">Check now</button></h2>
+      <div class="small muted" style="margin:-4px 0 8px">Where <b>speech</b> is rendered — Book, Playground, Nomi and SillyTavern all use the devices ticked here. Tick a device to use it. Saved automatically. Each ticked device holds one copy of the model — a second copy on the same card measured <i>slower</i>, not faster. Satellite cards appear when that machine is running — this list re-checks every 10 seconds while you are on this tab.</div>
+      <div id="devList" class="small muted">detecting…</div>
+      <!-- 9.5.9 — ONE box over ONE condition; both engine tabs read it. See js/sys/devices.js. -->
+      <label class="small" style="display:block;margin-top:10px"><input type="checkbox" id="devWarnLlm" checked> Warn me if I enable a device while an LLM model is loaded, or if I load an LLM model while a device is enabled</label>
+      <div class="small muted" style="margin-top:6px">Covers <b>both</b> directions of the same collision: ticking a device here while KoboldCpp or llama.cpp is holding this box's cards, and pressing <b>Load</b> on either of those tabs while a device here is ticked. Always a warning that names what is in the way, never a refusal — sharing a card is your call. It says nothing when the engine is on another machine, because those are not these cards.</div>
+      <div class="small muted" style="margin-top:8px">A worker is one copy of the model. <b>1</b> leaves VRAM headroom for co-tenant LLMs (SillyTavern); <b>2</b> costs ~+4&nbsp;GB on that card and lets one worker's CPU work overlap another's GPU work — how much that is worth depends on the card and has not been measured here. Each device is set separately — a 24&nbsp;GB satellite card and a card sharing a box with an LLM do not want the same number.</div>
+      <div class="small muted" style="margin-top:8px"><b>Speech only.</b> Enhancing and voice creation never run on a satellite — the enhancer wants a whole card to itself and about 21&nbsp;GB of it, which would evict the very rendering you moved there. They use <b>this machine's own ticked cards</b>, so unticking all of them switches those two features off as well.</div>
+    </div>
+    {% include 'partials/panel-settings-satellites.html' %}
+    <div class="panel">
+      <h2>Appearance</h2>
+      <!-- `output` displays the selected scale without creating a second editable value. -->
+      <div class="row" style="align-items:center;gap:12px">
+        <label for="uiFont" style="margin:0;flex:0 0 auto">Text size</label>
+        <input type="range" id="uiFont" min="12" max="24" step="1" value="16"
+               style="flex:1 1 220px;width:auto;max-width:320px">
+        <output id="uiFontOut" class="small" style="flex:0 0 auto;min-width:52px;font-variant-numeric:tabular-nums">16 px</output>
+        <button id="uiFontReset" class="sm" style="flex:0 0 auto">Reset</button>
+      </div>
+      <div class="small muted" style="margin-top:6px">Scales every piece of text in Vocalis. <b>16&nbsp;px is the browser default</b> and the standard size for body text — below about 14 it starts to be hard to read at 100% zoom. Images, waveforms and charts are <i>not</i> scaled, so turning this up buys readability without costing screen space, which is the difference from browser zoom. Applies as you drag.</div>
+    </div>
+    <div class="panel">
+      <h2>Logging</h2>
+      <div><label style="display:inline;margin:0;color:var(--fg)"><input type="checkbox" id="logAnsi" checked> Use ANSI colors in the log</label></div>
+      <div class="small muted" style="margin-top:6px">Colored output for <code>tail -f</code> / <code>less -R</code>; turn off for plain greppable text. Applies immediately.</div>
+      <div class="small muted" style="margin-top:6px">Log file: <code id="logPath">—</code><span id="logPathWhere"></span> — appends across restarts (each start is marked by a green banner), rotates at 10&nbsp;MB, keeps 5.</div>
+    </div>
+    {% include 'partials/panel-settings-kobold.html' %}
+    {% include 'partials/panel-settings-llama.html' %}
+    <!-- Keep the shared SillyTavern pairing token in Settings rather than duplicating a credential
+         control across the shared Character Cards and World Books panes. -->
+    <div class="panel">
+      <h2>SillyTavern extension</h2>
+      <div class="small muted" style="margin:-4px 0 8px"><b>Needed for SillyTavern narration, and to push worldbooks and character cards back into SillyTavern.</b> Importing and exporting files works without it.</div>
+      <div class="small muted" style="margin:0 0 8px">The extension runs inside your <i>already logged-in</i> SillyTavern session, so Vocalis never stores a SillyTavern password. This token is how the extension proves it is yours — Vocalis's own login cookie cannot reach it, because the browser will not send a cookie from SillyTavern's address to this one. Paste it into the Vocalis extension's settings in SillyTavern once. <b>Generating a new one immediately stops the old one working.</b></div>
+      <div class="row">
+        <!-- Same reasoning as the Kobold field above, and for the same reasons: type="text" +
+             CSS masking keeps Chrome's password manager away, and spellcheck="false" is what
+             buys back the telemetry exclusion that a real password field would have given. -->
+        <div style="flex:1;min-width:260px">
+          <label>Pairing token</label>
+          <input type="text" id="pairToken" class="masked" autocomplete="off" spellcheck="false"
+                 autocapitalize="off" autocorrect="off" placeholder="not paired" readonly>
+        </div>
+        <div style="flex:0;align-self:flex-end"><button class="sm" id="pairCopy">Copy</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="pairNew" title="Mint a new token. The old one stops working immediately, so SillyTavern will need the new value pasted in.">Generate</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="sm" id="pairClear" title="Unpair. The extension can no longer reach Vocalis until you generate a new token.">Unpair</button></div>
+      </div>
+      <div class="row" style="margin-top:6px;align-items:center">
+        <div style="flex:0 0 auto"><label style="display:inline;margin:0;color:var(--fg)"><input type="checkbox" id="pairShow"> Show token</label></div>
+        <div style="flex:1" class="small muted" id="pairState">—</div>
+      </div>
+    </div>
+    <!-- Keep the Nomi token separate from the SillyTavern token so either credential can be revoked independently. Keep both pairing settings together in Settings. -->
+    <div class="panel">
+      <h2>Nomi extension</h2>
+      <div class="small muted" style="margin:-4px 0 8px"><b>Required to play Nomi replies through Vocalis.</b> Until 7.2 this channel was open: anyone who could reach this server could use your GPU to generate speech, and could add entries to the Nomi voice map. The token is how the Chrome extension proves it is yours. <b>Generating a new one immediately stops the old one working.</b></div>
+      <!-- No ⚠️ glyph in the copy: `test_no_status_glyph_leaks_into_text_the_user_reads` forbids
+           status glyphs in user-facing text because they read as "something is wrong" rather than
+           as emphasis. <b> carries the weight instead. -->
+      <div class="small muted" style="margin:0 0 8px">Separate from the SillyTavern token above — they rotate independently, and pasting the wrong one fails exactly like pasting none. Get the extension itself from the <b>Nomi</b> tab, then paste this into its Options page.</div>
+      <div class="row">
+        <div style="flex:1;min-width:260px">
+          <label>Pairing token</label>
+          <input type="text" id="nomiPairToken" class="masked" autocomplete="off" spellcheck="false"
+                 autocapitalize="off" autocorrect="off" placeholder="not paired" readonly>
+        </div>
+        <div style="flex:0;align-self:flex-end"><button class="sm" id="nomiPairCopy">Copy</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="nomiPairNew" title="Mint a new token. The old one stops working immediately, so the Chrome extension will need the new value pasted into its Options page.">Generate</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="sm" id="nomiPairClear" title="Unpair. The extension can no longer reach /speak until you generate a new token.">Unpair</button></div>
+      </div>
+      <div class="row" style="margin-top:6px;align-items:center">
+        <div style="flex:0 0 auto"><label style="display:inline;margin:0;color:var(--fg)"><input type="checkbox" id="nomiPairShow"> Show token</label></div>
+        <div style="flex:1" class="small muted" id="nomiPairState">—</div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Admin login</h2>
+      <div class="small muted" style="margin:-4px 0 8px">Gates Vocalis Studio — the whole web app. The Nomi and SillyTavern extensions do not use this login; each has its own pairing token, above. Forgot the password? Use your recovery key on the login page. (An install without encryption has no recovery key; there, run <code>scripts/set-admin-credentials</code> on the server.)</div>
+      <!-- Shown only once a vault exists (/health initialized). One password, two uses: it
+           authenticates AND unwraps the key, so changing it here re-wraps the key too. -->
+      <div class="small" id="loginVaultNote" style="display:none;margin:-4px 0 8px;color:var(--warn)">
+        🔑 <b>This is also your encryption password.</b> It authenticates you <i>and</i> unlocks the vault — logging in is what unwraps the key. Changing it here re-wraps the key at the same time, which is why the current password is required. Removing the login is not possible while encryption is on: a vault with no login can never be unlocked.
+      </div>
+      <div class="row">
+        <div style="flex:1;min-width:180px"><label>Username</label><input type="text" id="setU" autocomplete="username"></div>
+        <div id="setCurWrap" style="flex:1;min-width:180px;display:none"><label>Current password</label><input type="password" id="setCur" autocomplete="current-password" placeholder="required — encryption is on"></div>
+        <div style="flex:1;min-width:180px"><label>New password</label><input type="password" id="setP" autocomplete="new-password" placeholder="blank = remove the login"></div>
+        <div style="flex:1;min-width:180px"><label>Confirm password</label><input type="password" id="setP2" autocomplete="new-password"></div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="applyLogin">Apply</button></div>
+      </div>
+    </div>
+    <!-- Shown only once a vault exists (/health initialized): with no vault there is no
+         wrap_recovery to rotate, and the button would 409. -->
+    <div class="panel" id="recoveryPanel" style="display:none">
+      <h2>Recovery key</h2>
+      <div class="small muted" style="margin:-4px 0 8px">The recovery key is the <b>only</b> way back into your data if you forget your password — it unlocks the vault and sets a new password in one step. Generating a new one <b>immediately revokes the old one</b>. Your password and your data are untouched, and you stay logged in.</div>
+      <div class="small" style="margin:-4px 0 8px;color:var(--warn)">⚠️ Older <code>vault_keys.yaml</code> <b>backups</b> still answer to the old key. If you are rotating because a key may have leaked, replace those backups too.</div>
+      <!-- `.row>div{flex:1 1 150px}` makes every child greedy, so a bare flex:1 field shoves the
+           button to the far edge and squeezes its label into a four-line stack. Fixed basis on the
+           field + auto on the button keeps them adjacent; the trailing spacer eats the slack. -->
+      <div class="row">
+        <div style="flex:0 0 220px"><label>Confirm your password</label><input type="password" id="recPw" autocomplete="current-password" placeholder="required"></div>
+        <div style="flex:0 0 auto;align-self:flex-end"><button class="primary" id="rotateRecovery" style="white-space:nowrap">Generate new recovery key</button></div>
+        <div style="flex:1 1 0;min-width:0"></div>
+      </div>
+    </div>
+  </section>

@@ -1,0 +1,59 @@
+  <section data-panel="playground">
+    <div class="panel">
+      <h2>Playground</h2>
+      <div id="pgCluster"></div><!-- rendered by voiceClusterHTML — identical to the Book's -->
+      <!-- 6.1-m1b §3.1 — the shortcut for the round trip that DID start from a scene row. It is
+           only a shortcut: the clipboard is the primary mechanism, because a clip made from
+           scratch has no origin to return to and an insert's target is chosen at paste time. -->
+      <div id="pgOriginBar" class="small" style="display:none;margin-top:10px;padding:6px 8px;border-left:3px solid var(--acc)"></div>
+      <label style="margin-top:10px">Text (paste, or upload a .txt / .md)</label>
+      <textarea id="pgText" placeholder="Type or paste text to audition…"></textarea>
+      <div class="row" style="margin-top:8px;align-items:center">
+        <div style="flex:0 0 auto" title="The audio equivalent of an AI upscaler. Chatterbox's voice comes out slightly muffled — it can't produce the crispness that makes speech sound present and real — and enhancement puts that back, saving the clip at 256 kbps instead of 96. It runs AFTER the render, on the finished clip: what you hear streaming live is the raw take, and the clip that gets saved is the enhanced one.">
+          <label style="display:inline-flex;align-items:center;gap:6px;margin:0;color:var(--fg)"><input type="checkbox" id="pgEnh" checked> Enhance <span class="muted small">(full quality)</span></label></div>
+        <div style="flex:0 0 auto" title="Stop this render once it has produced 60 minutes of audio and save what it has as a finished clip. Checked at each chunk boundary — never mid-sentence. You can tick this DURING a render (you realize the text is longer than you thought and want to walk away); unticking mid-render just lets it run on.">
+          <label style="display:inline-flex;align-items:center;gap:6px;margin:0;color:var(--fg)"><input type="checkbox" id="pgCap"> Stop at 60 minutes</label></div>
+        <div style="flex:1;min-width:200px" class="small muted" id="pgEnhNote"></div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div style="flex:0 0 auto;display:flex;align-items:center;gap:8px"><input type="file" id="pgFile" accept=".txt,.md" style="display:none"><label for="pgFile" class="filebtn">Choose File</label><span id="pgFileName" class="small muted" style="white-space:nowrap"></span></div>
+        <div style="flex:0"><button class="go" id="pgGen">▶ Generate</button></div>
+        <div style="flex:0"><button class="danger" id="pgCancel" style="display:none">■ Cancel</button></div>
+        <div style="flex:1;min-width:200px;align-self:center">
+          <audio id="pgTakeOut" controls preload="metadata" style="display:none;width:100%;max-width:360px" title="The stored take for these exact inputs — Generate renders a fresh take and replaces it"></audio>
+          <audio id="pgStreamOut" controls style="display:none;width:100%;max-width:360px" title="Live stream — volume/pause/scrub freely; rendering continues in the background (Cancel stops the render, not just playback)"></audio>
+        </div>
+      </div>
+      <div id="pgOut" style="margin-top:12px"></div>
+    </div>
+    <div class="panel">
+      <div class="logwrap"><h2 style="margin:0">Live log</h2><div id="pgStrip" class="small muted"></div></div>
+      <!-- The audio produced so far. Chunks are not minutes — they run from a clause to
+           400 characters — so "how long is this clip getting?" is otherwise unanswerable
+           until it finishes, which is exactly when it is too late to cap it. -->
+      <div id="pgAudio" class="small" style="display:none;margin-bottom:6px"></div>
+      <div id="pgLog"><span class="muted ph">Generate a clip to see chunk-by-chunk progress here.</span></div>
+    </div>
+    <div class="panel">
+      <!-- Keep search in the list header beside Refresh. -->
+      <div class="logwrap"><h2 style="margin:0">Playground library <span id="pgLibTotals" class="small muted"></span></h2>
+        <div style="display:flex;gap:10px;align-items:center">
+          <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Show only ★ favorites"><input type="checkbox" id="pgFavsOnly">★ favorites only</label>
+          <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Show only interrupted (partial) renders — handy for cleaning them up"><input type="checkbox" id="pgPartialsOnly">partials only</label>
+          <!-- Enhanced and unenhanced outputs are distinct clips, so both lists need this filter. -->
+          <label class="small muted" style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer" title="Enhanced clips are the 256 kbps enhanced takes. Filter to the un-enhanced ones to clean them up, or to the enhanced ones to download just those."><span>enhanced</span><select id="pgEnhFilter" class="sm"><option value="">all</option><option value="1">enhanced</option><option value="0">not enhanced</option></select></label>
+          <input id="pgSearch" class="filter" type="search" placeholder="Filter name, voice, or text…" autocomplete="off" spellcheck="false"
+                 title="Show only the clips that match. Every word you type has to appear in the name, the voice, or the clip's own text.">
+          <button class="sm" id="pgLibRefresh">↻ Refresh</button></div></div>
+      <!-- Download sits LEFT of Delete and wears the green: they act on the same selection, and
+           the safe one should not be the one you reach past the destructive one to get to. -->
+      <div class="row">
+        <div style="flex:0"><button class="sm ok" id="pgDlSel" disabled title="Download every selected clip as one zip. Stored, not compressed — an MP3 does not deflate.">⬇ Download selected</button></div>
+        <div style="flex:0"><button class="sm danger" id="pgDelSel" disabled>Delete selected</button></div>
+      </div>
+      <!-- This stable mount point keeps the player available when its clip is filtered or paged out. -->
+      <div id="pgLibHome"><div id="pgLibPlayer" style="margin-top:8px"></div></div>
+      <div id="pgLib" style="margin-top:8px"><span class="muted">No clips yet — everything you generate lands here.</span></div>
+      <div id="pgPager" class="small" style="margin-top:6px"></div>
+    </div>
+  </section>

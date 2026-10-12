@@ -1,0 +1,10 @@
+{
+    "verbose": true,
+    "transform": {},
+    "testEnvironment": "node",
+    "roots": ["<rootDir>/integration/mnemosyne"],
+    "maxWorkers": 1,
+    "testTimeout": 120000,
+    "globalSetup": "<rootDir>/util/global-setup.js",
+    "globalTeardown": "<rootDir>/util/global-teardown.js"
+}

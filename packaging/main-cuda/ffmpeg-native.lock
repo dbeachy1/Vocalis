@@ -1,0 +1,13 @@
+# Ubuntu 26.04 non-GPL runtime audio closure for packaging/main-cuda/Dockerfile.app.
+# Shared audio runtime includes the LGPL FFmpeg build and SoundFile's libsndfile codec closure.
+# Source versions and notices are recorded in packaging/licenses/apt-runtime-source-artifacts.json.
+# Added binary-source mappings: libsndfile1->libsndfile 1.2.2-4; libflac14->flac 1.5.0+ds-5; libogg0->libogg 1.3.6-2; libvorbis0a/libvorbisenc2->libvorbis 1.3.7-3build2; libsamplerate0->libsamplerate 0.2.2-4build2 (retained LeadVocal sinc resampling).
+libflac14	1.5.0+ds-5	amd64	libflac14_1.5.0+ds-5_amd64.deb	167804	ea6cbd9399a646b073d36d8d33444f39f9f1dd63f5fa8cd18906573f51cc305b
+libmp3lame0	3.101~svn6525+dfsg-2ubuntu0.1	amd64	libmp3lame0_3.101~svn6525+dfsg-2ubuntu0.1_amd64.deb	121480	bc765461943344b160f208572c296360011a9aa14ca886fac5865dac4ba8730c
+libmpg123-0t64	1.33.3-2	amd64	libmpg123-0t64_1.33.3-2_amd64.deb	176430	5bb06d8890eecd357da520a21e592a93267bb4b48a4f8946d6d67c366f511bbd
+libogg0	1.3.6-2	amd64	libogg0_1.3.6-2_amd64.deb	23394	9d62d5e64a55ecfc17a7aeb00a5ca5fdf095bd68c1c397146c81867bec35c31f
+libopus0	1.6.1-1	amd64	libopus0_1.6.1-1_amd64.deb	3563890	395f9e1bf29b804e42471e225976d69355c220bbfe469cb4ed387d36184b9bcc
+libsamplerate0	0.2.2-4build2	amd64	libsamplerate0_0.2.2-4build2_amd64.deb	1342514	c554aed04aa0c47928039dc158e26c2b6da44b4570d400574110dcdaedd03360
+libsndfile1	1.2.2-4	amd64	libsndfile1_1.2.2-4_amd64.deb	218520	678c7e95dea924d1ebe6c59879009dc3e7b61491bc32bd63bea200487d60a454
+libvorbis0a	1.3.7-3build2	amd64	libvorbis0a_1.3.7-3build2_amd64.deb	100972	e8577fd985c3a2bc61212be338207cc2a95e7d6892acaeccb3d455da13e4a480
+libvorbisenc2	1.3.7-3build2	amd64	libvorbisenc2_1.3.7-3build2_amd64.deb	79598	b4230d0064eee971727b204e3d0644a4deb4a3d882eaac2304d379e7a5439f2a

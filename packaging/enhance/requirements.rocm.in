@@ -1,0 +1,5 @@
+-r requirements.inference.in
+# The inference profile omits ptflops and its transitive torchvision dependency; pinned source calls
+# complexity summaries only from optional methods outside the inference/load path.
+torch[device-gfx1201]==2.10.0+rocm7.14.1
+torchaudio==2.10.0+rocm7.14.1

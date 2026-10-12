@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The satellite's notification-area program (design: "Satellite setup program and tray icon for Windows").
+       A small Windows Forms program for .NET Framework 4.8, which every Windows that can run Docker Desktop already
+       has, so nothing else is installed with it. Built by the plain .NET SDK; the reference assemblies come from the
+       NuGet package Microsoft.NETFramework.ReferenceAssemblies at one exact version, restored in locked mode
+       (packages.lock.json) into this project's own obj\packages, so the build touches nothing outside this folder.
+       Feasibility probe, October 11, 2026: UseWindowsForms is needed and works for this target; the result is one
+       program file that runs with nothing beside it. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>VocalisSatelliteTray</AssemblyName>
+    <RootNamespace>VocalisSatelliteTray</RootNamespace>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <RestorePackagesPath>$(MSBuildThisFileDirectory)obj\packages</RestorePackagesPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- The file shown by Task Manager and Windows' Startup apps list: the Vocalis icon (Doug, October 11, 2026:
+         "Don't forget to use the correct icon in the setup and the system tray"). Checked by
+         packaging/tests/test_satellite_tray.py, which reads the icon out of the built program. -->
+    <ApplicationIcon>..\vocalis.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyTitle>Vocalis Satellite</AssemblyTitle>
+    <Product>Vocalis Satellite</Product>
+    <Company>Vocalis</Company>
+    <!-- The build script may pass -p:Version=<release version>; 1.0.0 is the default for ordinary builds. -->
+    <Version Condition="'$(Version)' == ''">1.0.0</Version>
+    <!-- One program file: no VocalisSatelliteTray.exe.config beside it (the SDK writes one that only names the runtime). -->
+    <GenerateSupportedRuntime>false</GenerateSupportedRuntime>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+  <!-- The three looks of the notification-area icon are embedded, so the program shows the right picture without
+       the loose .ico files. They are the files make_icon.py writes (colour, grey, grey with a mark). -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\vocalis.ico" LogicalName="vocalis.ico" />
+    <EmbeddedResource Include="..\vocalis-satellite-stopped.ico" LogicalName="vocalis-satellite-stopped.ico" />
+    <EmbeddedResource Include="..\vocalis-satellite-nodocker.ico" LogicalName="vocalis-satellite-nodocker.ico" />
+  </ItemGroup>
+  <!-- The unit tests live in tests\ with their own project; this project must not compile them or their build output. -->
+  <ItemGroup>
+    <Compile Remove="tests\**" />
+    <EmbeddedResource Remove="tests\**" />
+    <None Remove="tests\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="VocalisSatelliteTray.Tests" />
+  </ItemGroup>
+</Project>

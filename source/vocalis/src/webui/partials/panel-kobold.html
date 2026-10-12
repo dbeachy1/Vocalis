@@ -1,0 +1,21 @@
+  <div data-llmpanel="kobold" style="display:none">
+    <!-- List KoboldCpp `.kcpps` configurations from its HTTP API, not the model directory. Configurations include load settings and work with remote servers. -->
+    <div class="panel" id="kobUnavail" style="display:none">
+      <h2>KoboldCpp</h2>
+      <div class="small" id="kobUnavailMsg" style="margin-top:6px"></div>
+    </div>
+    <div class="panel" id="kobMain" style="display:none">
+      <h2>Model</h2>
+      <div class="small muted" style="margin:-4px 0 8px" id="kobHostLine">—</div>
+      <div class="row">
+        <div style="flex:1;min-width:280px"><label>Config</label><select id="kobSel"></select></div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="kobLoad">Load</button></div>
+        <div style="flex:0;align-self:flex-end"><button id="kobUnload" style="display:none">Unload</button></div>
+      </div>
+      <div class="small muted" style="margin-top:8px" id="kobDetail">—</div>
+      <div id="kobStatusBox" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--line)">
+        <div id="kobStatus" class="small">—</div>
+        <div id="kobVram" class="small muted" style="margin-top:4px"></div>
+      </div>
+    </div>
+  </div>

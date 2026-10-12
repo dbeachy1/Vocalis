@@ -1,0 +1,50 @@
+  /* `flex-wrap` is the backstop: if the header ever outgrows its panel again, it wraps onto a
+     second line INSIDE the panel rather than pushing controls off the edge where they cannot be
+     clicked and look deleted. */
+  .logwrap{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;gap:8px;flex-wrap:wrap;}
+  /* Keep the library title and controls in one row; constrain long select options. */
+  .logwrap > h2{white-space:nowrap;flex:0 0 auto;}
+  /* The model id takes the row's flexible space and ellipsizes only when the row is full. */
+  [id^="wbModel_"]{flex:1 1 0;min-width:8em;
+                   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+                   border-left:1px solid var(--line);padding-left:12px;margin-left:4px;}
+  [id^="wbModel_"]:empty{border-left-color:transparent;}
+  /* ⚠️ `min-width:0` is load-bearing: a flex item's default `min-width:auto` refuses to shrink
+     below its content, so max-width alone would not have helped the select at all. */
+  /* Let the filter select size to its contents instead of inheriting the form-wide 100% width. */
+  [id^="wbBook_"],[id^="wbSort_"]{width:auto;flex:0 0 auto;min-width:0;max-width:14em;}
+  /* ⚠️ And the buttons never shrink or wrap their labels — they are the point of the header. */
+  .logwrap button{flex:0 0 auto;white-space:nowrap;}
+  #log,#pgLog,#vsLog,#vtLog,#ssLog,#blkLog{height:300px;overflow:auto;background:var(--barbg);border:1px solid var(--line);border-radius:8px;padding:10px;
+    font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;user-select:text;}
+  #pgLog,#vsLog,#vtLog,#ssLog{height:200px;}
+  /* Twenty 12px lines at 1.5 line-height plus 20px padding fit in this bounded batch log. */
+  #blkLog{height:380px;}
+  #log .dev,#pgLog .dev,#vsLog .dev,#vtLog .dev,#ssLog .dev,#blkLog .dev{color:var(--acc);} #log .stat,#pgLog .stat,#vsLog .stat,#vtLog .stat,#ssLog .stat,#blkLog .stat{color:var(--mut);} #log .drop,#pgLog .drop,#vsLog .drop,#vtLog .drop,#ssLog .drop,#blkLog .drop{color:var(--err);}
+  /* Character rows expose voice details in `.stBody` when their header toggles `.open`. */
+  /* Use the list grid's subgrid so headers align with their corresponding data columns. */
+  #stList{display:grid;grid-template-columns:auto auto auto auto auto auto auto 1fr auto;column-gap:12px;}
+  #stList > *{grid-column:1/-1;}
+  #stList > .stRow{display:grid;grid-template-columns:subgrid;}
+  .stRow .stHead{display:grid;grid-template-columns:subgrid;grid-column:1/-1;align-items:center;padding:6px 0;}
+  .stRow .stBody{grid-column:1/-1;}
+  .stRow .stName{white-space:nowrap;}
+  .stRow .stCell{white-space:nowrap;}
+  .stRow .stHead{cursor:pointer;}
+  .stRow .stHead:hover .stName{color:var(--acc);}
+  .stRow .stCacheSize{color:var(--fg);font-weight:700;}
+  .stRow .caret{color:var(--mut);width:12px;flex:0 0 auto;transition:transform .15s;}
+  .stRow.open .caret{transform:rotate(90deg);}
+  .stRow .stBody{display:none;padding-bottom:4px;}
+  .stRow.open .stBody{display:block;}
+  /* The voice in the collapsed header is READ-ONLY text styled like the dropdown's own face, so
+     it reads as "the value that dropdown holds" and not as a second name. */
+  .stVoiceTxt{border:1px solid var(--line);border-radius:6px;padding:2px 10px;color:var(--fg);white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;max-width:40ch;}
+  .stVoiceTxt.muted{color:var(--mut);}
+  /* SillyTavern ▸ Logs — the live server-log tail */
+  .stlog{height:60vh;min-height:320px;overflow:auto;background:var(--barbg);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;margin:0;font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-word;
+    user-select:text;color:var(--fg);}
+  .stlog .stLogLine{padding:0 0 1px;} .stlog .warn{color:var(--warn);} .stlog .ok{color:var(--ok);}
+  .stlog .drop{color:var(--err);} .stlog .stLogLine.hide{display:none;}

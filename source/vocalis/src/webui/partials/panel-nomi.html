@@ -1,0 +1,29 @@
+  <section data-panel="nomi" style="display:none">
+    <div class="panel">
+      <h2>Chrome extension</h2>
+      <div class="small muted" style="margin:-4px 0 8px">Plays Nomi replies through Vocalis. Chrome doesn't allow installing an extension from a web page, so it's a one-time manual load:</div>
+      <ol class="small" style="margin:0 0 12px 18px;line-height:1.8">
+        <li><b>Download</b> below and unzip somewhere permanent — Chrome keeps loading it from that folder, so don't delete it.</li>
+        <li>Open <code>chrome://extensions</code> and turn on <b>Developer mode</b> (top-right toggle).</li>
+        <li>Click <b>Load unpacked</b> and pick the unzipped <code>vocalis-tts-for-nomi</code> folder.</li>
+        <li>Right-click the extension's icon ▸ <b>Options</b> and set the server URL to the address you open Vocalis at (the one in this page's address bar, without the path).</li>
+        <li><b>Paste the pairing token into that same Options page</b> — it is in <b>⚙ Settings ▸ Nomi extension</b>. Without it Vocalis refuses to speak.</li>
+        <li>To update later: download again, replace the folder's contents, then hit ↻ on <code>chrome://extensions</code>.</li>
+      </ol>
+      <a class="dlbtn" style="margin-left:0;background:var(--ok)" href="/nomi/extension.zip">⬇ Download extension</a>
+    </div>
+    <div class="panel">
+      <div class="logwrap"><h2 style="margin:0">Nomi voice map</h2><button class="sm" id="nomiRefresh">↻</button></div>
+      <div class="small muted" style="margin-bottom:8px">Map each Nomi (by ID) to a voice for the Chrome extension's /speak. Play a Nomi in the extension and its card appears here automatically with the name filled in — pick a voice and <b>Save</b>. The knobs are that Nomi's <b>own</b> delivery settings — exactly what /speak uses. ▶ Audition renders the on-screen values without saving; only <b>Save</b> persists.</div>
+      <div style="border-left:3px solid var(--acc);padding-left:10px;margin:8px 0 4px">
+        <div class="small" style="margin-bottom:2px"><b>Default voice</b> <span class="muted">— speaks for unmapped Nomis (at default delivery). Knobs here are audition-only; the voice choice is saved by Save.</span></div>
+        <div id="nomiDefaultCluster"></div>
+      </div>
+      <div id="nomiList" style="margin-top:12px"><span class="muted">Loading…</span></div>
+      <div class="row" style="margin-top:10px;align-items:center">
+        <button class="sm" id="nomiAdd">+ Add Nomi</button>
+        <div style="flex:1"></div>
+        <button class="primary" id="nomiSave">Save</button>
+      </div>
+    </div>
+  </section>

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "model": "Lead Vocal separation set for audio-separator 0.44.5 (UVR MDX karaoke detector and four de-reverb models)",
+  "files": [
+    {
+      "path": "download_checks.json",
+      "role": "catalog audio-separator searches for every model; read for every model",
+      "url": "https://raw.githubusercontent.com/TRvlvr/application_data/3826b05b570dbd4fbedbc807758803b35348ba1b/filelists/download_checks.json",
+      "bytes": 28267,
+      "sha256": "d3622e1fa19c161d3cf704927711b453d593a3f1eb0f2e0838c3136907935151"
+    },
+    {
+      "path": "vr_model_data.json",
+      "role": "VR model parameters, found by the model file's MD5; read for the VR models",
+      "url": "https://raw.githubusercontent.com/TRvlvr/application_data/3826b05b570dbd4fbedbc807758803b35348ba1b/vr_model_data/model_data_new.json",
+      "bytes": 4380,
+      "sha256": "6a2021b9aa355c10f845b68c73944d47bd9e1fdf37b8a584b14ce8f88b09bb2f"
+    },
+    {
+      "path": "mdx_model_data.json",
+      "role": "MDX model parameters, found by the model file's MD5; read for the MDX models",
+      "url": "https://raw.githubusercontent.com/TRvlvr/application_data/3826b05b570dbd4fbedbc807758803b35348ba1b/mdx_model_data/model_data_new.json",
+      "bytes": 15358,
+      "sha256": "1aca8f9bcc57233bc714029663a9ec2345d9c7721f91e5e08f46392a879c6a9a"
+    },
+    {
+      "path": "UVR_MDXNET_KARA_2.onnx",
+      "role": "karaoke detector (leadvocal.KARAOKE_MODEL)",
+      "url": "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/UVR_MDXNET_KARA_2.onnx",
+      "bytes": 52786726,
+      "sha256": "bf32e15105a09c0f7dddd2b67346146334d6f3ecb399ed7638eba2ab07cbf5f4"
+    },
+    {
+      "path": "UVR-DeEcho-DeReverb.pth",
+      "role": "de-reverb choice 1, the default (leadvocal.DEREVERB_MODELS)",
+      "url": "https://github.com/TRvlvr/model_repo/releases/download/all_public_uvr_models/UVR-DeEcho-DeReverb.pth",
+      "bytes": 223650277,
+      "sha256": "e644028ec82865dc0fe082bc6fea85a43f7c71cfe375caee2da2d154aa661ee7"
+    },
+    {
+      "path": "UVR-De-Reverb-aufr33-jarredou.pth",
+      "role": "de-reverb choice 2",
+      "url": "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/UVR-De-Reverb-aufr33-jarredou.pth",
+      "bytes": 58928133,
+      "sha256": "fff726b0adf09f2eadc2151645557db81e1a01fe15d91f9bbbfa9b50a007f1fd"
+    },
+    {
+      "path": "dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt",
+      "role": "de-reverb choice 3 (Roformer)",
+      "url": "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_anvuew_sdr_19.1729.ckpt",
+      "bytes": 913107578,
+      "sha256": "9262877b87e9ebb0fb808a456b0a411fa677f5df31c8383c1254af531c078970"
+    },
+    {
+      "path": "dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt",
+      "role": "de-reverb choice 4 (Roformer)",
+      "url": "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_less_aggressive_anvuew_sdr_18.8050.ckpt",
+      "bytes": 913107578,
+      "sha256": "0db8f1b41c00cead1112e967262a12802fd32e76c0c3a8eb207e772bae25d07b"
+    },
+    {
+      "path": "dereverb_mel_band_roformer_anvuew.yaml",
+      "role": "configuration both Roformer de-reverb models share (leadvocal.MODEL_CONFIG_FILES)",
+      "url": "https://github.com/nomadkaraoke/python-audio-separator/releases/download/model-configs/dereverb_mel_band_roformer_anvuew.yaml",
+      "bytes": 1846,
+      "sha256": "1599d9ea717ea2b5b3bc55d936f752b8d0f67baaa3de95acd6d03259a2f37784"
+    }
+  ],
+  "provenance": {
+    "sourceRepositories": [
+      "https://github.com/TRvlvr/model_repo",
+      "https://github.com/TRvlvr/application_data",
+      "https://github.com/nomadkaraoke/python-audio-separator",
+      "https://github.com/Anjok07/ultimatevocalremovergui"
+    ],
+    "addressDerivedFrom": "audio-separator 0.44.5 (PyPI audio_separator-0.44.5-py3-none-any.whl), audio_separator/separator/separator.py: download_checks.json from application_data main/filelists, vr_model_data.json and mdx_model_data.json from application_data main/{vr,mdx}_model_data/model_data_new.json, each model file from the UVR release all_public_uvr_models first and, when that answers 404, from the python-audio-separator release model-configs; the Roformer YAML from the UVR release (404) and then model-configs. The addresses above are the ones that answered 200 on October 11, 2026.",
+    "pinnedJsonNote": "The library reads the three JSON files from the unpinned 'main' branch of TRvlvr/application_data. They are pinned here to commit 3826b05b570dbd4fbedbc807758803b35348ba1b, the head of main on October 11, 2026, whose three files have the same bytes as main had that day (identical SHA-256).",
+    "modelFileCoverage": "Every file leadvocal.model_files_needed can ask for: the catalog, the two hash lookup files (non-Roformer models), the karaoke model, the four DEREVERB_MODELS entries and the one YAML the two Roformer models share. The jarredou VR model and the two Roformer models are found by audio-separator in its own models.json, not in the UVR catalog.",
+    "disposition": "The UVR project states that its code is MIT-licensed and asks third-party developers who use its models to honor the MIT license by crediting UVR and its developers; contributor-specific terms for individual files (FoxJoy, aufr33, jarredou, anvuew) are not stated by the publisher pages. Setup downloads the files from the publishers at the user's install, the same footing as every other model in this package. The exact redistribution scope of the individual model files is not settled.",
+    "redistributionResolved": false,
+    "decision": "Doug, October 11, 2026: the earlier hold is lifted on the same footing as every other model; setup downloads from the publisher, size- and hash-checked; no weights are shipped in any image, archive or repository; the application never downloads a model while it runs.",
+    "hashesComputedFrom": "one download of each file from the address above on October 11, 2026, over HTTPS; the byte count is the length received"
+  }
+}

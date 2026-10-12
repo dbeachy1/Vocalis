@@ -1,0 +1,12 @@
+# Dependencies from facebookresearch/demucs v4.0.1 requirements_minimal.txt;
+# source distribution metadata is legacy setup.py and is resolved separately from this graph.
+torch==2.10.0+cu128
+torchaudio==2.10.0+cu128
+dora-search
+omegaconf==2.3.1
+einops
+julius>=0.2.3
+lameenc>=1.2
+openunmix
+PyYAML
+tqdm

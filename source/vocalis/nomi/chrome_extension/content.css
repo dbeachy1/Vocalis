@@ -1,0 +1,64 @@
+.nomi-cb-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+}
+
+.nomi-cb-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #9610ff;
+  background: transparent;
+  color: #9610ff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0;
+  flex-shrink: 0;
+  vertical-align: middle;
+  transition: opacity 0.2s;
+}
+
+.nomi-cb-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.nomi-cb-generating {
+  opacity: 0.7;
+}
+
+.nomi-cb-generating::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: #9610ff;
+  animation: nomi-spin 0.8s linear infinite;
+}
+
+@keyframes nomi-spin {
+  to { transform: rotate(360deg); }
+}
+
+.nomi-cb-playing {
+  background: rgba(150, 16, 255, 0.12);
+  animation: nomi-ripple 1.4s ease-out infinite;
+}
+
+@keyframes nomi-ripple {
+  0%   { box-shadow: 0 0 0 0   rgba(150, 16, 255, 0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(150, 16, 255, 0); }
+  100% { box-shadow: 0 0 0 0   rgba(150, 16, 255, 0); }
+}
+
+.nomi-cb-error {
+  border-color: #cc0000;
+  color: #cc0000;
+}

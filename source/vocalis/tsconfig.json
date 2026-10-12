@@ -1,0 +1,83 @@
+// TypeScript's CHECKER over plain JavaScript. 8.3, DESIGN_8_3_JSDOC_TYPES.md §5.1.
+//
+// 🔴 NOTHING IS COMPILED, TRANSPILED OR GENERATED. `noEmit` is the whole point: the source stays
+// `.js`, the browser loads exactly the bytes in the repo, and the artifact this project deploys —
+// src/webui/bundle/app.js, built by esbuild — is byte-identical whether or not `tsc` ever runs.
+// This file buys one thing: a JSDoc annotation becomes a CHECKED statement instead of prose.
+//
+// ⚠️ esbuild only STRIPS types, it never checks them. `tsc --noEmit` running in the pre-deploy
+// gate (tests/test_webui_types.py) is the entire guarantee that the annotations are true. Without
+// it, 8.3 would have built exactly the decorative-lying-comment situation it exists to prevent.
+//
+// 🔴 `include` IS AN ALLOWLIST, NOT A CONVENIENCE. Over a thousand `.js`/`.mjs` files ship inside
+// `venv/` — PyTorch alone brings `preact.mjs` and friends. A permissive `include` with `venv` in
+// `exclude` is one careless edit away from type-checking somebody else's vendored bundle, so the
+// list below names only what this project actually wrote.
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": true,
+    "checkJs": true,
+
+    // The browser targets are evergreen and the bundle is not downleveled, so there is no reason
+    // to describe the language as older than it is.
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+
+    // 🔴 SILLYTAVERN SERVES ITS OWN MODULES FROM ITS WEB ROOT, AND THE EXTENSION IMPORTS ONE BY
+    // ABSOLUTE URL — `import { … } from '/scripts/narration-player-bar.js'` (index.js:51). A
+    // leading `/` is a path, not a bare specifier, so an ambient `declare module` does NOT catch
+    // it; it has to be mapped. The stub it points at declares only what the extension imports.
+    //
+    // ⚠️ THIS IS A REAL COUPLING TO SOMEBODY ELSE'S FILE. Vocalis does not ship it; ST does. If a
+    // future ST renames it, the failure is at load time inside ST's page, where nothing in this
+    // suite can see it. Mapping it here at least puts the dependency where a reader will find it.
+    // ⚠️ `/script.js` IS ITS OWN ENTRY AND NOT A TYPO FOR THE LINE ABOVE. SillyTavern's front end
+    // is one enormous `public/script.js` at the web root plus a `public/scripts/` directory
+    // beside it, so the two specifiers differ by one character and share no prefix a wildcard
+    // could cover. `bustAvatarThumbnails` lives in the first one.
+    "paths": {
+      "/scripts/*": ["./types/st-host/*"],
+      "/script.js": ["./types/st-host/script.d.ts"]
+    },
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
+    // Enable strict checks in deliberate groups so each new category remains reviewable.
+    //
+    // Do not toggle a check to clear a failing run. `strict` enables the strict-check family;
+    // individual flags are omitted to avoid a second source of truth.
+    //
+    // Catch variables should be narrowed before reading error properties; include fallback text
+    // when an exception has no usable message. See DESIGN_8_3 §9c.
+    "strict": true,
+
+    // Keep DOM types accurate; add a local JSDoc cast only where the call site knows the element.
+    // See DESIGN_8_3 §3.2a.
+
+    // Event listeners receive `Event`, not arbitrary event subclasses. Use the app's
+    // `DocumentEventMap` and keep callback parameter types compatible with the platform API.
+
+    // Nothing here consumes a typed npm package; the only .d.ts we own is types/. Checking
+    // node_modules' own declarations would spend the entire run on esbuild's.
+    "skipLibCheck": true,
+
+    // ⚠️ These two are ON from the start because they cost nothing today and are pure signal: an
+    // unreachable branch or an unused label in this tree is a mistake, not a style choice.
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false
+  },
+
+  "include": [
+    "src/webui/js/**/*.js",
+    "src/webui/vocalis_stream_player.js",
+    "sillytavern/extension/*.js",
+    "nomi/chrome_extension/*.js",
+    "types/**/*.d.ts"
+  ],
+
+  // 🔴 `src/webui/bundle/` IS GENERATED AND IS THE SAME CODE A SECOND TIME. Checking it doubles
+  // every error and attributes each one to a file nobody edits ("editing app.js by hand does
+  // nothing" - tools/build_webui.mjs). `temp/` is the ignored scratch tree.
+  "exclude": ["venv", "temp", "node_modules", "src/webui/bundle", "tests"]
+}

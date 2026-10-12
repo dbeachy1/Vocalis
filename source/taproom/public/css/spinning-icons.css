@@ -1,0 +1,46 @@
+/* TAPROOM: spin the glyph, not the button */
+
+/*
+ * `fa-spin` puts its rotation on the ELEMENT. On a bare icon that is the same thing as rotating the
+ * glyph, which is why upstream never noticed. On a message-action button it is not: the element is the
+ * button, so the animation turns the button's whole box -- padding, border, background, focus ring --
+ * and the glyph just comes along for the ride.
+ *
+ * Rotating a styled action button also rotates its box, which can make the row appear to jitter or clip.
+ * Keep the button stationary and apply the animation to the glyph's pseudo-element instead.
+ *
+ * So: cancel the animation on the button and put it on the glyph's own pseudo-element. The box holds
+ * still, the icon turns, and no theme's button styling gets spun.
+ *
+ * ⚠️ `display: inline-block` on the ::before is required -- `transform` does not apply to an inline box,
+ * so without it the animation is declared, accepted, and silently does nothing.
+ *
+ * Scoped to the message action rows on purpose. Spinners elsewhere (the extension installer, the
+ * connect button) are bare `<i>` elements where rotating the element IS rotating the glyph, and they
+ * are not worth the specificity fight.
+ */
+
+.mes_buttons .fa-spin,
+.extraMesButtons .fa-spin {
+    animation: none;
+}
+
+.mes_buttons .fa-spin::before,
+.extraMesButtons .fa-spin::before {
+    display: inline-block;
+    animation: fa-spin 2s infinite linear;
+}
+
+/*
+ * `prefers-reduced-motion` is honoured by FontAwesome for `.fa-spin` itself; re-state it here, because
+ * moving the animation onto the pseudo-element moves it out from under upstream's rule.
+ */
+@media (prefers-reduced-motion: reduce) {
+
+    .mes_buttons .fa-spin::before,
+    .extraMesButtons .fa-spin::before {
+        animation-delay: -1ms;
+        animation-duration: 1ms;
+        animation-iteration-count: 1;
+    }
+}

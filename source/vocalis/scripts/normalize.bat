@@ -1,0 +1,1 @@
+ffmpeg -i %1 -af loudnorm=TP=-1 -ar 44100 -c:a pcm_s16le normalized.wav

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "model": "DeepFilterNet3",
+  "revision": "d375b2d8309e0935d165700c91da9de862a99c31",
+  "archive": {
+    "url": "https://raw.githubusercontent.com/Rikorose/DeepFilterNet/d375b2d8309e0935d165700c91da9de862a99c31/models/DeepFilterNet3.zip",
+    "bytes": 7986207,
+    "sha256": "49c52edc8947ae1f9bf50d81530beaf3a2c3245aeaf34b6f31ff535cd22284d2"
+  },
+  "members": [
+    {
+      "member": "DeepFilterNet3/config.ini",
+      "path": "config.ini",
+      "bytes": 2067,
+      "sha256": "415eb925d44990d938fb739f514aa3662c1ec0ea836cff044fa1291b82cb4290",
+      "crc32": "9e09dd6d"
+    },
+    {
+      "member": "DeepFilterNet3/checkpoints/model_120.ckpt.best",
+      "path": "checkpoints/model_120.ckpt.best",
+      "bytes": 8714073,
+      "sha256": "23b92884f63ccf54bb026014604625ab231657b6480df65db4095c4c171e6003",
+      "crc32": "179916aa"
+    }
+  ],
+  "provenance": {
+    "sourceRepository": "https://github.com/Rikorose/DeepFilterNet",
+    "disposition": "The authors' combined weight-publication statement, the official DFN3 linkage and the root license texts support downloading the weights from the publisher; the exact weight redistribution scope is not settled. The paper license is not assigned to the weights.",
+    "redistributionResolved": false,
+    "memberHashesComputedFrom": "the archive above after its size and SHA-256 were verified; crc32 is informational (zipfile checks it on read)"
+  }
+}

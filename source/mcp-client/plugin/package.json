@@ -1,0 +1,8 @@
+{
+  "name": "sillytavern-mcp-client-plugin",
+  "version": "0.1.0",
+  "description": "SillyTavern server plugin for MCP Client (downstream build: ESM entry shim, HTTP transports only). Licensed under the GNU AGPL version 3, see LICENSE.",
+  "type": "module",
+  "main": "index.js",
+  "private": true
+}

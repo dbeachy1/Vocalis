@@ -1,0 +1,311 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Where to get the source of the GCC runtime libraries (libgfortran, libquadmath, libgomp) that the NumPy, SciPy, scikit-learn and PyTorch wheels in the images carry, and of the NumPy, SciPy and scikit-learn releases themselves. Each library is identified by its GNU build ID and the SHA-256 of the file as it sits in the NVIDIA main image.",
+  "scope": {
+    "wheels": [
+      {
+        "name": "numpy-1.26.4-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+        "sha256": "675d61ffbfa78604709862923189bad94014bef562cc35cf61d3a07bba02a7ed",
+        "publisher": "https://pypi.org/project/numpy/1.26.4/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/65/6e/09db70a523a96d25e115e71cc56a6f9031e7b8cd166c1ac8438307c14058/numpy-1.26.4.tar.gz",
+          "bytes": 15786129,
+          "sha256": "2a02aba9ed12e4ac4eb3ea9421c420301a0c6460d9830d74a9df87efa4912010"
+        },
+        "usedIn": "NVIDIA main image: base, Enhance, Trim, VoxCPM2 and DeepFilterNet environments"
+      },
+      {
+        "name": "scipy-1.17.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "02ae3b274fde71c5e92ac4d54bc06c42d80e399fec704383dcd99b301df37458",
+        "publisher": "https://pypi.org/project/scipy/1.17.1/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/7a/97/5a3609c4f8d58b039179648e62dd220f89864f56f7357f5d4f45c29eb2cc/scipy-1.17.1.tar.gz",
+          "bytes": 30573822,
+          "sha256": "95d8e012d8cb8816c226aef832200b1d45109ed4464303e997c5b13122b297c0"
+        },
+        "usedIn": "NVIDIA main image: base, Enhance, Trim and VoxCPM2 environments"
+      },
+      {
+        "name": "numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "0d8163f43acde9a73c2a33605353a4f1bc4798745a8b1d73183b28e5b435ae28",
+        "publisher": "https://pypi.org/project/numpy/2.3.5/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/76/65/21b3bc86aac7b8f2862db1e808f1ea22b028e30a225a34a5ede9bf8678f2/numpy-2.3.5.tar.gz",
+          "bytes": 20584950,
+          "sha256": "784db1dcdab56bf0517743e746dfb0f885fc68d948aba86eeec2cba234bdf1c0"
+        },
+        "usedIn": "NVIDIA main image: ACE-Step environment"
+      },
+      {
+        "name": "scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "9eeb9b5f5997f75507814ed9d298ab23f62cf79f5a3ef90031b1ee2506abdb5b",
+        "publisher": "https://pypi.org/project/scipy/1.17.0/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/56/3e/9cca699f3486ce6bc12ff46dc2031f1ec8eb9ccc9a320fdaf925f1417426/scipy-1.17.0.tar.gz",
+          "bytes": 30396830,
+          "sha256": "2591060c8e648d8b96439e111ac41fd8342fdeff1876be2e19dea3fe8930454e"
+        },
+        "usedIn": "NVIDIA main image: ACE-Step environment"
+      },
+      {
+        "name": "numpy-2.5.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "b7e18c623bb5c95acb3b3328861272816ba199fb531921c5d6d0b675f1fde9e3",
+        "publisher": "https://pypi.org/project/numpy/2.5.3/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/13/01/11703282db468b85f6f7b8c7f22d058de5970d5c7e60a3a8aaa313c3de36/numpy-2.5.3.tar.gz",
+          "bytes": 20791231,
+          "sha256": "df2d5874ff183595a4ba404edd04f6bd9b5505c1d7708573f6a6c17489a67563"
+        },
+        "usedIn": "NVIDIA main image: Stems and Lead Vocal environments"
+      },
+      {
+        "name": "scipy-1.18.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "f55fa87b6c612ecd6b058f167c53231b1d14e412efe361d3d6e38b3631c73218",
+        "publisher": "https://pypi.org/project/scipy/1.18.1/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/7e/74/66de6258867beb2ef08f35f9f2ac017a52cacd5081714d239ff1a442d458/scipy-1.18.1.tar.gz",
+          "bytes": 30781235,
+          "sha256": "52c4b7422442aba924d03ad4019852b08a92e64ea187b933135687bfe2747307"
+        },
+        "usedIn": "NVIDIA main image: Lead Vocal environment"
+      },
+      {
+        "name": "scikit_learn-1.9.1-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+        "sha256": "e5d7b18a5b9dca241a74695f3275fa4c895a9dadc72b3d8df5fa9d1083c9b83e",
+        "publisher": "https://pypi.org/project/scikit-learn/1.9.1/#files",
+        "sourceRelease": {
+          "url": "https://files.pythonhosted.org/packages/d2/eb/eaf5e07fcc0da7149b0e084f24e54edd7441b9a89ce7e034032ae97fe3a0/scikit_learn-1.9.1.tar.gz",
+          "bytes": 7786908,
+          "sha256": "629cada3e33e2b9bf376cdc7614a47a4140b8aedc1d836579e359736fbd82977"
+        },
+        "usedIn": "NVIDIA main image: base, Enhance, Trim, VoxCPM2 and Lead Vocal environments (carries libgomp)"
+      }
+    ],
+    "runtimeObjects": [
+      {
+        "library": "libgfortran",
+        "buildId": "5bbe74eb6855e0a2c043c0bec2f484bf3e9f14c0",
+        "wheelFiles": [
+          "NumPy: libgfortran-040039e1.so.5.0.0",
+          "SciPy: libgfortran-040039e1-0352e75f.so.5.0.0",
+          "NumPy 2.3.5 (ACE-Step): libgfortran-040039e1-0352e75f.so.5.0.0 (the file the SciPy entry names)"
+        ],
+        "mappedCandidate": "libgfortran5-8.3.1-2.1.1.el7.x86_64.rpm",
+        "sourceFamilyStatus": "Mapped by matching GNU Build ID and exact ELF executable/read-only code and data sections; wheel hash-renaming, SONAME/DT_NEEDED rewrite and RPATH metadata differ. This maps the observed copies to the candidate binary/source family, not byte-identical full files.",
+        "observedSha256": {
+          "NumPy 1.26.4 libgfortran-040039e1.so.5.0.0": "14afb3129b1a8b50bc40a3b0820c7f1152ea9bc10121aab152943f7057472886",
+          "SciPy 1.17.1 / NumPy 2.3.5 libgfortran-040039e1-0352e75f.so.5.0.0": "c6090048eccc763522c12ef016f81da6b627cb3a044f55cf0479a839c41c0980"
+        }
+      },
+      {
+        "library": "libquadmath",
+        "buildId": "549b4c82347785459571c79239872ad31509dcf4",
+        "wheelFiles": [
+          "NumPy: libquadmath-96973f99.so.0.0.0",
+          "SciPy: libquadmath-96973f99-934c22de.so.0.0.0",
+          "NumPy 2.3.5 (ACE-Step): libquadmath-96973f99-934c22de.so.0.0.0 (the file the SciPy entry names)"
+        ],
+        "mappedCandidate": "libquadmath-4.8.5-44.el7.x86_64.rpm",
+        "sourceFamilyStatus": "Mapped by matching GNU Build ID and exact ELF executable/read-only code and data sections; wheel hash-renaming and SONAME/dependency metadata differ. This maps the observed copies to the candidate binary/source family, not byte-identical full files.",
+        "observedSha256": {
+          "NumPy 1.26.4 libquadmath-96973f99.so.0.0.0": "934c22ded0e7d169c4d4678876c96051adf3d94545da962f60b41659b075da3b",
+          "SciPy 1.17.1 / NumPy 2.3.5 libquadmath-96973f99-934c22de.so.0.0.0": "6ed5137f412781ad7863439fb543613f620b43c32b63292a0029246162f5bbc6"
+        }
+      },
+      {
+        "library": "libgfortran",
+        "buildId": "7a1cb85776f57993d3677ea0c447549a8cfec097",
+        "wheelFiles": [
+          "SciPy 1.17.0 and 1.17.1: libgfortran-8f1e9814.so.5.0.0"
+        ],
+        "observedSha256": {
+          "libgfortran-8f1e9814.so.5.0.0": "a95cc4ac4afad889f2d83088f46b5e6fa6cd5efd729db887e1e639147ec55b73"
+        },
+        "mappedCandidate": "libgfortran 8.5.0-26.el8_10.alma.1 (AlmaLinux 8.10)",
+        "debugLink": "libgfortran.so.5.0.0-8.5.0-26.el8_10.alma.1.x86_64.debug",
+        "sourceFamilyStatus": "Named by the debug-link string recorded inside the library file; the build ID was not compared with the AlmaLinux binary package.",
+        "sourceArtifact": "gcc-8.5.0-26.el8_10.alma.1.src.rpm"
+      },
+      {
+        "library": "libquadmath",
+        "buildId": "84f2ad8237013ef80f316c581f675e4dc1b483bd",
+        "wheelFiles": [
+          "SciPy 1.17.0 and 1.17.1: libquadmath-828275a7.so.0.0.0"
+        ],
+        "observedSha256": {
+          "libquadmath-828275a7.so.0.0.0": "71bdc2ec57ab2fc939360597968f73230426b1c6764048e62a2cb6c8d8c3a1fd"
+        },
+        "mappedCandidate": "libquadmath 8.5.0-26.el8_10.alma.1 (AlmaLinux 8.10)",
+        "debugLink": "libquadmath.so.0.0.0-8.5.0-26.el8_10.alma.1.x86_64.debug",
+        "sourceFamilyStatus": "Named by the debug-link string recorded inside the library file; the build ID was not compared with the AlmaLinux binary package.",
+        "sourceArtifact": "gcc-8.5.0-26.el8_10.alma.1.src.rpm"
+      },
+      {
+        "library": "libgfortran",
+        "buildId": "04dbe32dceb80654422140fb7641f732065999c8",
+        "wheelFiles": [
+          "NumPy 2.5.3: libgfortran-83c28eba-468e71e5.so.5.0.0",
+          "SciPy 1.18.1: libgfortran-83c28eba.so.5.0.0"
+        ],
+        "observedSha256": {
+          "NumPy 2.5.3 libgfortran-83c28eba-468e71e5.so.5.0.0": "a6a368328d02a5d8a149746f13f6268f8cc9192df5c18777b25c3c9b5ef52160",
+          "SciPy 1.18.1 libgfortran-83c28eba.so.5.0.0": "468e71e59e1d784821a76702e5ecd1e0dbcfc024499f74a552d1bea4b26f27ad"
+        },
+        "mappedCandidate": "libgfortran 8.5.0-28.el8_10.alma.1 (AlmaLinux 8.10)",
+        "debugLink": "libgfortran.so.5.0.0-8.5.0-28.el8_10.alma.1.x86_64.debug",
+        "sourceFamilyStatus": "Named by the debug-link string recorded inside the library file; the build ID was not compared with the AlmaLinux binary package.",
+        "sourceArtifact": "gcc-8.5.0-28.el8_10.alma.1.src.rpm"
+      },
+      {
+        "library": "libquadmath",
+        "buildId": "c1c5f8d61f17e5579c4e85718845b74e4b94116c",
+        "wheelFiles": [
+          "NumPy 2.5.3: libquadmath-2284e583-a9307bba.so.0.0.0",
+          "SciPy 1.18.1: libquadmath-2284e583.so.0.0.0"
+        ],
+        "observedSha256": {
+          "NumPy 2.5.3 libquadmath-2284e583-a9307bba.so.0.0.0": "6bc3069003caec1f075be3c51ae8355332f081fa9465910c4b5724e7fe7d8ad4",
+          "SciPy 1.18.1 libquadmath-2284e583.so.0.0.0": "a9307bbaa353623fa014e8b682d50c4629f5e5c7d61daa9a8652f7d165cd421a"
+        },
+        "mappedCandidate": "libquadmath 8.5.0-28.el8_10.alma.1 (AlmaLinux 8.10)",
+        "debugLink": "libquadmath.so.0.0.0-8.5.0-28.el8_10.alma.1.x86_64.debug",
+        "sourceFamilyStatus": "Named by the debug-link string recorded inside the library file; the build ID was not compared with the AlmaLinux binary package.",
+        "sourceArtifact": "gcc-8.5.0-28.el8_10.alma.1.src.rpm"
+      },
+      {
+        "library": "libgomp",
+        "buildId": "2244452c1de4759ccb52adc5352b501d4c2ee9ce",
+        "wheelFiles": [
+          "scikit-learn 1.9.1: scikit_learn.libs/libgomp-e985bcbb.so.1.0.0",
+          "PyTorch 2.10.0+cu128: torch/lib/libgomp.so.1"
+        ],
+        "observedSha256": {
+          "scikit_learn.libs/libgomp-e985bcbb.so.1.0.0": "a43904e4fa297301d4640dc1bb3c8a3480b406f99e498eba9b1914b68aab604a",
+          "torch/lib/libgomp.so.1 (PyTorch 2.10.0+cu128)": "59badd7c550c340a23d217c37232a4bac6e66a99f47aa273a0a0393bc7c68ddb"
+        },
+        "mappedCandidate": "libgomp 8.5.0-28.el8_10.alma.1 (AlmaLinux 8.10)",
+        "debugLink": "libgomp.so.1.0.0-8.5.0-28.el8_10.alma.1.x86_64.debug (scikit-learn copy; the PyTorch copy has the same build ID)",
+        "sourceFamilyStatus": "Named by the debug-link string recorded inside the library file; the build ID was not compared with the AlmaLinux binary package.",
+        "sourceArtifact": "gcc-8.5.0-28.el8_10.alma.1.src.rpm"
+      },
+      {
+        "library": "libgomp",
+        "buildId": "5f4fb88af97be3ecacc71363136bb015b2a07119",
+        "wheelFiles": [
+          "PyTorch 2.6.0+cu124 and 2.6.0+cpu: torch/lib/libgomp-a34b3233.so.1"
+        ],
+        "observedSha256": {
+          "PyTorch 2.6.0+cu124 torch/lib/libgomp-a34b3233.so.1": "aa9c09dd9d3b8f42b355048284f2894f1b4023f676843a69084276e754914206",
+          "PyTorch 2.6.0+cpu torch/lib/libgomp-a34b3233.so.1": "570455c2902d6cc2a7f367703c06dac07495dd7f8a1ed2c8fc4cea628c881b13"
+        },
+        "sourceFamilyStatus": "The library records no package version, so no exact GCC release is named here. GCC's libgomp source is published in the GCC project's public source tree (https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libgomp) and in its release archives at https://ftp.gnu.org/gnu/gcc/.",
+        "publicSourceLocation": "https://gcc.gnu.org/git/?p=gcc.git;a=tree;f=libgomp"
+      }
+    ],
+    "mappedBinaryPackages": [
+      {
+        "name": "libgfortran5",
+        "version": "8.3.1-2.1.1.el7",
+        "architecture": "x86_64",
+        "url": "https://buildlogs.cdn.centos.org/c7.1908.00.x86_64/gcc-libraries/20190808232852/8.3.1-2.1.1.el7.x86_64/libgfortran5-8.3.1-2.1.1.el7.x86_64.rpm",
+        "bytes": 814292,
+        "sha256": "a2f9c2575dd997467e7f4b28de9894d689e494e05ba8cdfbe676a7c7d5d16602",
+        "sourceRpmField": "gcc-libraries-8.3.1-2.1.1.el7.src.rpm",
+        "officialChecksum": "No repodata/checksum was available at the exact buildlogs package directory; SHA256 is locally observed over the official HTTPS download.",
+        "signature": "RPM RSA signature tag absent; no cryptographic package signature is claimed.",
+        "license": "The NumPy and SciPy wheel notices declare libgfortran GPL-3.0 with GCC Runtime Library Exception 3.1. The matching source tree carries COPYING.RUNTIME; the exception is limited to covered runtime code and does not remove the source-delivery obligation.",
+        "usedIn": "NumPy and SciPy wheels (see runtimeObjects)"
+      },
+      {
+        "name": "libquadmath",
+        "version": "4.8.5-44.el7",
+        "architecture": "x86_64",
+        "url": "https://vault.centos.org/7.9.2009/os/x86_64/Packages/libquadmath-4.8.5-44.el7.x86_64.rpm",
+        "bytes": 194944,
+        "sha256": "72c210666a44092430a965f8319492faf4950959d56650067d0629ee71caa2ab",
+        "sourceRpmField": "gcc-4.8.5-44.el7.src.rpm",
+        "officialChecksum": "RPM SHA256 matches the checksum in CentOS 7.9.2009 primary metadata; primary metadata digest is anchored by the official repomd.xml checksum.",
+        "signature": "RPM RSA signature tag present; cryptographic signature verification was not performed.",
+        "license": "The NumPy and SciPy wheel notices declare libquadmath LGPL-2.1-or-later. The matching GCC source tree carries libquadmath/COPYING.LIB (LGPL-2.1).",
+        "usedIn": "NumPy and SciPy wheels (see runtimeObjects)"
+      }
+    ],
+    "sourceArtifacts": [
+      {
+        "name": "gcc-libraries-8.3.1-2.1.1.el7.src.rpm",
+        "url": "https://buildlogs.cdn.centos.org/c7.1908.00.x86_64/gcc-libraries/20190808232852/8.3.1-2.1.1.el7.x86_64/gcc-libraries-8.3.1-2.1.1.el7.src.rpm",
+        "bytes": 137335596,
+        "sha256": "4d3e523f8b8588ee4432b796b6e12f62b022e2c1cdda92668bb6965f397f27cb",
+        "supports": "libgfortran5-8.3.1-2.1.1.el7.x86_64.rpm",
+        "buildMaterials": [
+          {
+            "path": "gcc-8.3.1-20190223.tar.xz",
+            "bytes": 58574316,
+            "sha256": "a0b84168660ec8384c55b354d8c0bef04498fa0a6d2f0aadd2562b77b7c506a4"
+          },
+          {
+            "path": "gcc-libraries.spec",
+            "bytes": 29223,
+            "sha256": "23b1cff7a5330897664c4e38502c971af9c76315044af1dec99d455591c90fa5"
+          },
+          {
+            "path": "complete patches and package inputs",
+            "evidence": "The complete source RPM contains the patches and package inputs."
+          }
+        ],
+        "licenseEvidence": "Inside the source RPM, the GCC source tar includes COPYING.RUNTIME (GCC Runtime Library Exception 3.1; SHA256 9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74) and libquadmath/COPYING.LIB (LGPL-2.1; SHA256 32434afcc8666ba060e111d715bfdb6c2d5dd8a35fa4d3ab8ad67d8f850d2f2b)."
+      },
+      {
+        "name": "gcc-4.8.5-44.el7.src.rpm",
+        "url": "https://vault.centos.org/7.9.2009/os/Source/SPackages/gcc-4.8.5-44.el7.src.rpm",
+        "bytes": 79314655,
+        "sha256": "642c4085f6af9565e39583e54a9d7a5d9e6b93dd8c8e9474aec8a892d6c7aa36",
+        "supports": "libquadmath-4.8.5-44.el7.x86_64.rpm",
+        "buildMaterials": [
+          {
+            "path": "gcc-4.8.5-20150702.tar.bz2",
+            "bytes": 73251246,
+            "sha256": "0ae59dc99f382e2d60736359f89eabf7616fe5a4410bbbda065c233e059d5f32"
+          },
+          {
+            "path": "gcc.spec",
+            "bytes": 171137,
+            "sha256": "3a0798485f50a6911ed954193b8e9596903976060e287b90b0bc3828d3eb9a30"
+          },
+          {
+            "path": "complete patches and package inputs",
+            "evidence": "The complete source RPM contains the patches and package inputs."
+          }
+        ],
+        "licenseEvidence": "Inside the source RPM, the GCC source tar includes COPYING.RUNTIME (GCC Runtime Library Exception 3.1; SHA256 9d6b43ce4d8de0c878bf16b54d8e7a10d9bd42b75178153e3af6a815bdc90f74) and libquadmath/COPYING.LIB (LGPL-2.1; SHA256 32434afcc8666ba060e111d715bfdb6c2d5dd8a35fa4d3ab8ad67d8f850d2f2b)."
+      },
+      {
+        "name": "gcc-8.5.0-28.el8_10.alma.1.src.rpm",
+        "url": "https://vault.almalinux.org/8.10/BaseOS/Source/Packages/gcc-8.5.0-28.el8_10.alma.1.src.rpm",
+        "bytes": 65715094,
+        "sha256": "c94dbbd2cd6d5d01a5a6822ea18f8ce34942c25a80e17b4682d547d5e652dbd0",
+        "officialChecksum": "The SHA-256 and size are the ones in the AlmaLinux 8.10 BaseOS Source repository metadata (repodata primary.xml; its own checksum matches repomd.xml, SHA-256 151fb66d214df34b1ec10fd25bc18064b83fd3795d8996d43a60a3b703d09a22). The metadata signature was not verified. The file itself was not downloaded; its length was read from the server.",
+        "supports": "libgfortran, libquadmath and libgomp 8.5.0-28.el8_10.alma.1 (NumPy 2.5.3, SciPy 1.18.1, scikit-learn 1.9.1 and PyTorch 2.10.0 wheels)",
+        "license": "libgfortran and libgomp: GPL-3.0-or-later with the GCC Runtime Library Exception 3.1; libquadmath: LGPL-2.1-or-later"
+      },
+      {
+        "name": "gcc-8.5.0-26.el8_10.alma.1.src.rpm",
+        "url": "https://vault.almalinux.org/8.10/BaseOS/Source/Packages/gcc-8.5.0-26.el8_10.alma.1.src.rpm",
+        "bytes": 65714006,
+        "sha256": "0911864c260a75ae030f3144616e7e5e1359e04ce1c9730ab83906486e3bc79f",
+        "officialChecksum": "Same repository metadata as above. The file itself was not downloaded; its length was read from the server.",
+        "supports": "libgfortran and libquadmath 8.5.0-26.el8_10.alma.1 (SciPy 1.17.0 and 1.17.1 wheels, second pair)",
+        "license": "libgfortran: GPL-3.0-or-later with the GCC Runtime Library Exception 3.1; libquadmath: LGPL-2.1-or-later"
+      }
+    ],
+    "publicGccSource": {
+      "gitTree": "https://gcc.gnu.org/git/?p=gcc.git;a=tree",
+      "releaseArchives": "https://ftp.gnu.org/gnu/gcc/",
+      "note": "The wheels' own license files give the same tree as the availability of these libraries."
+    },
+    "limits": [
+      "The PyTorch 2.6.0 libgomp copy (build ID 5f4fb88a...) records no package version; only the public GCC source tree is named for it.",
+      "The AMD satellite image's Python environment was read: it carries the same NumPy 1.26.4, SciPy 1.17.1 and scikit-learn 1.9.1 library copies as the NVIDIA main image (same build IDs and SHA-256 values) and no libgomp in PyTorch's ROCm wheel. The other Python environments of the AMD main image were not read for this record."
+    ]
+  }
+}

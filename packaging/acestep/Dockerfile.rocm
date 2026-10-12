@@ -1,0 +1,155 @@
+# syntax=docker/dockerfile:1.7
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+USER root
+ARG ACE_SOURCE_REVISION=6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0
+ARG ACE_SOURCE_ARCHIVE_SHA256=fc563d1e5c2f17733668692d2ff1a4507e44c903857b11e22108233fb3636b12
+ARG ACE_REQUIREMENTS_SHA256=c6ac7bb82d6f9e1511facd0d8f81bd8204cccbf0777cd1d303b7f3096c40b510
+ARG ACE_ENV_MANIFEST_SHA256=b0a2e54c987c7ac4b3a14b07df9d4bd13bfe7ae3c49338edf1da20db4088910b
+ARG ACE_SOURCE_TREE_SHA256=71e2fbd4c6e121999f33305fe7acfd7a34684277796c5bd50be4ba8b86b00e9b
+ENV ACESTEP_HOME=/opt/acestep \
+    ACESTEP_VENV=/opt/venvs/acestep \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_INPUT=1
+LABEL org.opencontainers.image.source="https://github.com/ACE-Step/ACE-Step" \
+      org.opencontainers.image.revision="${ACE_SOURCE_REVISION}" \
+      org.vocalis.acestep.source-archive-sha256="${ACE_SOURCE_ARCHIVE_SHA256}" \
+      org.vocalis.acestep.source-tree-sha256="${ACE_SOURCE_TREE_SHA256}" \
+      org.vocalis.acestep.environment-manifest-sha256="${ACE_ENV_MANIFEST_SHA256}" \
+      org.vocalis.acestep.requirements-sha256="${ACE_REQUIREMENTS_SHA256}" \
+      org.vocalis.acestep.model-lock-sha256="3d5ac8ceed782a5dd3d1de9c0f04cd0c81a4727ecff433a56350a85d3021ac0b"
+COPY source/ACE-Step-1.5-6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0/ /opt/acestep/
+COPY input/ACE-Step-1.5-6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0.tar.gz /usr/share/licenses/vocalis/acestep/ACE-Step-source.tar.gz
+COPY input/ACE-Step-upstream-license.txt /usr/share/licenses/vocalis/acestep/LICENSE
+COPY input/patches/ /usr/share/licenses/vocalis/acestep/patches/
+COPY input/rocm-ace-environment-requirements.lock.txt input/environment-manifest.json input/common-wheelhouse-manifest.json input/model-file-lock.json input/model-acquisition-verification.json input/dwt1d-distribution.lock.json input/source-tree-manifest.json /usr/share/vocalis/sbom/acestep/
+COPY input/verify-overlay.py /usr/local/libexec/verify-acestep-overlay.py
+COPY input/verify-source-tree.py /usr/local/libexec/verify-acestep-source-tree.py
+RUN --network=none --mount=type=bind,from=ace-wheelhouse,target=/mnt/ace-wheelhouse,ro \
+    set -eu; \
+    test "$(/opt/venv/chatterbox/bin/python -c 'import sys; print(sys.version_info[:2])')" = '(3, 12)'; \
+    test "$(/opt/venv/chatterbox/bin/python -c 'import hashlib,pathlib; print(hashlib.sha256(pathlib.Path("/usr/share/vocalis/sbom/acestep/rocm-ace-environment-requirements.lock.txt").read_bytes()).hexdigest())')" = "$ACE_REQUIREMENTS_SHA256"; \
+    test "$(/opt/venv/chatterbox/bin/python -c 'import hashlib,pathlib; print(hashlib.sha256(pathlib.Path("/usr/share/licenses/vocalis/acestep/ACE-Step-source.tar.gz").read_bytes()).hexdigest())')" = "$ACE_SOURCE_ARCHIVE_SHA256"; \
+    /opt/venv/chatterbox/bin/python /usr/local/libexec/verify-acestep-source-tree.py "$ACESTEP_HOME" /usr/share/vocalis/sbom/acestep/source-tree-manifest.json; \
+    /opt/venv/chatterbox/bin/python -m venv --symlinks "$ACESTEP_VENV"; \
+    "$ACESTEP_VENV/bin/python" -m pip install --no-index --no-deps --no-cache-dir --require-hashes --find-links=/mnt/ace-wheelhouse/files -r /usr/share/vocalis/sbom/acestep/rocm-ace-environment-requirements.lock.txt; \
+    "$ACESTEP_VENV/bin/python" -m pip check; \
+    ACESTEP_LM_BACKEND=pt PYTHONPATH="$ACESTEP_HOME" PYTHONDONTWRITEBYTECODE=1 "$ACESTEP_VENV/bin/python" /usr/local/libexec/verify-acestep-overlay.py "$ACESTEP_HOME"; \
+    ACESTEP_LM_BACKEND=pt PYTHONPATH="$ACESTEP_HOME" PYTHONDONTWRITEBYTECODE=1 "$ACESTEP_VENV/bin/python" -c 'import acestep.api.server_cli, acestep.api.startup_llm_init, acestep.api.startup_model_init, acestep.api.http.model_init_service, torch, torchaudio, pywt, pytorch_wavelets; from acestep.gpu_config import get_gpu_config, resolve_lm_backend; assert resolve_lm_backend("pt", get_gpu_config(24.0)) == "pt"; import importlib.metadata as m; assert m.version("pytorch-wavelets") == "1.3.0+vocalis.dwt1d.1";' ; \
+    test -d /opt/acestep/acestep; \
+    test -f /usr/share/vocalis/sbom/acestep/model-file-lock.json; \
+    test -f /usr/share/licenses/vocalis/acestep/patches/local-model-root.patch
+USER 1000:1000
+
+USER root
+COPY ffmpeg-native.lock /usr/share/vocalis-g1/ffmpeg-native.lock
+COPY input/ffmpeg-output-artifact-manifest.json /usr/share/vocalis-g1/ffmpeg-output-artifact-manifest.json
+COPY ffmpeg-artifacts/usr/local/bin/ffmpeg /usr/local/bin/ffmpeg
+COPY ffmpeg-artifacts/usr/local/bin/ffprobe /usr/local/bin/ffprobe
+RUN chmod 0755 /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
+COPY ffmpeg-artifacts/usr/local/lib/ /usr/local/lib/
+COPY ffmpeg-artifacts/usr/share/licenses/vocalis-g1/FFmpeg-LGPL-2.1.txt /usr/share/licenses/vocalis-g1/FFmpeg-LGPL-2.1.txt
+COPY ffmpeg-artifacts/usr/share/vocalis-g1/ffmpeg-build-packages.txt /usr/share/vocalis-g1/ffmpeg-build-packages.txt
+COPY ffmpeg-artifacts/usr/share/vocalis-g1/ffmpeg-configure-options.txt /usr/share/vocalis-g1/ffmpeg-configure-options.txt
+RUN if dpkg-query -W -f='${binary:Package}\n' 2>/dev/null \
+      | grep -E '^(ffmpeg|libav(codec|device|filter|format|util)([0-9]+t64|[0-9]+)?|libsw(resample|scale)([0-9]+t64|[0-9]+)?|libx264(-[0-9]+)?|libx265(-[0-9]+)?|libxvidcore[0-9]*|librubberband[0-9]*|libvidstab[0-9]*([.][0-9]+)?)(:[^[:space:]]+)?$'; then \
+      echo 'unexpected preinstalled FFmpeg/GPL codec package in ACE parent' >&2; exit 1; \
+    fi; \
+    if ldconfig -p | grep -E 'lib(av(codec|device|filter|format|util)|sw(resample|scale))\.so'; then \
+      echo 'unexpected preinstalled FFmpeg shared library in ACE parent' >&2; exit 1; \
+    fi
+RUN --mount=type=bind,from=ffmpeg-debs,target=/ffmpeg-debs,readonly \
+    python - <<'PY'
+import csv
+import glob
+import hashlib
+import json
+import os
+import re
+import subprocess
+
+
+def output(args):
+    return subprocess.check_output(args, text=True, encoding="utf-8", errors="replace")
+
+
+with open("/usr/share/vocalis-g1/ffmpeg-native.lock", encoding="utf-8", newline="") as stream:
+    rows = [row for row in csv.reader(stream, delimiter="\t") if row and not row[0].startswith("#")]
+expected = {row[3] for row in rows}
+artifacts = sorted(glob.glob("/ffmpeg-debs/*.deb"))
+actual = {os.path.basename(path) for path in artifacts}
+if actual != expected:
+    raise SystemExit(f"audio runtime deb set mismatch: missing={sorted(expected-actual)}, extra={sorted(actual-expected)}")
+for package, version, arch, filename, size, digest in rows:
+    path = "/ffmpeg-debs/" + filename
+    if os.path.getsize(path) != int(size):
+        raise SystemExit("audio runtime deb size mismatch: " + filename)
+    if hashlib.sha256(open(path, "rb").read()).hexdigest() != digest:
+        raise SystemExit("audio runtime deb SHA-256 mismatch: " + filename)
+    fields = output(["dpkg-deb", "-f", path, "Package", "Version", "Architecture"]).splitlines()
+    values = [field.split(": ", 1)[1] for field in fields]
+    if values != [package, version, arch]:
+        raise SystemExit("audio runtime deb identity mismatch: " + filename)
+subprocess.run(["dpkg", "-i", *artifacts], check=True)
+subprocess.run(["ldconfig"], check=True)
+
+with open("/usr/share/vocalis-g1/ffmpeg-output-artifact-manifest.json", encoding="utf-8") as stream:
+    manifest = json.load(stream)
+entries = {entry["path"]: entry for entry in manifest["entries"]}
+for entry in manifest["entries"]:
+    if entry["kind"] not in ("file", "hardlink", "symlink"):
+        continue
+    path = "/" + entry["path"]
+    target = entry.get("resolvedTarget") if entry["kind"] != "file" else entry["path"]
+    expected_entry = entries[target]
+    while expected_entry["kind"] in ("hardlink", "symlink"):
+        target = expected_entry["resolvedTarget"]
+        expected_entry = entries[target]
+    if not os.path.isfile(path) or os.path.getsize(path) != expected_entry["bytes"]:
+        raise SystemExit("copied FFmpeg artifact size/type mismatch: " + entry["path"])
+    digest = hashlib.sha256(open(path, "rb").read()).hexdigest()
+    if digest != expected_entry["sha256"]:
+        raise SystemExit("copied FFmpeg artifact SHA-256 mismatch: " + entry["path"])
+
+forbidden = re.compile(
+    r"^(?:ffmpeg|libav(?:codec|device|filter|format|util)(?:[0-9]+t64|[0-9]+)?|"
+    r"libsw(?:resample|scale)(?:[0-9]+t64|[0-9]+)?|libx264(?:-[0-9]+)?|libx265(?:-[0-9]+)?|"
+    r"libxvidcore[0-9]*|librubberband[0-9]*|libvidstab[0-9]*\.?(?:[0-9]+)?)$"
+)
+packages = output(["dpkg-query", "-W", r"-f=${binary:Package}\n"]).splitlines()
+forbidden_packages = [line for line in packages if forbidden.fullmatch(line.split(":", 1)[0])]
+if forbidden_packages:
+    raise SystemExit("excluded FFmpeg/GPL package present: " + ", ".join(forbidden_packages))
+maps = [line for line in output(["ldconfig", "-p"]).splitlines()
+        if re.search(r"lib(?:av(?:codec|device|filter|format|util)|swresample|swscale)\.so", line)]
+if not maps or any("/usr/local/lib/" not in line for line in maps):
+    raise SystemExit("FFmpeg shared-library map is missing or selects a noncandidate path: " + "; ".join(maps))
+
+license_output = output(["/usr/local/bin/ffmpeg", "-hide_banner", "-L"])
+if "version 2.1 of the License, or (at your option) any later version" not in license_output:
+    raise SystemExit("copied FFmpeg is not LGPL 2.1-or-later")
+config = output(["/usr/local/bin/ffmpeg", "-hide_banner", "-buildconf"])
+for flag in ("--disable-gpl", "--disable-nonfree", "--disable-autodetect", "--enable-libmp3lame", "--enable-libopus"):
+    if flag not in config:
+        raise SystemExit("copied FFmpeg configuration is missing " + flag)
+encoders = output(["/usr/local/bin/ffmpeg", "-hide_banner", "-encoders"])
+for encoder in ("libmp3lame", "libopus"):
+    if encoder not in encoders:
+        raise SystemExit("expected audio encoder is missing: " + encoder)
+if re.search(r"libx264|libx265|libxvid", encoders):
+    raise SystemExit("excluded GPL encoder is present")
+for binary in ("/usr/local/bin/ffmpeg", "/usr/local/bin/ffprobe"):
+    dependencies = output(["ldd", binary])
+    if "not found" in dependencies:
+        raise SystemExit("unresolved native dependency in " + binary)
+PY
+USER 1000:1000
+
+
+RUN ACESTEP_LM_BACKEND=pt PYTHONPATH="/opt/acestep" PYTHONDONTWRITEBYTECODE=1 /opt/venvs/acestep/bin/python - <<'PY'
+import torchcodec
+import soundfile
+import acestep.core.generation.handler.io_audio
+assert soundfile.__libsndfile_version__
+print("NATIVE_AUDIO_IMPORTS=PASS", soundfile.__libsndfile_version__)
+PY

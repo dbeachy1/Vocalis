@@ -1,0 +1,40 @@
+  /* Separate status/model controls from GPU readouts so the first row stays compact. */
+  header{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--panel);
+         border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5;}
+  /* 5.0: the brand is a two-column GRID, not a flex row, because it now has a SECOND LINE —
+     the green edition tag that appears under "Vocalis v… — Studio" on an encrypted install.
+     Placement is explicit for the same reason .hdr-stack's is (see below): the tag is hidden
+     on an unencrypted box, and nothing should be able to slide it up beside the version. */
+  /* Use grid spacers to place Log out at the lower left, level with the UPS row. */
+  /* Center the edition, brand, and logout controls as one group; this supersedes the old corner placement. */
+  .hdr-brand{display:grid;grid-template-columns:auto auto;grid-template-rows:auto auto auto 1fr;
+             align-self:stretch;align-items:center;
+             justify-items:center;column-gap:10px;row-gap:2px;}
+  .hdr-brand h1{grid-column:1;grid-row:1;} .hdr-brand .ver{grid-column:2;grid-row:1;}
+  /* Pin the edition tag to its intended grid row so freed cells do not change its placement. */
+  .hdr-brand .edition{grid-column:1/-1;grid-row:2;}
+  /* Shared grid columns align the controls across the two header rows. */
+  .hdr-stack{display:grid;grid-template-columns:auto auto auto;align-items:center;
+             justify-items:start;column-gap:14px;row-gap:6px;}
+  .hdr-row{display:contents;}
+  .hdr-row1>*{grid-row:1;} .hdr-row2>*{grid-row:2;}
+  #cbBtn,#freeBtn{grid-column:1;} #voxBtn,#comfyBtn{grid-column:2;} #ready,#aceBtn{grid-column:3;}
+  /* October 11, 2026 (Doug): with no ComfyUI button, which is always the case in the Docker edition, the
+     slot under Load VoxCPM2 was an empty hole with ACE-Step one column further right. ACE-Step takes that
+     slot whenever #comfyBtn is hidden. comfy.js hides it with an inline `display:none` (and index.html
+     starts it that way), which is what the attribute selector reads; the column is still explicit, so
+     hiding #voxBtn or #freeBtn cannot slide it anywhere else. */
+  #comfyBtn[style*="none"] ~ #aceBtn{grid-column:2;}
+  /* Log out belongs in the centered brand group; see the `.hdr-brand` rule above. */
+  .hdr-brand #logoutBtn{grid-column:1/-1;grid-row:3;justify-self:center;align-self:start;
+                        margin-top:4px;}
+  .ver{color:var(--mut);font-size:0.857143rem;} .ready{color:var(--warn);font-size:0.857143rem;} .ready.on{color:var(--ok);}
+  /* Describe the installed encryption edition, which is fixed at installation time. */
+  .edition{grid-column:1/-1;grid-row:2;color:var(--ok);font-size:0.857143rem;font-weight:600;
+           letter-spacing:.3px;}
+  .edition[hidden]{display:none;}
+  /* An engine running OUTSIDE Vocalis (4.8-m4h). Deliberately NOT --err: nothing is broken,
+     and a red dot here would cry wolf every time a shell render is running. It is the
+     "someone else has the card" color, dotted-underlined so it reads as hoverable — the
+     tooltip is where the count and the what-to-do live. */
+  .ready .ext{color:var(--vio);border-bottom:1px dotted var(--vio);cursor:help;}

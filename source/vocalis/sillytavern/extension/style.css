@@ -1,0 +1,362 @@
+/* Vocalis TTS (streaming) — SillyTavern extension styles. */
+
+/* narrate button: template gives it .mes_button sizing. Vocalis orange so it
+   stands out from ST's gray action icons; red stop state while it is AUDIBLE (9.1 §1 —
+   see `.vocalis_audible` at the foot of this file; paused keeps the render-state color). */
+.vocalis_narrate {
+    color: #ff9633 !important;
+    opacity: 0.85;
+
+/* Keep the slot at the widest glyph width so state changes do not shift the icon row.
+ * `content-box` leaves SillyTavern's 3px button padding outside the 1.25em glyph area;
+ * a 1.25em border box would clip the speaker icon. */
+    box-sizing: content-box;
+    width: 1.25em;
+    text-align: center;
+
+    /* Hold-to-re-render (index.js) is the same gesture a touchscreen uses to raise the
+     * text-selection callout and start a selection drag. Without these, holding ▶ on a
+     * phone pops the OS menu over the button and highlights the message instead of
+     * arming anything. `touch-action: manipulation` also drops the ~300 ms tap delay,
+     * so an ordinary tap still plays immediately. */
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.vocalis_narrate:hover {
+    color: #ffb366 !important;
+    opacity: 1;
+}
+
+/* Color reports render state; the glyph reports playback state. Keep these axes
+ * independent so playback does not hide cache/render status. These rules follow
+ * `.vocalis_narrate:hover` because both selectors have equal specificity. Orange is
+ * the unclassified default, preserving the existing appearance when narration is off. */
+.vocalis_narrate.vocalis_pending { color: #ffd23f !important; opacity: 1; }   /* yellow */
+.vocalis_narrate.vocalis_ready   { color: #4da3ff !important; opacity: 1; }   /* blue   */
+.vocalis_narrate.vocalis_cached  { color: #7cb342 !important; opacity: 1; }   /* green  */
+
+.vocalis_narrate.vocalis_pending:hover { color: #ffe27a !important; }
+.vocalis_narrate.vocalis_ready:hover   { color: #85c2ff !important; }
+.vocalis_narrate.vocalis_cached:hover  { color: #9ccc65 !important; }
+
+.vocalis_narrate.vocalis_playing {
+    opacity: 1;
+}
+
+/* `.vocalis_playing` tracks the stop glyph, including while paused. `.vocalis_audible`
+ * is narrower and tracks active sound, allowing the state color to return on pause.
+ * The header band identifies the loaded message independently of the button color. */
+
+/* extension disabled: hide the per-message buttons entirely */
+body.vocalis-disabled .vocalis_narrate {
+    display: none;
+}
+
+.vocalis-settings .vocalis-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.vocalis-settings .vocalis-row .text_pole {
+    flex: 1;
+    margin: 0;
+}
+
+.vocalis-status {
+    margin-top: 4px;
+    font-size: 0.85em;
+    opacity: 0.8;
+}
+
+.vocalis-status.ok {
+    color: #7cb342;
+}
+
+.vocalis-status.fail {
+    color: #e57373;
+}
+
+.vocalis-note {
+    margin-top: 8px;
+    font-size: 0.85em;
+    opacity: 0.7;
+}
+
+/* Polish text and send lives beside ST's own composer Send control. Keep its hit area at least
+   as large as the host action and use state text/animation in addition to green so availability
+   is understandable without color alone. */
+.vocalis_polish_send {
+    display: inline-flex;
+    /* Match Taproom's gray Send control (order 2). The runtime inserts this immediately
+       after Send, so the equal flex order keeps the green action directly to its right. */
+    order: 2;
+    /* The two quote marks need their own breathing room beyond Taproom's icon square. */
+    flex: 0 0 calc(var(--bottomFormBlockSize) + 0.35rem);
+    min-width: 0;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 0.12em;
+    color: #58c96b !important;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+.vocalis_polish_send[hidden] {
+    display: none !important;
+}
+
+/* Keep the default plane first and reserve one compact row for the paired actions. Taproom's
+   mobile rule otherwise narrows this rail to one icon, which makes the quote marks collide
+   with the default plane. */
+#rightSendForm.vocalis_polish_send_pair {
+    /* Includes the green action's extra 0.35rem, the 0.25rem gap, and Taproom's 2px
+       right padding. A non-shrinking basis prevents an idle-only wrap. */
+    flex: 0 0 calc(var(--bottomFormBlockSize) + var(--bottomFormBlockSize) + 0.725rem);
+    width: calc(var(--bottomFormBlockSize) + var(--bottomFormBlockSize) + 0.725rem);
+    flex-wrap: nowrap;
+    column-gap: 0.25rem;
+}
+
+/* A tall composer removes Taproom's `compact` class, but the right rail remains a row whose
+   default cross-axis alignment leaves both paper planes at the top. Center only the paired
+   send actions in that non-compact state; compact/mobile layout keeps the host's alignment. */
+#send_form:not(.compact) #rightSendForm.vocalis_polish_send_pair > #send_but,
+#send_form:not(.compact) #rightSendForm.vocalis_polish_send_pair > .vocalis_polish_send {
+    align-self: center;
+}
+
+/* When Polish Text and Send is disabled, collapse back to one control without surrendering
+   ownership of the rail: the host's default Send plane must remain visible. */
+#rightSendForm.vocalis_polish_send_rail:not(.vocalis_polish_send_pair) {
+    flex: 0 0 calc(var(--bottomFormBlockSize) + 0.125rem);
+    width: calc(var(--bottomFormBlockSize) + 0.125rem);
+    flex-wrap: nowrap;
+    column-gap: 0;
+}
+
+/* Vocalis deliberately presents both paper planes. The host may add displayNone while its
+   composer is unavailable, but it must not erase the default half of this paired control. */
+#rightSendForm.vocalis_polish_send_rail > #send_but.displayNone {
+    display: flex !important;
+}
+
+/* Taproom intentionally excludes its generation Stop control from the shared send-button
+   geometry. Once Stop replaces the gray plane, give it the same square flex item and centering
+   so the stop/green pair stays on the exact row occupied by the two idle planes. */
+#rightSendForm.vocalis_polish_send_rail > .mes_stop {
+    flex: 0 0 var(--bottomFormBlockSize);
+    width: var(--bottomFormBlockSize);
+    height: var(--bottomFormBlockSize);
+    margin: 0;
+    padding: 0;
+    align-self: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.vocalis_polish_send:hover,
+.vocalis_polish_send:focus-visible {
+    color: #9bea9e !important;
+    outline: 1px solid currentColor;
+    outline-offset: 2px;
+}
+
+.vocalis_polish_send.vocalis_polish_unavailable {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.vocalis_polish_send.vocalis_polish_busy {
+    cursor: wait;
+    opacity: 0.72;
+    animation: vocalis-polish-pulse 1.2s ease-in-out infinite;
+}
+
+#send_textarea.vocalis_polish_composer_busy {
+    cursor: wait;
+    opacity: 0.72;
+}
+
+.vocalis_polish_quote {
+    font-size: 0.8em;
+    line-height: 1;
+}
+
+@keyframes vocalis-polish-pulse {
+    50% { opacity: 0.45; }
+}
+
+/* Polish failures remain visible and selectable so users can read and copy the
+ * diagnostic. `toast-error` continues to provide the error color. */
+.vocalis_polish_error {
+    width: min(46em, 92vw) !important;
+    max-width: min(46em, 92vw) !important;
+    opacity: 1 !important;
+}
+
+.vocalis_polish_error .vocalis_polish_error_report {
+    /* The whole report is selectable: `tapToDismiss: false` means a drag over the
+       text no longer dismisses the toast, so copying it out actually works. */
+    user-select: text;
+    cursor: auto;
+    font-size: 0.92em;
+    line-height: 1.45;
+}
+
+.vocalis_polish_error_row {
+    margin-top: 0.35em;
+    /* Backend messages arrive as one long unbroken string often enough — a JSON
+       payload, a URL, a stack frame — that this is the difference between a
+       readable report and a box with a horizontal overflow. */
+    overflow-wrap: anywhere;
+}
+
+.vocalis_polish_error_row:first-child {
+    margin-top: 0;
+}
+
+.vocalis_polish_error_label {
+    font-weight: 700;
+    opacity: 0.92;
+}
+
+.vocalis_polish_error_value {
+    font-family: var(--monoFontFamily, ui-monospace, Consolas, monospace);
+    font-size: 0.94em;
+}
+
+.vocalis_polish_error_foot {
+    margin-top: 0.6em;
+    font-style: italic;
+    opacity: 0.85;
+}
+
+/* ── 6.0 §2: audio scenes ─────────────────────────────────────────────────────
+   The range bar and the shift-click menu both live on `body`, not inside ST's
+   message furniture — the `.mes_buttons` row CLIPS, so a menu built there is cut
+   off at the row's edge (§2.2). Which means both need their own stacking and
+   their own positioning here. */
+
+/* The selection rail needs `!important` to override SillyTavern's `.mes` shadow reset;
+ * this selector then wins by specificity. The browser spec replays that upstream rule. */
+#chat .mes.vocalis_in_scene {
+    box-shadow: inset 3px 0 0 0 var(--vocalis-scene, #7cb342) !important;
+}
+
+/* Mark messages still ahead of the autoplay cursor. This uses a separate edge from
+ * the scene-selection rail because a message can belong to both states. `!important`
+ * overrides SillyTavern's `.mes` shadow reset. */
+#chat .mes.vocalis_autoplay {
+    box-shadow: inset -3px 0 0 0 var(--vocalis-autoplay, #4ea1ff) !important;
+}
+#chat .mes.vocalis_in_scene.vocalis_autoplay {
+    box-shadow: inset 3px 0 0 0 var(--vocalis-scene, #7cb342),
+                inset -3px 0 0 0 var(--vocalis-autoplay, #4ea1ff) !important;
+}
+
+.vocalis_scene_bar {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 12px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    max-width: min(92vw, 900px);
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: var(--SmartThemeBlurTintColor, rgba(20, 20, 20, 0.92));
+    border: 1px solid var(--SmartThemeBorderColor, rgba(255, 255, 255, 0.15));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    font-size: 0.9em;
+}
+
+.vocalis_scene_bar .vocalis_scene_what {
+    flex: 1;
+    min-width: 0;
+    /* The cost is the part that changes as he moves an endpoint, and a bar that
+       reflowed the buttons on every estimate would be unusable. */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vocalis_scene_bar .vocalis_scene_cost {
+    opacity: 0.75;
+}
+
+.vocalis_scene_bar .menu_button {
+    margin: 0;
+    flex: 0 0 auto;
+}
+
+.vocalis_scene_menu {
+    position: fixed;
+    z-index: 10001;
+    min-width: 210px;
+    padding: 4px 0;
+    border-radius: 6px;
+    background: var(--SmartThemeBlurTintColor, rgba(20, 20, 20, 0.96));
+    border: 1px solid var(--SmartThemeBorderColor, rgba(255, 255, 255, 0.15));
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    font-size: 0.9em;
+}
+
+.vocalis_scene_menu_item {
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.vocalis_scene_menu_item:hover {
+    background: var(--white20a, rgba(255, 255, 255, 0.12));
+}
+
+/* Numbered for keyboard (§2.2) — the digit is a hint, not a control, so it is
+   dimmed and never the click target. */
+.vocalis_scene_menu_n {
+    display: inline-block;
+    width: 1.4em;
+    opacity: 0.5;
+}
+
+/* The header band marks the loaded message across the full-width `.ch_name` row,
+ * making it easier to find than a single icon. It follows `current` even while paused;
+ * `.vocalis_audible` separately indicates active playback. Keep the band within the
+ * existing row box: padding or shadow bleed shifts or clips adjacent content. */
+#chat .mes.vocalis_speaking .ch_name {
+    background: var(--vocalis-speaking, #ffd23f) !important;
+    border-radius: 3px;
+}
+
+/* Use a fixed dark foreground for the fixed yellow band so the header remains legible
+ * in both light and dark themes. Exclude `.vocalis_narrate` to preserve its state color. */
+#chat .mes.vocalis_speaking .ch_name,
+#chat .mes.vocalis_speaking .ch_name .name_text,
+#chat .mes.vocalis_speaking .ch_name .timestamp,
+#chat .mes.vocalis_speaking .ch_name .mes_ghost,
+#chat .mes.vocalis_speaking .ch_name .mes_button:not(.vocalis_narrate) {
+    color: #14171c !important;
+}
+
+/* These state colors retain at least 4.5:1 contrast against the yellow band.
+ * The selectors have equal specificity, so keep `.vocalis_audible` last to override
+ * the cached state while audio is active; the browser spec covers this order. */
+#chat .mes.vocalis_speaking .vocalis_narrate                 { color: #8a4b00 !important; }  /* none    */
+#chat .mes.vocalis_speaking .vocalis_narrate.vocalis_pending { color: #6b4e00 !important; }  /* yellow  */
+#chat .mes.vocalis_speaking .vocalis_narrate.vocalis_ready   { color: #10458c !important; }  /* blue    */
+#chat .mes.vocalis_speaking .vocalis_narrate.vocalis_cached  { color: #256010 !important; }  /* green   */
+#chat .mes.vocalis_speaking .vocalis_narrate.vocalis_audible { color: #b3170f !important; }  /* RED     */
+
+/* Hover feedback survives as opacity rather than as a color, because every rule above is
+ * (1,4,0) and a hover variant of each would be five more to keep in step for a control that
+ * is one click wide. */
+#chat .mes.vocalis_speaking .vocalis_narrate:hover { opacity: 0.7; }

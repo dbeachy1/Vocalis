@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "status": "frozen-for-private-evaluation-acquisition",
+  "model": {
+    "repository": "openbmb/VoxCPM2",
+    "revision": "32279effe8c19989596f05d353d1447f51d9e915",
+    "metadataEndpoint": "https://huggingface.co/api/models/openbmb/VoxCPM2/revision/32279effe8c19989596f05d353d1447f51d9e915?blobs=true",
+    "metadataEvidenceSha256": "5c4b712bc1019aa7d029960d7a611821abbb7030c8a11ec7179cec2a5c19c5ce",
+    "license": "Apache-2.0",
+    "licenseEvidence": {
+      "cardDataLicense": "apache-2.0",
+      "pinnedReadmeSha256": "c18d2ffbfb2f0aec770481c967842aee6c200cde65f6b033efd892a849986fda",
+      "standaloneModelRepoLicenseFile": false
+    }
+  },
+  "source": {
+    "repository": "OpenBMB/VoxCPM",
+    "release": "v2.0.0",
+    "commit": "a010d621ff9a1dce83ce9c934919b24f28073e90",
+    "commitUrl": "https://github.com/OpenBMB/VoxCPM/tree/a010d621ff9a1dce83ce9c934919b24f28073e90",
+    "license": "Apache-2.0",
+    "licenseEvidence": {
+      "sourceLicenseSha256": "4f10acc209addacfad28293315c74c4cd648f771ee1263a748f1781d1e0265e4",
+      "pyprojectSha256": "4ee48db6243be2a2eedff52843f5573c4d82179a7d47483d595889cdfc564b0d"
+    }
+  },
+  "workerPath": "source/vocalis/scripts/voxcpm/worker.py",
+  "loadContract": {
+    "call": "VoxCPM.from_pretrained(args.model, load_denoiser=False, optimize=args.optimize, device=args.device)",
+    "modelRepoDefault": "openbmb/VoxCPM2",
+    "sourceBehavior": "The library snapshot path is the selected model repository. load_denoiser=False disables optional input/reference-audio denoiser acquisition; the worker output path does not require it.",
+    "localFilesOnly": false,
+    "allowPatterns": null
+  },
+  "selection": {
+    "fileCount": 8,
+    "totalBytes": 4960730347,
+    "files": [
+      {
+        "path": "audiovae.pth",
+        "bytes": 376951122,
+        "expectedContentId": {
+          "algorithm": "sha256-lfs",
+          "value": "94b5d51e107e0507d4acc976cfdadb64edd6fd06d1f751dadbf2fd1594274bf1"
+        },
+        "gitBlobSha1": "036ef0b5ced85736b842e31d35bd39606845d830",
+        "lfsSha256": "94b5d51e107e0507d4acc976cfdadb64edd6fd06d1f751dadbf2fd1594274bf1",
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/audiovae.pth"
+      },
+      {
+        "path": "config.json",
+        "bytes": 4336,
+        "expectedContentId": {
+          "algorithm": "git-blob-sha1",
+          "value": "792f1c223ed607f9e508c0a0deb15dd9532483be"
+        },
+        "gitBlobSha1": "792f1c223ed607f9e508c0a0deb15dd9532483be",
+        "lfsSha256": null,
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/config.json"
+      },
+      {
+        "path": "model.safetensors",
+        "bytes": 4580080592,
+        "expectedContentId": {
+          "algorithm": "sha256-lfs",
+          "value": "f7f964cfa9da23653baec6e6f7750719977ad944ed9f95fe52fe3a620506891d"
+        },
+        "gitBlobSha1": "d53929032ba7405f13a6236df11cd12da17d995a",
+        "lfsSha256": "f7f964cfa9da23653baec6e6f7750719977ad944ed9f95fe52fe3a620506891d",
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/model.safetensors"
+      },
+      {
+        "path": "README.md",
+        "bytes": 7939,
+        "expectedContentId": {
+          "algorithm": "git-blob-sha1",
+          "value": "14573f986536306e3d9d65f988a3fc4b863b895c"
+        },
+        "gitBlobSha1": "14573f986536306e3d9d65f988a3fc4b863b895c",
+        "lfsSha256": null,
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/README.md"
+      },
+      {
+        "path": "special_tokens_map.json",
+        "bytes": 1632,
+        "expectedContentId": {
+          "algorithm": "git-blob-sha1",
+          "value": "8619dda6f3eb6d60d0a1bb274820054e46f41699"
+        },
+        "gitBlobSha1": "8619dda6f3eb6d60d0a1bb274820054e46f41699",
+        "lfsSha256": null,
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/special_tokens_map.json"
+      },
+      {
+        "path": "tokenization_voxcpm2.py",
+        "bytes": 2895,
+        "expectedContentId": {
+          "algorithm": "git-blob-sha1",
+          "value": "e7d768677298d058fa6ef8b160e3ca4430997fad"
+        },
+        "gitBlobSha1": "e7d768677298d058fa6ef8b160e3ca4430997fad",
+        "lfsSha256": null,
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/tokenization_voxcpm2.py"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 5059,
+        "expectedContentId": {
+          "algorithm": "git-blob-sha1",
+          "value": "fecf4cdae73b57053cac2ad34c67febbe4e4f08b"
+        },
+        "gitBlobSha1": "fecf4cdae73b57053cac2ad34c67febbe4e4f08b",
+        "lfsSha256": null,
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/tokenizer_config.json"
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 3676772,
+        "expectedContentId": {
+          "algorithm": "git-blob-sha1",
+          "value": "41a5c2a8dba4058dd1ad73fb898abf5e4f64f0f9"
+        },
+        "gitBlobSha1": "41a5c2a8dba4058dd1ad73fb898abf5e4f64f0f9",
+        "lfsSha256": null,
+        "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/tokenizer.json"
+      }
+    ]
+  },
+  "exclusions": [
+    {
+      "path": ".gitattributes",
+      "bytes": 1519,
+      "gitBlobSha1": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+      "reason": "Repository/LFS transport metadata, not model runtime content."
+    },
+    {
+      "path": "iic/speech_zipenhancer_ans_multiloss_16k_base",
+      "reason": "Optional input/reference-audio denoiser suppressed by the worker explicit load_denoiser=False path."
+    },
+    {
+      "path": "separate teacher or auxiliary model repositories",
+      "reason": "Not referenced by the retained worker call or the pinned model repository snapshot."
+    },
+    {
+      "path": "other VoxCPM/VoxCPM2 revisions",
+      "reason": "No floating branch, tag, or fallback is included in this frozen-revision proposal."
+    }
+  ],
+  "notes": [
+    "This is a boundary proposal only; no model files were acquired, loaded, or executed.",
+    "The README is included because it is the pinned model-card, usage, and license notice for the model repository.",
+    "The model audiovae.pth checkpoint remains included; disabling the separate denoiser does not remove the model own audio VAE.",
+    "The upstream snapshot loader has no allow-pattern restriction in the retained call; the proposal includes all eight non-transport entries exposed by the pinned model metadata."
+  ]
+}

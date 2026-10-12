@@ -1,0 +1,95 @@
+body.login #shadow_popup {
+    opacity: 1;
+    display: flex;
+}
+
+body.login .logo {
+    max-width: 30px;
+}
+
+body.login #logoBlock {
+    align-items: center;
+    margin: 0 auto;
+    gap: 10px;
+}
+
+body.login .userSelect {
+    display: flex;
+    flex-direction: column;
+    color: var(--SmartThemeBodyColor);
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 5px;
+    padding: 3px 5px;
+    width: 30%;
+    cursor: pointer;
+    margin: 5px 0;
+    transition: background-color var(--animation-duration) ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+}
+
+body.login .userSelect .userName,
+body.login .userSelect .userHandle {
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.login .userSelect:hover {
+    background-color: var(--black30a);
+}
+
+body.login #handleEntryBlock,
+body.login #passwordEntryBlock,
+body.login #passwordRecoveryBlock {
+    margin: 2px;
+}
+
+/*
+ * The Login button, green.
+ *
+ * A hardcoded button colour is safe HERE and nowhere else in the app: this page renders BEFORE anyone has
+ * authenticated, so no theme has been applied to it and `/css/user.css` is not served (it sits behind the
+ * auth boundary — see src/middleware/userCss.js). Every variable below resolves against style.css's :root
+ * defaults, and nothing a user does to their theme can reach this rule or be overridden by it.
+ *
+ * --okGreen70a is the codebase's existing confirm/commit green (it is what .mes_edit_done wears), so Login
+ * reads as the same kind of action it does everywhere else.
+ *
+ * ⚠️ `filter: none` is NOT optional. .menu_button ships `filter: grayscale(0.5)`, which desaturates the
+ * background it is given — drop this line and the green comes back out grey.
+ */
+body.login #loginButton {
+    background-color: var(--okGreen70a);
+    border-color: var(--active);
+    color: var(--white100);
+    filter: none;
+}
+
+/*
+ * The hover needs restating because `body.login #loginButton` carries an ID and therefore already outranks
+ * `.menu_button:hover` — without this, hovering the button would do nothing at all. It brightens the same
+ * green rather than switching to --active, which is light enough that white lettering on it fails contrast.
+ */
+body.login #loginButton:not(.disabled):not([disabled]):hover {
+    background-color: var(--okGreen70a);
+    filter: brightness(1.35);
+}
+
+/*
+ * The standing storage badge — revealed by `login.js` only when a provider supplied wording for it.
+ *
+ * ⚠️ Colour comes from `--STStorageIndicatorColor` in style.css, not a literal here: a hard green reads as
+ * an alarm on a dark theme and disappears on a light one, and this is meant to reassure.
+ */
+body.login #storageIndicator {
+    color: var(--STStorageIndicatorColor);
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.9em;
+    opacity: 0.9;
+}

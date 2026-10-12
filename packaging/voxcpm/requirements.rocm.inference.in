@@ -1,0 +1,16 @@
+# Inference-only closure from the retained worker's import path at OpenBMB/VoxCPM
+# a010d621ff9a1dce83ce9c934919b24f28073e90. The upstream project metadata and lock
+# remain unchanged; training, CLI and hosted demo dependencies are not imported here.
+# Resolve metadata against the existing AMD wheelhouse and PyPI without building sources.
+torch[device-gfx1201]==2.10.0+rocm7.14.1
+torchaudio==2.10.0+rocm7.14.1
+triton==3.6.0+rocm7.14.1
+numpy==1.26.4
+soundfile==0.14.0
+transformers==5.2.0
+huggingface-hub==1.33.0
+einops==0.8.2
+pydantic==2.13.5
+safetensors==0.5.3
+librosa==0.11.0
+tqdm==4.66.5

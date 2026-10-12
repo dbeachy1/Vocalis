@@ -1,0 +1,13 @@
+/.codex/
+
+# Windows installer build (packaging/windows): artifacts, restored Inno Setup package, local signing paths
+/artifacts/
+/packaging/windows/obj/
+/packaging/windows/bin/
+/packaging/windows/signing.local.json
+
+# Satellite tray program build output (packaging/windows/tray)
+/packaging/windows/tray/bin/
+/packaging/windows/tray/obj/
+/packaging/windows/tray/tests/bin/
+/packaging/windows/tray/tests/obj/

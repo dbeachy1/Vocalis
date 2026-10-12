@@ -1,0 +1,208 @@
+{
+  "schemaVersion": 1,
+  "scope": {
+    "purpose": "Where to get the source of the copyleft and source-requiring Python and npm components in the images, by exact version. Each entry names the publisher's file, its size and its SHA-256 (for npm, the integrity value from the lock file), and where the component is used.",
+    "images": [
+      "NVIDIA main image",
+      "AMD main image",
+      "Taproom image",
+      "NVIDIA and AMD satellite images"
+    ]
+  },
+  "sourceArtifacts": [
+    {
+      "name": "soxr",
+      "version": "1.1.0",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/ed/11/27cebce4a108f77afea7c80545115536b45e3f11ebfb914f638fdd9ba847/soxr-1.1.0.tar.gz",
+      "bytes": 173067,
+      "sha256": "9f228ae21c78fa9359ca98d8a5e8e91f30639e438e574133dace62c5b5309e44",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/soxr/1.1.0/json",
+        "sha256": "37a900157027f93432228edf0fd6ec571165a84065f1a3c437f5ee520bbd3bd4"
+      },
+      "license": "LGPL-2.1-or-later",
+      "licenseEvidence": "Official PyPI 1.1.0 metadata declares LGPL-2.1-or-later; source retains libsoxr and PFFFT license files.",
+      "usedIn": "Python environments of the main and satellite images (the soxr wheel contains libsoxr 0.1.3 and PFFFT)"
+    },
+    {
+      "name": "ip-matching",
+      "version": "2.1.2",
+      "kind": "npm tarball",
+      "url": "https://registry.npmjs.org/ip-matching/-/ip-matching-2.1.2.tgz",
+      "bytes": 49922,
+      "sha256": "7cfac6ba28384f2278f92fbef10e4fdc98ed774f3b288ccb2ddf7ffe34457b9a",
+      "integrity": "sha512-/ok+VhKMasgR5gvTRViwRFQfc0qYt9Vdowg6TO4/pFlDCob5ZjGPkwuOoQVCd5OrMm20zqh+1vA8KLJZTeWudg==",
+      "registryMetadata": {
+        "url": "https://registry.npmjs.org/ip-matching/2.1.2",
+        "sha256": "67e527c304c6015159f0e1829399bfd58e57e77eae1a5b9749ec5bbfc37bd5aa"
+      },
+      "license": "LGPL-3.0-only",
+      "licenseEvidence": "Registry metadata matches the Taproom lock integrity and package.json declaration.",
+      "usedIn": "Taproom image (npm dependency of Taproom)"
+    },
+    {
+      "name": "frozendict",
+      "version": "2.4.7",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/90/b2/2a3d1374b7780999d3184e171e25439a8358c47b481f68be883c14086b4c/frozendict-2.4.7.tar.gz",
+      "bytes": 317082,
+      "sha256": "e478fb2a1391a56c8a6e10cc97c4a9002b410ecd1ac28c18d780661762e271bd",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/frozendict/2.4.7/json"
+      },
+      "license": "LGPL-3.0",
+      "usedIn": "ACE-Step environment of the main image",
+      "note": "The sdist contains the package's C extension source and its LICENSE.txt."
+    },
+    {
+      "name": "certifi",
+      "version": "2022.12.7",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/37/f7/2b1b0ec44fdc30a3d31dfebe52226be9ddc40cd6c0f34ffc8923ba423b69/certifi-2022.12.7.tar.gz",
+      "bytes": 156897,
+      "sha256": "35824b4c3a97115964b408844d64aa14db1cc518f6562e8d7261699d1350a9e3",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/certifi/2022.12.7/json"
+      },
+      "license": "MPL-2.0",
+      "usedIn": "NVIDIA main image: base, Enhance and Trim environments"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.1.4",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/e0/2d/a891ca51311197f6ad14a7ef42e2399f36cf2f9bd44752b3dc4eab60fdc5/certifi-2026.1.4.tar.gz",
+      "bytes": 154268,
+      "sha256": "ac726dd470482006e014ad384921ed6438c457018f4b3d204aea4281258b2120",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/certifi/2026.1.4/json"
+      },
+      "license": "MPL-2.0",
+      "usedIn": "NVIDIA main image: ACE-Step environment"
+    },
+    {
+      "name": "certifi",
+      "version": "2026.7.22",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/a3/c2/24167ea9858356b47a87a50d39908bfdb72ceeefe0041586e704e5376b3a/certifi-2026.7.22.tar.gz",
+      "bytes": 138112,
+      "sha256": "741e2c3b351ddf169a738da9f2c048608ff7f2c5cc02f1ebc6b118bb090d5d55",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/certifi/2026.7.22/json"
+      },
+      "license": "MPL-2.0",
+      "usedIn": "NVIDIA main image: VoxCPM2, Lead Vocal and DeepFilterNet environments"
+    },
+    {
+      "name": "tqdm",
+      "version": "4.66.5",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/58/83/6ba9844a41128c62e810fddddd72473201f3eacde02046066142a2d96cc5/tqdm-4.66.5.tar.gz",
+      "bytes": 169504,
+      "sha256": "e1020aef2e5096702d8a025ac7d16b1577279c9d63f8375b63083e9a5f0fcbad",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/tqdm/4.66.5/json"
+      },
+      "license": "MPL-2.0 AND MIT",
+      "usedIn": "NVIDIA main image: base, Enhance and VoxCPM2 environments"
+    },
+    {
+      "name": "tqdm",
+      "version": "4.67.1",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/a8/4b/29b4ef32e036bb34e4ab51796dd745cdba7ed47ad142a9f4a1eb8e0c744d/tqdm-4.67.1.tar.gz",
+      "bytes": 169737,
+      "sha256": "f8aef9c52c08c13a65f30ea34f4e5aac3fd1a34959879d7e59e63027286627f2",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/tqdm/4.67.1/json"
+      },
+      "license": "MPL-2.0 AND MIT",
+      "usedIn": "NVIDIA main image: ACE-Step environment"
+    },
+    {
+      "name": "tqdm",
+      "version": "4.70.1",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/0d/ea/b2a5bd54b28a324dae8211928b2d730b6547500342c7e6c6dea08bd0a485/tqdm-4.70.1.tar.gz",
+      "bytes": 171846,
+      "sha256": "cefd0eca11b2a37a3aee776544d4f4ae913f02688135b5556b8788dfa474afc4",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/tqdm/4.70.1/json"
+      },
+      "license": "MPL-2.0 AND MIT",
+      "usedIn": "NVIDIA main image: Stems and Lead Vocal environments"
+    },
+    {
+      "name": "orjson",
+      "version": "3.13.0",
+      "kind": "PyPI sdist",
+      "url": "https://files.pythonhosted.org/packages/f2/72/380b97dc45bd162d23afe5194721ef678d9eac7cfaa549fe2873f7f0a518/orjson-3.13.0.tar.gz",
+      "bytes": 2732604,
+      "sha256": "d1de5eb04485110c5da4c657e49168995d55e076b1ce60f1a042e254f4186c4f",
+      "registryMetadata": {
+        "url": "https://pypi.org/pypi/orjson/3.13.0/json"
+      },
+      "license": "MPL-2.0 AND (Apache-2.0 OR MIT)",
+      "usedIn": "NVIDIA main image: base and Enhance environments (its wheel carries MPL-2.0 licensed parts)"
+    },
+    {
+      "name": "dompurify",
+      "version": "3.4.2",
+      "kind": "npm tarball",
+      "url": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.2.tgz",
+      "integrity": "sha512-lHeS9SA/IKeIFFyYciHBr2n0v1VMPlSj843HdLOwjb2OxNwdq9Xykxqhk+FE42MzAdHvInbAolSE4mhahPpjXA==",
+      "integrityNote": "The integrity value is the one in source/taproom/package-lock.json, which npm checks on install.",
+      "license": "MPL-2.0 OR Apache-2.0",
+      "usedIn": "Taproom image (npm dependency of Taproom)"
+    }
+  ],
+  "licenseTexts": [
+    {
+      "licenseText": "GNU GPL version 3",
+      "path": "packaging/licenses/GPL-3.0.txt",
+      "source": "https://www.gnu.org/licenses/gpl-3.0.txt",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "bytes": 35149,
+      "appliesTo": [
+        "ip-matching via LGPL-3.0 section 0"
+      ]
+    },
+    {
+      "licenseText": "GNU LGPL version 3",
+      "path": "packaging/licenses/LGPL-3.0.txt",
+      "source": "https://www.gnu.org/licenses/lgpl-3.0.txt",
+      "sha256": "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118",
+      "bytes": 7652,
+      "appliesTo": [
+        "ip-matching"
+      ]
+    },
+    {
+      "licenseText": "GNU LGPL version 2.1",
+      "path": "packaging/licenses/LGPL-2.1.txt",
+      "source": "https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+      "bytes": 26419,
+      "appliesTo": [
+        "soxr"
+      ]
+    }
+  ],
+  "additionalNotices": [
+    {
+      "name": "TaffyDB",
+      "version": "2.6.2",
+      "scope": "Taproom nested dependency at protobufjs/cli/node_modules/taffydb",
+      "licenseEvidence": "No SPDX/package license field or separate license file was present. The exact installed taffy.js contains a BSD-style grant requiring source redistributions to retain the copyright notice, conditions, and disclaimer.",
+      "installedFileSha256": "79fc972c5a5e1d9739d27d9028e4da45b56bcfa1960e13df1574ad0101659806",
+      "noticePath": "packaging/licenses/taffydb-2.6.2-header.txt",
+      "noticeSha256": "2b9e05ddf5aefb4dfc06065409ce76eb7c469ba300adc1f97f68ea1d7cef2ad1",
+      "noticeBytes": 1155
+    }
+  ],
+  "replacedComponents": [
+    "EbookLib (AGPL-3.0-or-later) was replaced by the standard-library zipfile and lxml; it is not installed in any image.",
+    "pykakasi (GPL-3.0-or-later) was removed from the Chatterbox requirements by the metadata-only patch in packaging/chatterbox; it is not installed in any image."
+  ]
+}

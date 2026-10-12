@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "model": "PANNs Cnn14 AudioSet scorer",
+  "publisherRecord": "https://zenodo.org/records/3576403",
+  "recordId": 3576403,
+  "recordMetadataSha256": "745555545f791d509c673ee1f5ba9aab745511e1f35ec9b62e845656d3c28a87",
+  "license": {
+    "id": "CC-BY-4.0",
+    "url": "https://creativecommons.org/licenses/by/4.0/",
+    "legalCodeUrl": "https://creativecommons.org/licenses/by/4.0/legalcode",
+    "retainedLegalTextSource": "https://raw.githubusercontent.com/spdx/license-list-data/main/text/CC-BY-4.0.txt",
+    "legalCodeSha256": "d557539df68e771cc1eedcc91d13f70fca930e508d11eedcafa4b15db49e3744"
+  },
+  "creators": [
+    {
+      "name": "Qiuqiang Kong",
+      "affiliation": "University of Surrey"
+    },
+    {
+      "name": "Yin Cao",
+      "affiliation": "University of Surrey"
+    },
+    {
+      "name": "Turab Iqbal",
+      "affiliation": "University of Surrey"
+    },
+    {
+      "name": "Yuxuan Wang",
+      "affiliation": "ByteDance"
+    },
+    {
+      "name": "Wenwu Wang",
+      "affiliation": "University of Surrey"
+    },
+    {
+      "name": "Mark Plumbley",
+      "affiliation": "University of Surrey"
+    }
+  ],
+  "files": [
+    {
+      "path": "Cnn14_mAP=0.431.pth",
+      "bytes": 1365409299,
+      "url": "https://zenodo.org/api/records/3576403/files/Cnn14_mAP=0.431.pth/content",
+      "publisherChecksum": "md5:595633ac2d1cac7ef04ebf70e2fee4e4",
+      "observedSha256": "7f0ea3a7ad9622f7bdc22439a750e04efdc1641bc4c930ff8727bb92d3141a69"
+    }
+  ],
+  "selectionBytes": 1365409299,
+  "status": "acquired; publisher MD5 and exact byte count verified; runtime acceptance pending"
+}

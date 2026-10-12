@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Vocalis TTS for Nomi",
+  "version": "3.0",
+  "description": "Plays Nomi.ai replies through your local Vocalis server — Chatterbox TTS voice cloning with a per-Nomi voice map.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://nomi.ai/*",
+    "https://beta.nomi.ai/*",
+    "http://127.0.0.1/*",
+    "http://localhost/*"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [{
+    "matches": ["https://nomi.ai/*", "https://beta.nomi.ai/*"],
+    "js":  ["content.js"],
+    "css": ["content.css"],
+    "run_at": "document_idle"
+  }],
+  "icons": {
+    "16":  "icons/icon16.png",
+    "48":  "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Vocalis TTS for Nomi — right-click ▸ Options for the server URL",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  }
+}

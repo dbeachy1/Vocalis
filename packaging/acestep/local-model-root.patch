@@ -1,0 +1,248 @@
+--- a/acestep/model_downloader.py
++++ b/acestep/model_downloader.py
+@@ -232,6 +232,13 @@
+     Returns:
+         Tuple of (success, message)
+     """
++    local_root = os.environ.get("ACESTEP_MODEL_ROOT")
++    if local_root:
++        return False, (
++            f"Required ACE-Step model input is missing under the selected local model root "
++            f"'{Path(local_root).resolve()}'; refusing to download '{local_dir}'."
++        )
++
+     # Ensure directory exists
+     local_dir.mkdir(parents=True, exist_ok=True)
+ 
+--- a/acestep/api/model_download.py
++++ b/acestep/api/model_download.py
+@@ -101,6 +101,13 @@
+         print(f"[Model Download] Model {model_name} already exists at {model_path}")
+         return model_path
+ 
++    local_root = os.environ.get("ACESTEP_MODEL_ROOT")
++    if local_root:
++        raise FileNotFoundError(
++            f"ACE-Step model '{model_name}' is missing from selected local model root "
++            f"'{local_root}'; automatic downloads are disabled."
++        )
++
+     repo_id = MODEL_REPO_MAPPING.get(model_name, DEFAULT_REPO_ID)
+     print(f"[Model Download] Model {model_name} not found, checking network...")
+ 
+--- a/acestep/api/startup_model_init.py
++++ b/acestep/api/startup_model_init.py
+@@ -61,8 +61,12 @@
+     offload_dit_to_cpu = env_bool("ACESTEP_OFFLOAD_DIT_TO_CPU", False)
+     compile_model = env_bool("ACESTEP_COMPILE_MODEL", False)
+ 
+-    checkpoint_dir = os.path.join(project_root, "checkpoints")
+-    os.makedirs(checkpoint_dir, exist_ok=True)
++    checkpoint_dir = os.environ.get("ACESTEP_CHECKPOINTS_DIR") or os.path.join(project_root, "checkpoints")
++    if os.environ.get("ACESTEP_MODEL_ROOT"):
++        if not os.path.isdir(checkpoint_dir):
++            raise FileNotFoundError(f"Selected local ACE-Step model root is unavailable: {checkpoint_dir}")
++    else:
++        os.makedirs(checkpoint_dir, exist_ok=True)
+ 
+     dit_model_name = get_model_name(config_path)
+     if dit_model_name:
+--- a/acestep/api/http/model_init_service.py
++++ b/acestep/api/http/model_init_service.py
+@@ -90,8 +90,12 @@
+ 
+     llm = app_state.llm_handler
+     project_root = get_project_root()
+-    checkpoint_dir = os.path.join(project_root, "checkpoints")
+-    os.makedirs(checkpoint_dir, exist_ok=True)
++    checkpoint_dir = os.environ.get("ACESTEP_CHECKPOINTS_DIR") or os.path.join(project_root, "checkpoints")
++    if os.environ.get("ACESTEP_MODEL_ROOT"):
++        if not os.path.isdir(checkpoint_dir):
++            raise FileNotFoundError(f"Selected local ACE-Step model root is unavailable: {checkpoint_dir}")
++    else:
++        os.makedirs(checkpoint_dir, exist_ok=True)
+ 
+     target_model = (model_name or get_model_name(current_config)).strip()
+     if not target_model:
+--- a/acestep/core/generation/handler/init_service_downloads.py
++++ b/acestep/core/generation/handler/init_service_downloads.py
+@@ -1,5 +1,6 @@
+ """Download and precheck helpers for service initialization."""
+ 
++import os
+ from pathlib import Path
+ from typing import Optional, Tuple
+ 
+@@ -64,6 +65,8 @@
+     @staticmethod
+     def _sync_model_code_if_needed(config_path: str, checkpoint_path: Path) -> None:
+         """Sync model-side python files when checkpoint code metadata diverges."""
++        if os.environ.get("ACESTEP_MODEL_ROOT"):
++            return
+         from acestep.model_downloader import _check_code_mismatch, _sync_model_code_files
+
+         mismatched = _check_code_mismatch(config_path, checkpoint_path)
+
+--- a/acestep/ui/gradio/events/results/generation_info.py
++++ b/acestep/ui/gradio/events/results/generation_info.py
+@@ -18,7 +18,11 @@
+     os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(
+         os.path.dirname(os.path.abspath(__file__))))))
+ )
+-DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "gradio_outputs").replace("\\", "/")
++tmp_root = os.environ.get("ACESTEP_TMPDIR")
++if tmp_root:
++    DEFAULT_RESULTS_DIR = os.path.join(tmp_root, "gradio_outputs").replace("\\", "/")
++else:
++    DEFAULT_RESULTS_DIR = os.path.join(PROJECT_ROOT, "gradio_outputs").replace("\\", "/")
+ os.makedirs(DEFAULT_RESULTS_DIR, exist_ok=True)
+ 
+ 
+--- a/acestep/ui/gradio/events/results/generation_info_test.py
++++ b/acestep/ui/gradio/events/results/generation_info_test.py
+@@ -3,6 +3,7 @@
+ import importlib.util
+ import os
+ from pathlib import Path
++import tempfile
+ import sys
+ import types
+ import unittest
+@@ -50,17 +51,27 @@
+ class ConstantsTests(unittest.TestCase):
+     """Tests for module-level constants."""
+ 
++    def test_results_dir_uses_configured_tmp_root(self):
++        """Configured output goes below the existing writable staging root."""
++        with tempfile.TemporaryDirectory() as tmp_root:
++            with patch.dict(os.environ, {"ACESTEP_TMPDIR": tmp_root}):
++                module = _load_module()
++
++            expected = Path(tmp_root) / "gradio_outputs"
++            self.assertEqual(Path(module.DEFAULT_RESULTS_DIR), expected)
++            self.assertTrue(expected.is_dir())
++
+     def test_project_root_exists(self):
+         """PROJECT_ROOT should point to an existing directory."""
+         self.assertTrue(os.path.isdir(PROJECT_ROOT))
+ 
+     def test_default_results_dir_is_under_project_root(self):
+         """DEFAULT_RESULTS_DIR should be a subdirectory of PROJECT_ROOT."""
+-        self.assertTrue(
+-            DEFAULT_RESULTS_DIR.replace("\\", "/").startswith(
+-                PROJECT_ROOT.replace("\\", "/")
+-            )
+-        )
++        with patch.dict(os.environ, {}, clear=True), patch("os.makedirs") as make_dir:
++            module = _load_module()
++        expected = os.path.join(PROJECT_ROOT, "gradio_outputs").replace("\\", "/")
++        self.assertEqual(module.DEFAULT_RESULTS_DIR, expected)
++        make_dir.assert_called_once_with(expected, exist_ok=True)
+ 
+ 
+ class ClearAudioOutputsTests(unittest.TestCase):
+--- a/acestep/api/lifespan_runtime.py
++++ b/acestep/api/lifespan_runtime.py
+@@ -60,6 +60,8 @@
+     project_root = get_project_root()
+     cache_root = os.path.join(project_root, ".cache", "acestep")
+     tmp_root = (os.getenv("ACESTEP_TMPDIR") or os.path.join(cache_root, "tmp")).strip()
++    if os.getenv("ACESTEP_TMPDIR"):
++        cache_root = tmp_root
+     triton_cache_root = (os.getenv("TRITON_CACHE_DIR") or os.path.join(cache_root, "triton")).strip()
+     inductor_cache_root = (
+         (os.getenv("TORCHINDUCTOR_CACHE_DIR") or os.path.join(cache_root, "torchinductor")).strip()
+--- a/acestep/api/lifespan_runtime_test.py
++++ b/acestep/api/lifespan_runtime_test.py
+@@ -52,6 +52,7 @@
+         self.assertIsNone(runtime.handler3)
+         training_state_init.assert_called_once_with(app)
+         mock_initialize_local_cache.assert_called_once_with(app, runtime.cache_root)
++        self.assertEqual(os.path.join("k:/repo", ".cache", "acestep"), runtime.cache_root)
+         self.assertTrue(mock_makedirs.called)
+ 
+     @patch("acestep.api.lifespan_runtime._initialize_local_cache")
+@@ -93,6 +94,7 @@
+             )
+             self.assertEqual("k:/tmp/acestep", os.environ.get("TMPDIR"))
+ 
++        self.assertEqual("k:/tmp/acestep", runtime.cache_root)
+         self.assertIsNotNone(runtime.handler2)
+         self.assertIsNotNone(runtime.handler3)
+         self.assertEqual("acestep-v15-second", runtime.config_path2)
+
+--- a/acestep/api/http/model_service_routes_test.py
++++ b/acestep/api/http/model_service_routes_test.py
+@@ -1,8 +1,10 @@
+ """Unit tests for model service route registration helpers."""
+ 
+ import asyncio
++import json
+ import os
+ import queue
++import tempfile
+ import unittest
+ from types import SimpleNamespace
+ from unittest import mock
+@@ -91,18 +93,44 @@
+         with mock.patch("acestep.api.http.model_service_routes.os.path.isdir", return_value=True), mock.patch(
+             "acestep.api.http.model_service_routes.os.listdir",
+             return_value=["acestep-v15-base", "acestep-v15-turbo", "acestep-5Hz-lm-1.7B"],
+-        ):
+-            inventory = _collect_model_inventory(
+-                app=app,
+-                get_project_root=lambda: "/fake/project",
+-                get_model_name=lambda p: os.path.basename(str(p).rstrip("/\\")),
+-            )
++        ) as listdir:
++            with mock.patch.dict(os.environ, {"ACESTEP_CHECKPOINTS_DIR": ""}):
++                inventory = _collect_model_inventory(
++                    app=app,
++                    get_project_root=lambda: "/fake/project",
++                    get_model_name=lambda p: os.path.basename(str(p).rstrip("/\\")),
++                )
++        listdir.assert_called_once_with("/fake/project/checkpoints")
+ 
+         names = [m["name"] for m in inventory["models"]]
+         self.assertIn("acestep-v15-base", names)
+         self.assertIn("acestep-v15-turbo", names)
+         self.assertEqual("acestep-v15-base", inventory["default_model"])
+         self.assertTrue(inventory["llm_initialized"])
++
++    def test_collect_model_inventory_uses_configured_checkpoint_root(self):
++        """Inventory discovers models from the configured model root."""
++
++        app = self._build_app()
++        with tempfile.TemporaryDirectory() as checkpoints:
++            turbo_path = os.path.join(checkpoints, "acestep-v15-turbo")
++            lm_path = os.path.join(checkpoints, "acestep-5Hz-lm-1.7B")
++            os.makedirs(turbo_path)
++            os.makedirs(lm_path)
++            with open(os.path.join(turbo_path, "config.json"), "w", encoding="utf-8") as config_file:
++                json.dump({"is_turbo": True}, config_file)
++
++            with mock.patch.dict(os.environ, {"ACESTEP_CHECKPOINTS_DIR": checkpoints}):
++                inventory = _collect_model_inventory(
++                    app=app,
++                    get_project_root=lambda: "/unused/project",
++                    get_model_name=lambda p: os.path.basename(str(p).rstrip("/\\")),
++                )
++
++        models = {model["name"]: model for model in inventory["models"]}
++        self.assertIn("acestep-v15-turbo", models)
++        self.assertIn("acestep-5Hz-lm-1.7B", {model["name"] for model in inventory["lm_models"]})
++        self.assertTrue(models["acestep-v15-turbo"]["supported_task_types"])
+ 
+     def test_init_route_wraps_initializer_exception(self):
+         """Init endpoint should convert initializer exceptions into wrapped code=500 payloads."""
+--- a/acestep/api/http/model_service_routes.py
++++ b/acestep/api/http/model_service_routes.py
+@@ -58,7 +58,7 @@
+     """
+ 
+     project_root = get_project_root()
+-    checkpoint_dir = os.path.join(project_root, "checkpoints")
++    checkpoint_dir = os.environ.get("ACESTEP_CHECKPOINTS_DIR") or os.path.join(project_root, "checkpoints")
+ 
+     loaded_dit_models: Dict[str, bool] = {}
+     primary_model = get_model_name(getattr(app.state, "_config_path", ""))

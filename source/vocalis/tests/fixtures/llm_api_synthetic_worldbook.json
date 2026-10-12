@@ -1,0 +1,71 @@
+{
+  "name": "Test World Book",
+  "entries": {
+    "0": {
+      "uid": 0,
+      "key": [
+        "test-key-0"
+      ],
+      "comment": "Test Entry 1",
+      "content": "Test Character 1 visits the observatory.",
+      "constant": false,
+      "order": 100,
+      "disable": false
+    },
+    "1": {
+      "uid": 1,
+      "key": [
+        "test-key-1"
+      ],
+      "comment": "Test Entry 2",
+      "content": "The observatory fixture entry 2 is unchanged.",
+      "constant": false,
+      "order": 100,
+      "disable": false
+    },
+    "2": {
+      "uid": 2,
+      "key": [
+        "test-key-2"
+      ],
+      "comment": "Test Entry 3",
+      "content": "Test Character 1 visits the observatory.",
+      "constant": false,
+      "order": 100,
+      "disable": false
+    },
+    "3": {
+      "uid": 3,
+      "key": [
+        "test-key-3"
+      ],
+      "comment": "Test Entry 4",
+      "content": "The observatory fixture entry 4 is unchanged.",
+      "constant": false,
+      "order": 100,
+      "disable": false
+    },
+    "4": {
+      "uid": 4,
+      "key": [
+        "test-key-4"
+      ],
+      "comment": "Test Entry 5",
+      "content": "The observatory fixture entry 5 is unchanged.",
+      "constant": false,
+      "order": 100,
+      "disable": false
+    },
+    "5": {
+      "uid": 5,
+      "key": [
+        "test-key-5"
+      ],
+      "comment": "Test Entry 6",
+      "content": "Test Character 1 visits the observatory.",
+      "constant": false,
+      "order": 100,
+      "disable": false
+    }
+  }
+}

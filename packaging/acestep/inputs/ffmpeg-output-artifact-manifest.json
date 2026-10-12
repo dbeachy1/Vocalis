@@ -1,0 +1,167 @@
+{
+  "archiveBytes": 30935040,
+  "archiveSha256": "299916d35e3755b2782ae669eb8a20be463d33b0143681a521610f129fd36805",
+  "entries": [
+    {
+      "bytes": 444656,
+      "kind": "file",
+      "path": "usr/local/bin/ffmpeg",
+      "sha256": "e08707afefec9b35482a03010f379bd42c438ec562720607e439b80b76491176"
+    },
+    {
+      "bytes": 212512,
+      "kind": "file",
+      "path": "usr/local/bin/ffprobe",
+      "sha256": "1b50ca3319a96389ebb9599f8fabd039dfd1bfdac961cfb27444be8b2689e7c6"
+    },
+    {
+      "kind": "directory",
+      "path": "usr/local/lib"
+    },
+    {
+      "bytes": 2910152,
+      "kind": "file",
+      "path": "usr/local/lib/libavformat.so.62.3.100",
+      "sha256": "7e7bdbdfa0b957b5bd5910ae7f2107f76cf89f0f2f755c7c6fb2fbbe369cd845"
+    },
+    {
+      "bytes": 18572504,
+      "kind": "file",
+      "path": "usr/local/lib/libavcodec.so.62.11.100",
+      "sha256": "bbbc5e4d47bd346a740d4dc222ceac49a5339ad3f9768022534d5f1a30c2ff33"
+    },
+    {
+      "bytes": 1780368,
+      "kind": "file",
+      "path": "usr/local/lib/libswscale.so.9.1.100",
+      "sha256": "33db221ca6a85a39782b7f83e90aa471f66080546cfb7ef5ec2fe1834b2ae6f2"
+    },
+    {
+      "bytes": 1071920,
+      "kind": "file",
+      "path": "usr/local/lib/libavutil.so.60.8.100",
+      "sha256": "bd6bd007288dfe8664b8413bed7fe59c8246aec96b6935f23d47764a4ba5f6f3"
+    },
+    {
+      "bytes": 5653656,
+      "kind": "file",
+      "path": "usr/local/lib/libavfilter.so",
+      "sha256": "ece5fdcd65e47e20027b23332e9df1f16fe9d1d3e0c3550c48ac2c92e4b95de4"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavutil.so",
+      "resolvedTarget": "usr/local/lib/libavutil.so.60.8.100",
+      "target": "usr/local/lib/libavutil.so.60.8.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavcodec.so",
+      "resolvedTarget": "usr/local/lib/libavcodec.so.62.11.100",
+      "target": "usr/local/lib/libavcodec.so.62.11.100"
+    },
+    {
+      "bytes": 174512,
+      "kind": "file",
+      "path": "usr/local/lib/libswresample.so",
+      "sha256": "5130e298bcae6af171055fe5ab1b7fccd1e24d37f478a7a0dbc5c8dfe9bbed26"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libswscale.so",
+      "resolvedTarget": "usr/local/lib/libswscale.so.9.1.100",
+      "target": "usr/local/lib/libswscale.so.9.1.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libswresample.so.6.1.100",
+      "resolvedTarget": "usr/local/lib/libswresample.so",
+      "target": "usr/local/lib/libswresample.so"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavformat.so",
+      "resolvedTarget": "usr/local/lib/libavformat.so.62.3.100",
+      "target": "usr/local/lib/libavformat.so.62.3.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libswresample.so.6",
+      "resolvedTarget": "usr/local/lib/libswresample.so",
+      "target": "usr/local/lib/libswresample.so"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavfilter.so.11",
+      "resolvedTarget": "usr/local/lib/libavfilter.so",
+      "target": "usr/local/lib/libavfilter.so"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavfilter.so.11.4.100",
+      "resolvedTarget": "usr/local/lib/libavfilter.so",
+      "target": "usr/local/lib/libavfilter.so"
+    },
+    {
+      "bytes": 64464,
+      "kind": "file",
+      "path": "usr/local/lib/libavdevice.so.62.1.100",
+      "sha256": "6d0933385a97c2fb5a2ca6f62e96464a39bbfac3cff9328c627983a1a197908c"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavformat.so.62",
+      "resolvedTarget": "usr/local/lib/libavformat.so.62.3.100",
+      "target": "usr/local/lib/libavformat.so.62.3.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavdevice.so.62",
+      "resolvedTarget": "usr/local/lib/libavdevice.so.62.1.100",
+      "target": "usr/local/lib/libavdevice.so.62.1.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavutil.so.60",
+      "resolvedTarget": "usr/local/lib/libavutil.so.60.8.100",
+      "target": "usr/local/lib/libavutil.so.60.8.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavcodec.so.62",
+      "resolvedTarget": "usr/local/lib/libavcodec.so.62.11.100",
+      "target": "usr/local/lib/libavcodec.so.62.11.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libavdevice.so",
+      "resolvedTarget": "usr/local/lib/libavdevice.so.62.1.100",
+      "target": "usr/local/lib/libavdevice.so.62.1.100"
+    },
+    {
+      "kind": "hardlink",
+      "path": "usr/local/lib/libswscale.so.9",
+      "resolvedTarget": "usr/local/lib/libswscale.so.9.1.100",
+      "target": "usr/local/lib/libswscale.so.9.1.100"
+    },
+    {
+      "bytes": 26517,
+      "kind": "file",
+      "path": "usr/share/licenses/vocalis-g1/FFmpeg-LGPL-2.1.txt",
+      "sha256": "246041b6ecf9bc32d718a62c57877c78b5eb397b6467e74ed7ae2626ab189c30"
+    },
+    {
+      "bytes": 242,
+      "kind": "file",
+      "path": "usr/share/vocalis-g1/ffmpeg-build-packages.txt",
+      "sha256": "63e62c627d3677fbc3b2d04c28b883884624f93dcaccbc60f2c2875dc87874a0"
+    },
+    {
+      "bytes": 237,
+      "kind": "file",
+      "path": "usr/share/vocalis-g1/ffmpeg-configure-options.txt",
+      "sha256": "4f0b68d106503a04d7f6fe91d73521030453ff671e9691ed16994e9797962d64"
+    }
+  ],
+  "sourceImageId": "sha256:1580fe447694a0f7c37550e5c399a300001f914e43239c235ceaf87dad84a67c"
+}

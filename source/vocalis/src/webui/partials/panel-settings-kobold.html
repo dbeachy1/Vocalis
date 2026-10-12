@@ -1,0 +1,26 @@
+<!-- Settings ▸ KoboldCpp markup and copy. Behavior is in `js/sys/kobold.js`. -->
+    <div class="panel">
+      <h2>KoboldCpp</h2>
+      <div class="small muted" style="margin:-4px 0 8px"><b>Only needed if you run KoboldCpp and want to load and unload its models from Vocalis.</b> Leave this blank otherwise — nothing else in Vocalis uses it, and the <b>KoboldCpp</b> tab is the only thing affected.</div>
+      <div class="small muted" style="margin:0 0 8px">The URL and the password are a <b>pair</b> — the password is scoped to that URL and means nothing without it. It's the <code>--adminpassword</code> KoboldCpp was started with. Set once; you are never prompted again. Saving tests the connection. (<code>VOCALIS_KOBOLD_URL</code> / <code>VOCALIS_KOBOLD_ADMINPASSWORD</code> override these.)</div>
+      <div class="row">
+        <div style="flex:1;min-width:220px"><label>URL</label><input type="text" id="kobUrl" placeholder="https://127.0.0.1:5001" autocomplete="off" spellcheck="false"></div>
+        <!-- Keep this credential masked with CSS in a text input so browser password managers do not autofill the app login. Disable spellcheck to avoid sending the value to spellcheck/translation services; turn autocomplete off and keep credential terms out of the name/id. -->
+        <div style="flex:1;min-width:220px">
+          <label>Admin password</label>
+          <input type="text" id="kobToken" class="masked" autocomplete="off" spellcheck="false"
+                 autocapitalize="off" autocorrect="off" placeholder="not set">
+        </div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="kobSave">Save</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="sm" id="kobClear" title="Remove the stored admin password. Loading and unloading stay disabled until you set one again.">Clear</button></div>
+      </div>
+      <!-- Docker package only (release audit 2026-10-11, item 8): 127.0.0.1 inside the container is the container itself. -->
+      <div class="small muted docker-only" id="kobUrlDockerNote" style="margin-top:6px">KoboldCpp must listen on more than loopback (start it with <code>--host 0.0.0.0</code>, or the machine's LAN address), and <code>127.0.0.1</code> here would be this container itself, so use <code>host.docker.internal</code> for a KoboldCpp on this machine.</div>
+      <div class="row" style="margin-top:6px;align-items:center">
+        <div style="flex:0 0 auto"><label style="display:inline;margin:0;color:var(--fg)" id="kobShowWrap"><input type="checkbox" id="kobShow"> Show password</label></div>
+        <div style="flex:1" class="small muted" id="kobPwState">—</div>
+      </div>
+      <div class="small" id="kobTestResult" style="margin-top:8px;display:none"></div>
+      <!-- This is a warning, not a refusal; GPU sharing remains the user's choice. The global device setting governs all engines, so do not add an engine-specific duplicate. -->
+      <div class="small muted" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)">A KoboldCpp model wants whole cards, and every card ticked in <b>Devices</b> above can be holding a Vocalis model. <b>Load</b> on the KoboldCpp tab asks first and names the cards that are still ticked — it never refuses, and unticking them is what actually frees the memory. Only applies when KoboldCpp is on <b>this</b> machine: a model loading on another box is not sharing these cards. Turn the warning off, for this and for the reverse direction, with <b>Warn me if I enable a device…</b> under <b>Devices</b> above.</div>
+    </div>

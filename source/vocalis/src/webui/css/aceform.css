@@ -1,0 +1,76 @@
+  /* ACE-Step card controls. This file follows `acestep.css` as a contiguous suffix to
+     preserve source order. `tray.js` owns the lists in the prior file; `form.js` and
+     `advanced.js` own these controls. */
+
+  /* The Advanced section (8.0-m3i). A grid rather than a row of floats: seventeen knobs of
+     wildly different label lengths would otherwise stagger, and the point of collapsing it by
+     default is that when it IS open it should be scannable. */
+  .aceadvgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+              gap:8px 14px;margin-top:8px;}
+  .acefield{display:flex;flex-direction:column;gap:2px;font-size:0.857143rem;}
+  .acefield>span{color:var(--mut);}
+  /* `default`/`follow the model` is the meaningful empty state, so the control must not look
+     unset-and-broken when it holds it. */
+  .acefield select,.acefield input{width:100%;}
+
+  /* Keep the disclosure legible as a control on both themes; `--fg` avoids hardcoding a
+     foreground that would disappear on the light skin. */
+  /* Use the shared `--acc` token to match primary controls across both themes. Keep the
+     existing size; amber is reserved for warning and unsaved-state indicators. */
+  #aceAdv>summary{color:var(--acc);cursor:pointer;font-weight:600;padding:2px 0;
+                  list-style-position:outside;}
+  #aceAdv>summary:hover{text-decoration:underline;}
+  /* A keyboard user gets the same affordance the mouse user just got. */
+  #aceAdv>summary:focus-visible{outline:2px solid var(--fg);outline-offset:2px;border-radius:3px;}
+
+  /* Use the shared amber token for starred templates so the state remains visible in both themes. */
+  #aceTplStar.starred{color:var(--warn);border-color:var(--warn);font-weight:700;}
+  /* "unsaved changes", beside the template controls. --warn rather than --err: unsaved work is a
+     state to notice, not a fault — it is the normal condition of a song you are still writing,
+     and a red one there would cry wolf from the first keystroke. */
+  .acedirty{color:var(--warn);font-size:0.857143rem;font-weight:600;white-space:nowrap;
+            align-self:center;}
+
+  /* Keep modes visible as buttons. Unsupported modes remain disabled with a tooltip naming
+     the required model so users can distinguish unavailable modes from missing features. */
+  /* The Mode heading. Bigger and full-strength against controls.css's gray 0.857rem label, because
+     it names the choice that decides what every other field on the card means. See js/ace/form.js. */
+  label.acemodehd{color:var(--fg);font-size:1.071429rem;font-weight:700;margin-bottom:5px;}
+
+  /* Emphasize the vocal-style field label without making it a section heading. */
+  label.acefg{color:var(--fg);}
+
+  /* Vertically center compact buttons beside full-height inputs. The browser spec checks
+     their centers so control-size changes cannot silently break alignment. */
+  .acesidebtns{flex:0;display:flex;gap:6px;white-space:nowrap;padding-bottom:6px;}
+
+  /* ⚠️ ONE LINE, LEFT TO RIGHT, and the width comes from the WRAPPER in js/ace/form.js — a
+     `flex:0` parent collapsed this to its widest button and stacked nine of them into five rows.
+     `flex-wrap` stays: on a narrow window a second line is right, an overflowing row is not. */
+  .acemodes{display:flex;gap:6px;flex-wrap:wrap;}
+  /* And no button breaks its own label — "🎛 Remix (no FSQ)" is one thing to press, not two. */
+  button.acemode{white-space:nowrap;}
+  /* `.on` and not `:focus`: the selected mode has to stay obvious after the click moves focus
+     elsewhere, which is the first thing that happens when someone then types in the caption. */
+  /* Use the defined `--acc` theme token for the selected mode and hover state. */
+  button.acemode.on{border-color:var(--acc);color:var(--acc);font-weight:700;}
+  /* ⚠️ `not(:disabled)` on the hover rule. Without it a disabled mode lights up under the
+     pointer and reads as clickable — the same class of lie as a button that looks enabled and
+     does nothing, which this tab has a comment about in three other places. */
+  button.acemode:not(:disabled):hover{border-color:var(--acc);}
+
+  /* 8.1-m4: the track picker. A wrapping row of tick/radio boxes rather than a multi-select,
+     because "which tracks does this song need" is a question you answer by SCANNING the list —
+     twelve instrument names in upstream's family order — and a <select multiple> shows four of
+     them behind a scrollbar with ctrl-click as the only way in. */
+  .acetracks{display:flex;gap:10px 16px;flex-wrap:wrap;margin-top:4px;}
+  .acetracks .acetrack{white-space:nowrap;}
+
+  /* Keep the LoRA field in its own flex cell and explicit second grid row. As a sixth
+     item in five tracks, it would otherwise create an implicit row at column one and
+     expand the device column to fit the path control. */
+  .acelora{grid-column:2 / -1;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+  .acelora .aceloradpath{min-width:220px;max-width:420px;flex:1;}
+  .acelora .acelorascale{width:78px;}
+  /* The word that stops Attach reading as a second half of Load — see js/ace/cards.js. */
+  .acelorlbl{color:var(--mut);font-size:0.857143rem;cursor:help;}

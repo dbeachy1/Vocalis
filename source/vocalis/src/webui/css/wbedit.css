@@ -1,0 +1,250 @@
+  /* ── SillyTavern ▸ Character Cards / World Books (7.0 §6) ────────────────
+     Two panes side by side need room; that is what the 1800px shell above is for (§6.0.1).
+     ⚠️ WIDE SHELL, BOUNDED COLUMNS. The shell is 1800 and each prose column keeps a reading
+     measure of ~34–42em — a text block allowed to run the full width is unreadable in the
+     other direction, and line length is a character count, not a pixel count. */
+  /* The whole row opens the document, so it has to LOOK like a control — a pointer and a hover
+     tint, or a full-width click target is invisible and he keeps aiming at the little button. */
+  .wbrow{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .wbrow:hover{background:var(--hov,rgba(127,127,127,.08));}
+  /* A deleted document's row: still listed, plainly not live. Darker than the muted help text
+     around it, and NOT a click target — the whole-row open handler does not reach these, because
+     there is nothing left to open. Only its Undelete button does anything. */
+  .wbrow.wbgone{cursor:default;color:var(--mut);opacity:.72;}
+  .wbrow.wbgone:hover{background:transparent;}
+  .wbrow.wbgone b{font-weight:600;}
+  .wbrow:last-child{border-bottom:0;}
+  /* §6.1.2a — where the editor parks when a document is open. Indented and ruled on
+     the left so it reads as belonging to the row above it, not as a sibling row. */
+  .wbslot:not(:empty){border-left:3px solid var(--acc);margin:6px 0 10px 6px;padding-left:10px;}
+  .wbbad{color:var(--err);}
+  /* Preserve the three status states until dismissed so progress and errors remain visible. */
+  .wbbusy{color:var(--warn);}
+  /* Use the warning color for unsaved work, not the error color, and keep it legible beside revision metadata. */
+  .wbpend{color:var(--warn);font-weight:600;}
+  .wbok{color:var(--ok);}
+  .spin.after{margin-right:0;margin-left:6px;}
+  button.wbx{border:0;background:none;color:inherit;font:inherit;line-height:1;padding:0 3px;
+             margin-left:8px;cursor:pointer;opacity:.7;}
+  button.wbx:hover{opacity:1;}
+  /* The circular avatar is a crop of the card image, not a separate asset. */
+  .wbface{position:relative;overflow:hidden;border-radius:50%;flex:0 0 auto;
+          background:var(--line);display:flex;align-items:center;justify-content:center;}
+  .wbface img{position:absolute;left:0;top:0;max-width:none;}
+  /* Before the load handler runs, cover-and-center — so a slow decode shows a plausible face
+     rather than a top-left corner that then jumps. */
+  .wbface img:not(.wbfit){width:100%;height:100%;object-fit:cover;}
+  /* Sits UNDER the picture (the img is absolutely positioned over it) so a face that is still
+     downloading shows the character's letter instead of an empty circle that reads as "this card
+     has no picture". Nothing removes it — the image simply covers it. */
+  .wbface .wbinitial{font-weight:600;opacity:.55;user-select:none;}
+  /* Show the full character-card image; face-region geometry applies only to the crop overlay. */
+  .wbcard{max-width:220px;max-height:330px;border-radius:8px;border:1px solid var(--line);
+          display:block;cursor:pointer;}
+  /* Full size means the PNG's OWN pixels — no upscale. A card is ~400x600, so this is a
+     real change without becoming a lightbox. §4.3: display only, never a re-encode. */
+  .wbcard.wbfull{max-width:none;max-height:none;}
+  /* m4o — picking the face. The image gets a positioned wrapper only while he is choosing, so
+     the ordinary view is byte-for-byte the layout it has always been. */
+  .wbpick{position:relative;display:inline-block;line-height:0;}
+  /* Dim the portrait outside the square selection; keep a dashed circle inside as a face-position guide. */
+  .wbpick .wbsq{position:absolute;box-sizing:border-box;border:2px solid var(--acc);
+                box-shadow:0 0 0 9999px rgba(0,0,0,.55);cursor:move;touch-action:none;}
+  .wbpick .wbsqc{position:absolute;inset:0;border-radius:50%;pointer-events:none;
+                 border:1px dashed rgba(255,255,255,.75);}
+  /* The handles. Corners only: the rect is square by format, so an edge handle would have to
+     move two sides at once and reads as a control that does not do what it looks like.
+     ⚠️ THEY SIT OUTSIDE THE BORDER (`-7px`) so the grab area does not eat a small square. */
+  .wbpick .wbh{position:absolute;width:14px;height:14px;box-sizing:border-box;
+               border:2px solid var(--acc);background:var(--panel);border-radius:3px;
+               touch-action:none;}
+  .wbpick .wbh-nw{left:-8px;top:-8px;cursor:nwse-resize;}
+  .wbpick .wbh-ne{right:-8px;top:-8px;cursor:nesw-resize;}
+  .wbpick .wbh-sw{left:-8px;bottom:-8px;cursor:nesw-resize;}
+  .wbpick .wbh-se{right:-8px;bottom:-8px;cursor:nwse-resize;}
+  /* The picture must not be draggable while he is dragging ON it — the browser's own image
+     drag starts a file drag and swallows every pointermove after the first.
+     ⚠️ `touch-action:none` IS WHAT MAKES THIS WORK ON A TOUCHSCREEN AT ALL: without it the
+     browser claims the gesture as a scroll and `pointermove` stops arriving after the first. */
+  .wbpick.wbpicking img{cursor:crosshair;-webkit-user-drag:none;user-select:none;touch-action:none;}
+  .wbfields{display:flex;flex-direction:column;gap:10px;}
+  /* §6.6 the find bar. Wraps rather than overflowing: it carries two text inputs and
+     six controls, and the pane is used at widths this would otherwise push out of. */
+  .wbfind{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px;
+          padding:7px 8px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);}
+  .wbfind input.filter{width:auto;min-width:180px;flex:0 1 240px;}
+  /* The field holding the current match. A tint, not a border, so nothing reflows —
+     a layout shift while stepping through matches moves the text under the cursor. */
+  .wbfield.wbhit{background:rgba(127,127,127,.10);}
+  .wbcount{opacity:.75;font-variant-numeric:tabular-nums;}
+  .wbfield{border-left:3px solid var(--line);padding:4px 0 4px 10px;}
+  .wbfield.wbdirty{border-left-color:var(--acc);}
+  /* §9a.29a — an entry the save was REFUSED over: `normal` mode with no keywords, which
+     SillyTavern skips outright. Red on the rail so it is findable while scrolling a 110-entry
+     book, and red on the empty Keywords box itself so the fix is where the eye lands. The rule
+     is AFTER .wbdirty deliberately: a refused entry is also a dirty one, and the blocker is the
+     more useful thing to show. */
+  /* Mark keyless entries that are intentionally not being saved; active invalid entries use the refusal state. */
+  .wbfield.wbinert{border-left-color:var(--warn);}
+  .wbinerttag{font-size:0.785714rem;line-height:1;padding:1px 6px;border-radius:999px;white-space:nowrap;
+              color:var(--warn);border:1px solid var(--warn);opacity:.85;cursor:help;flex:0 0 auto;}
+  /* Keep absent fields editable so users can add their first value. */
+  .wbfield.wbempty{border-left-color:var(--line);}
+  .wbfield.wbempty > .wbhead > .wbtick{cursor:help;opacity:.55;}
+  .wbemptytag{font-size:0.785714rem;line-height:1;padding:1px 6px;border-radius:999px;white-space:nowrap;
+              color:var(--muted);border:1px solid var(--line);cursor:help;flex:0 0 auto;}
+  /* The refusal wins the rail when both apply — it is the one with an action attached. */
+  .wbfield.wbkeyless{border-left-color:var(--err);}
+  .wbfield.wbkeyless .wbsf[data-name="key"] input{border-color:var(--err);}
+  .wbfield.wbkeyless .wbsf[data-name="key"] > .wbsl{color:var(--err);font-weight:600;}
+  .wbfield.wbkeyless .wbsf[data-name="key"] > .wbsl::after{content:" — required";}
+  /* X-prefixed entries remain editable and eligible for a pass; dimming is only a visual cue. */
+  .wbfield.wbx > .wbhead{opacity:.62;}
+  /* Fold unticked field bodies but keep headers visible so fields can be reselected. The ellipsis
+     distinguishes a folded body from an empty field. */
+  .wbfield.wbfold > .wbtext{display:none;}
+  .wbfield.wbfold > .wbhead::after{content:'⋯';opacity:.55;letter-spacing:1px;}
+  /* Keep entry folding independent from the outer document fold to avoid expanding every entry at once. */
+  .wbfield.wbshut > .wbtext{display:none;}
+  .wbfield.wbshut > .wbset{display:none;}
+  /* §9a.35 — the hoisted keywords box folds with the row for the same reason the ⚙ pane does:
+     a control standing under a collapsed entry has lost the text it belongs to. Both fold
+     classes, and listed beside `.wbset` so the pair cannot drift apart. */
+  .wbfield.wbshut > .wbkeys{display:none;}
+  .wbfield.wbshut > .wbhead::after{content:'⋯';opacity:.55;letter-spacing:1px;}
+  /* 🔴 THE DIRTY MARK MUST SURVIVE THE COLLAPSE. `.wbdirty` already tints the rail, but a rail is
+     not an explanation: an entry with unsaved edits, shut, next to a Save button reads as a Save
+     with nothing to do. The word is what makes it legible while scrolling past. Both fold classes,
+     because m4x's can hide an edited body too. Listed AFTER the plain `::after` rules so it wins,
+     and it carries the ⋯ itself — one element has only one `::after`. */
+  .wbfield.wbdirty.wbfold > .wbhead::after,
+  .wbfield.wbdirty.wbshut > .wbhead::after{content:'⋯ ● unsaved';color:var(--acc);opacity:.9;
+                                           letter-spacing:0;font-size:0.785714rem;}
+  /* The twisty. Pure CSS off the row's class so there is no JS text to keep in sync with the
+     class — the two drifting is how a caret ends up pointing the wrong way after Find opens a
+     row. `width` is fixed so the titles below it line up into a readable column. */
+  .wbcar{display:inline-block;width:.75em;text-align:center;opacity:.7;font-size:max(0.75rem,12px);
+         line-height:1;user-select:none;}
+  .wbcar::before{content:'▾';}
+  .wbfield.wbshut > .wbhead > .wbcar::before{content:'▸';}
+  /* Injection-mode markers include a tooltip and distinct disabled/vectorized glyphs; color is
+     never the only state indicator. */
+  /* ⚠️ `.wbgroup` too, not just `.wbfield` — m4k's heading has to vanish with the last row it
+     labels, or it floats over the next section and labels THAT. */
+  .wbfield.wbhide,.wbgroup.wbhide{display:none;}
+  /* §9a.28 — the glyphs are now SillyTavern's own emoji (🔵 🟢 🔗, plus our ⛔), so they carry
+     their own color and `color:` no longer reaches them. The old per-mode color rules are gone
+     rather than left in place looking load-bearing: a rule that cannot affect its target is a
+     rule the next reader will trust and be wrong about. Sized down, because an emoji at the
+     body's font-size sits taller than the text it labels and ragged the header row. */
+  .wbdot{font-size:0.785714rem;line-height:1;cursor:help;flex:0 0 auto;}
+  .wbdot.mdisabled{opacity:.75;}
+  .wbfield.mdisabled > .wbhead > b{text-decoration:line-through;text-decoration-thickness:1px;}
+  .wbhead{display:flex;align-items:center;gap:8px;cursor:pointer;margin-bottom:3px;}
+  .wbtext{width:100%;font:inherit;line-height:1.45;resize:vertical;}
+  /* Fold typed settings with their field so controls are not left under a collapsed entry. */
+  /* m4k / §9a.5 — the heading over a card's own embedded lorebook. Quiet: it is a signpost saying
+     "these belong to the card", not a section the eye should stop at. `wbfields` is a flex column,
+     so this sits in the flow as an ordinary child and needs no grid gymnastics. */
+  .wbgroup{margin:12px 0 -2px;font-size:0.821429rem;font-weight:600;letter-spacing:.3px;
+           color:var(--mut);border-top:1px solid var(--line);padding-top:9px;}
+  .wbfield.wbfold > .wbset{display:none;}
+  .wbfield.wbfold > .wbkeys{display:none;}
+  .wbset{margin-top:5px;}
+  /* Keep primary keywords visible because they are required for matching. */
+  .wbkeys > .wbkeysbody{border-left:2px solid var(--acc);}
+  .wbsetog{font:inherit;font-size:0.857143rem;padding:1px 8px;border:1px solid var(--line);
+           border-radius:11px;background:transparent;color:var(--mut);cursor:pointer;}
+  .wbsetog:hover{color:var(--fg);border-color:var(--acc);}
+  .wbsetog.on{color:var(--fg);border-color:var(--acc);}
+  .wbsetbody{margin:7px 0 3px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;
+             background:var(--panel2);}
+  .wbsetgrp{margin:0 0 9px;}
+  .wbsetgrp:last-child{margin-bottom:0;}
+  .wbsetgrp > h5{margin:0 0 5px;font-size:0.785714rem;letter-spacing:.6px;text-transform:uppercase;
+                 color:var(--mut);font-weight:600;}
+  .wbsetrow{display:flex;flex-wrap:wrap;gap:8px 14px;}
+  /* Each control is its own labeled box. `flex:0 1 auto` with a floor keeps a row of six
+     checkboxes tight while a keyword list still gets the width it needs. */
+  .wbsf{display:flex;flex-direction:column;gap:2px;font-size:0.857143rem;min-width:110px;}
+  .wbsf.wide{flex:1 1 260px;}
+  .wbsf.check{flex-direction:row;align-items:center;gap:5px;min-width:0;cursor:pointer;}
+  .wbsf > .wbsl{color:var(--mut);cursor:help;}
+  .wbsf input[type=text],.wbsf input[type=number],.wbsf select{font:inherit;font-size:0.857143rem;
+    padding:2px 5px;width:100%;box-sizing:border-box;}
+  .wbsf input[type=number]{max-width:110px;}
+  /* 🔴 A CHANGED SETTING IS MARKED ON THE CONTROL ITSELF. The row's accent border says "something
+     in this entry is unsaved"; with thirty-seven controls behind one fold, it does not say WHICH,
+     and an unnoticed stray click on `disable` is an entry that silently stops firing. */
+  .wbsf.dirty > .wbsl{color:var(--acc);}
+  .wbsf.dirty input,.wbsf.dirty select{outline:1px solid var(--acc);}
+  .wbsf .wbsub{display:flex;align-items:center;gap:5px;}
+  .wbpass textarea{width:100%;font:inherit;resize:vertical;}
+  /* §6.4.3 the model log. Monospace and pre-wrap because the whole value of this window is that
+     it shows the block VERBATIM — collapsing whitespace would hide exactly the prompt-assembly
+     faults it exists to expose. Bounded height: a pass is up to 60 exchanges of several KB. */
+  .wblog{max-height:460px;overflow:auto;border:1px solid var(--line);border-radius:6px;
+         background:var(--panel2);padding:8px;}
+  .wblogx{border-bottom:1px solid var(--line);padding-bottom:8px;margin-bottom:8px;}
+  .wblogx:last-child{border-bottom:0;padding-bottom:0;margin-bottom:0;}
+  .wblogh{display:flex;align-items:center;gap:8px;margin:2px 0 4px;}
+  .wblog pre{white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;
+             font-size:0.857143rem;line-height:1.45;margin:0 0 6px;}
+  .wblogrole{opacity:.7;font-weight:600;}
+  .wbprop{border:1px solid var(--line);border-radius:6px;margin-bottom:10px;overflow:hidden;}
+  .wbprophead{display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(127,127,127,.09);}
+  .wbprop.wbx .wbprophead > b{opacity:.62;}
+  .wbpanes{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:10px;}
+  @media(max-width:1100px){.wbpanes{grid-template-columns:1fr;}}
+  .wbpane{min-width:0;}
+  .wbbody{white-space:pre-wrap;word-wrap:break-word;max-height:28em;overflow:auto;
+          line-height:1.45;padding:6px 8px;border:1px solid var(--line);border-radius:4px;}
+  .wbedited{width:100%;font:inherit;line-height:1.45;resize:vertical;}
+  /* Paint additions behind the editable textarea; align both layers using identical font and scroll metrics. */
+  .wbafter{position:relative;background:var(--panel2);border-radius:7px;}
+  .wbafter .wbedited{position:relative;display:block;margin:0;background:transparent;
+                     overflow-y:auto;scrollbar-gutter:stable;}
+  .wbafter .wbhl{position:absolute;inset:0;max-height:none;overflow:hidden;pointer-events:none;
+                 color:transparent;border-color:transparent;padding:7px 9px;border-radius:7px;
+                 scrollbar-gutter:stable;}
+  /* "A row with changes is marked in the list itself … so the changed ones are findable by
+     scrolling rather than by reading" (§6.3). On the ROW, outside the fold, so a collapsed X entry
+     still says it differs. */
+  .wbprop.wbchanged{border-left:3px solid rgba(70,180,90,.55);}
+  /* The diff colors. Asserted by the browser spec via getComputedStyle, not by class name —
+     a theme with `!important` on a background has silently blanked a highlight here before. */
+  /* ⚠️ `.mergeText` JOINS THESE THREE RULES RATHER THAN RESTATING THE COLORS (9.6). Two
+     pairs of rgba literals for "changed" is how a green in one pane and a green in another
+     drift apart at the first theme tweak, and a color is the whole signal here. */
+  .wbbody del,.wbbody ins,.mergeText del,.mergeText ins{text-decoration:none;border-radius:2px;padding:0 1px;}
+  .wbbody del,.mergeText del{background:rgba(220,70,70,.28);}
+  .wbbody ins,.mergeText ins{background:rgba(70,180,90,.28);}
+  /* ⚠️ AFTER the rule it undoes, not before it. `.wbhl ins` and `.wbbody ins` are both (0,2,0), so
+     specificity does not separate them and source order is the whole of the cascade here — written
+     above, the 1px comes back and the highlight layer drifts a pixel per span. */
+  .wbhl del,.wbhl ins{padding:0;border-radius:0;}
+  .wbverdict{white-space:nowrap;}
+
+  /* ── ⇄ Import & merge's dialog (9.6) ──────────────────────────────────────
+     🔴 THE TEXT PANES SCROLL RATHER THAN GROW. A conflict is two versions of a worldbook entry,
+     and an entry runs to paragraphs — laid out unbounded, two of them push the Apply button off
+     the bottom of a modal that has no scroll of its own, which reads as a dialog with no way to
+     confirm. The peek is already truncated in JS; this bounds what the truncation cannot. */
+  .mergeRow{border-top:1px solid var(--line);padding:10px 0;}
+  .mergeRow:first-of-type{border-top:none;}
+  .mergeSide{margin:6px 0 0;}
+  .mergeSide>b{font-weight:600;font-size:0.857143rem;color:var(--mut);}
+  /* Keep the full entry available in a bounded, resizable pane; the modal body also scrolls so
+     Apply remains reachable. */
+  .mergeText{white-space:pre-wrap;background:var(--panel2);border-radius:6px;padding:7px 9px;
+             margin-top:2px;max-height:18em;overflow:auto;resize:vertical;
+             font-family:inherit;font-size:inherit;line-height:1.45;}
+  /* The box the third answer types into. Hidden until that radio is chosen — `.on` rather than the
+     `hidden` attribute, because a class this file owns cannot be beaten by a `display` rule
+     somebody adds to `.mergeEdit` later, and a reveal that silently fails is hard to notice. */
+  .mergeEdit{display:none;width:100%;margin-top:8px;box-sizing:border-box;}
+  .mergeEdit.on{display:block;}
+  /* Side by side so the two answers are compared rather than remembered, and stacked again when
+     the modal is narrow — two 40-character columns is not a comparison, it is a puzzle. */
+  .mergePick{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap;}
+  .mergePick label{display:flex;align-items:center;gap:5px;cursor:pointer;}

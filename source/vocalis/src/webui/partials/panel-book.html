@@ -1,0 +1,105 @@
+  <section data-panel="book" style="display:none">
+    <!-- Keep Chapters inside the selected book's Library detail view; without a selected book, a separate tab would have no content. -->
+    <div class="tabs" id="bkTabs">
+      <button data-bktab="generate" class="active">Generate</button>
+      <button data-bktab="library">Library</button>
+    </div>
+
+    <div data-bkpanel="generate">
+    <div id="strip"><div class="big" id="stripMain">—</div><div class="sub" id="stripSub"></div></div>
+    <div class="panel">
+      <h2>Source document</h2>
+      <div class="small muted" style="margin:-4px 0 8px">Upload a <code>.docx</code>/<code>.epub</code> or pick one you've uploaded, then render it below. (These are input documents — the finished audio lives in <b>Library</b> and <b>Chapters</b> above.)</div>
+      <div class="row">
+        <div style="flex:0"><input type="file" id="bookFile" accept=".docx,.epub"></div>
+        <div style="flex:0;align-self:flex-end"><button id="bookUpload" class="ok">⬆ Upload</button></div>
+        <div style="flex:2"><label>Uploaded books</label><select id="bookSelect"></select></div>
+        <div style="flex:0;align-self:flex-end"><button id="bookRefresh" title="Rescan">↻</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="danger sm" id="bookDelete">🗑 Delete</button></div>
+      </div>
+      <div id="bookDetails" class="small muted" style="margin-top:8px"></div>
+      <!-- plain-only: not offered in the Docker package (release audit 2026-10-11, item 4). A path typed here
+           is read INSIDE the container, so any host path answered "File not found"; Upload is the way in.
+           The #path input stays in the DOM either way because the uploaded-book picker fills it. -->
+      <details class="plain-only" id="bookManualPath" style="margin-top:10px">
+        <summary class="small muted" style="cursor:pointer">…or enter a server path manually</summary>
+        <div class="row" style="margin-top:6px">
+          <div style="flex:3"><input type="text" id="path" placeholder="/path/to/book.docx or .epub"></div>
+          <div style="flex:0"><button id="parseBtn">Parse</button></div>
+        </div>
+      </details>
+      <div id="chapsWrap" style="display:none;margin-top:10px;">
+        <label id="chapsLabel"></label><div class="chaps" id="chaps"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Voice &amp; parameters</h2>
+      <div id="bookCluster"></div><!-- rendered by voiceClusterHTML — identical to the Playground's -->
+    </div>
+    <div class="panel">
+      <h2>Enhancement</h2>
+      <div class="small muted" style="margin:-4px 0 8px">Chatterbox's voice comes out slightly muffled — it can't produce the crispness that makes speech sound present and real. Enhancement upscales it, and the chapters are saved at <b>256 kbps</b> instead of 96. It runs on the <b>finished chapters</b>, after the render — which is why it has its own hours below, on top of the render's.</div>
+      <div class="row" style="align-items:last baseline">
+        <div style="flex:0 0 auto"><label style="display:inline-flex;align-items:center;gap:6px;margin:0;color:var(--fg)"><input type="checkbox" id="bkEnh" checked> Enhance every chapter</label></div>
+        <div style="flex:0 0 auto" title="The diffusion solver's step count. More steps increase solver work and may improve coherence; they do not change the generated bandwidth."><label>Steps</label><select id="bkNfe" style="width:auto"></select></div>
+        <div style="flex:1;min-width:220px"><div class="small" id="bkEnhEta"></div></div>
+      </div>
+      <div class="small" id="bkEnhNote" style="margin-top:6px"></div>
+    </div>
+    <div class="panel">
+      <div class="row">
+        <div style="flex:0"><button class="go" id="runBtn" disabled>▶ Render book</button></div>
+        <div style="flex:0"><button class="danger" id="cancelBtn" style="display:none">■ Cancel</button></div>
+        <div style="flex:1;align-self:center" class="small muted">Which GPUs render lives in <b>⚙ Settings</b> — it applies to everything.</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="logwrap"><h2 style="margin:0">Live log</h2>
+        <div><label style="display:inline;margin:0;color:var(--fg)"><input type="checkbox" id="autoscroll" checked> auto-scroll</label>
+        <button id="copyLog" class="sm" style="margin-left:8px">Copy</button></div></div>
+      <div id="log"><span class="muted ph">Parse a book and press Render to begin.</span></div>
+    </div>
+    </div><!-- /Book ▸ Generate -->
+
+    <!-- ===== BOOK ▸ LIBRARY (master) + CHAPTERS (detail) ===== -->
+    <div data-bkpanel="library" style="display:none">
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Library <span id="libTotals" class="small muted" style="font-weight:400"></span></h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <!-- Sorting behavior is implemented by `libOrder` in the library module. -->
+            <select id="libSort" class="sm" title="Order the shelf. A book that has never finished a render has no date, so it sits at the bottom of the date orders rather than at the top of one of them.">
+              <option value="new">Newest render</option>
+              <option value="name">Title A→Z</option>
+              <option value="long">Longest first</option></select>
+            <input id="libFilter" class="filter" type="search" placeholder="Filter books…" autocomplete="off" spellcheck="false"
+                   title="Show only the books that match. Every word you type has to appear in the title.">
+            <button class="sm" id="libRefresh">↻ Refresh</button></div></div>
+        <div class="small muted" style="margin:-4px 0 8px">Every audiobook you've rendered — one row per <b>book</b><span class="plain-only"> (or copied into <code>output/</code> by hand)</span>. Click one to see its chapters below.</div>
+        <div id="libList"><span class="muted">Loading…</span></div>
+      </div>
+
+      <!-- The DETAIL half. Always here, empty until a book is picked — so the answer to
+           "where did my chapters go" is "directly below the book you clicked", not "in a
+           tab that was grayed out until you found the thing that ungrays it". -->
+      <div class="panel" id="outPanel">
+        <div class="logwrap"><h2 style="margin:0" id="outTitle">Chapters</h2>
+          <div id="outActions" style="display:none">
+            <button class="sm" id="outRename">Rename</button>
+            <div id="outConcatControls">
+              <select class="sm" id="outConcatFormat" aria-label="Single audiobook format">
+                <option value="opus">Opus</option><option value="mp3">MP3</option><option value="aac">AAC (Apple)</option>
+              </select>
+              <select class="sm" id="outConcatBitrate" aria-label="Single audiobook bitrate" title="Output is mono for Opus, MP3, and AAC (Apple).">
+                <option value="192" selected>192 kbps, mono</option><option value="160">160 kbps, mono</option><option value="128">128 kbps, mono</option><option value="96">96 kbps, mono</option><option value="64">64 kbps, mono</option>
+              </select>
+            </div>
+            <button class="sm go" id="outConcat" title="Build one complete audiobook from every chapter. Prefers chapter masters and falls back to finished chapter audio when a master has been reclaimed. Re-run it any time — it rebuilds.">⚙ Create single audiobook (Opus)</button>
+            <button class="sm danger" id="outClear">⚠ Clear all</button></div></div>
+        <div class="small muted" style="margin:-4px 0 8px" id="outBlurb">Pick a book above to see its chapters — play or download each, ↻ re-render a single chapter, or combine them all into one audiobook file.</div>
+        <div id="outMeta" class="small muted" style="margin-bottom:10px"></div>
+        <!-- The renderer fills this summary and leaves it empty when no WAV masters can be reclaimed. -->
+        <div id="outReclaimWrap" class="small" style="margin-bottom:10px"></div>
+        <div id="outList"><span class="muted">No book selected.</span></div>
+      </div>
+    </div>
+  </section>

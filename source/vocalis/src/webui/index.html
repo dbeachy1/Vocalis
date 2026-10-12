@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzJhMmQzMyIvPjxwYXRoIGQ9Ik0xOCAxOCBMMzIgNDYgTDQ2IDE4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjdhMTgiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==">
+<title>Vocalis — Studio</title>
+<meta name="csrf" content="{{CSRF}}">
+<meta name="admin-user" content="{{ADMIN_USER}}">
+<!-- Keep the stylesheets in their original source order; CSS cascade depends on link order. -->
+<link rel="stylesheet" href="/webui/css/base.css">
+<link rel="stylesheet" href="/webui/css/header.css">
+<link rel="stylesheet" href="/webui/css/controls.css">
+<link rel="stylesheet" href="/webui/css/strip.css">
+<link rel="stylesheet" href="/webui/css/logs.css">
+<link rel="stylesheet" href="/webui/css/wbedit.css">
+<link rel="stylesheet" href="/webui/css/meters.css">
+<link rel="stylesheet" href="/webui/css/sysrows.css">
+<link rel="stylesheet" href="/webui/css/items.css">
+<link rel="stylesheet" href="/webui/css/media.css">
+<link rel="stylesheet" href="/webui/css/acestep.css">
+<!-- Keep aceform.css directly after acestep.css; both files form one generated stylesheet segment. -->
+<link rel="stylesheet" href="/webui/css/aceform.css">
+<script>/* apply saved theme before first paint to avoid a flash */
+try{var _t=localStorage.getItem('vocalis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<script>/* Apply the valid cached font scale before first paint to avoid a layout jump while the
+   server setting loads; the server reconciles the cache after startup. */
+try{var _f=parseInt(localStorage.getItem('vocalis-ui-font'),10);
+    if(_f>=12&&_f<=24)document.documentElement.style.setProperty('--fs',_f+'px');}catch(e){}</script>
+<script>/* Inject UI state synchronously because startup scripts read it before an async fetch can finish. */
+window.__UI_STATE__={{UI_STATE}};</script>
+</head>
+<body>
+<header>
+  <!-- The edition tag ships HIDDEN and is unhidden by pollReady() only when /health says a vault
+       exists. Hidden-by-default is the safe direction: a paint before the first /health lands, or
+       a /health that never lands, must not claim encryption an unencrypted box does not have. -->
+  <!-- Logout belongs with session identity in the brand area, outside the engine action grid. -->
+  <div class="hdr-brand"><h1>Vocalis</h1><span class="ver" id="ver"></span>
+    <span class="edition" id="edition" hidden>Encrypted Edition</span>
+    <button id="logoutBtn" class="sm" style="display:none" title="Log out">⎋ Log out</button></div>
+  <!-- Row 1 = what the engines ARE doing (status, which model, load/free it).
+       Row 2 = actions on the box itself. Add new controls to the row that matches.
+       Both live in ONE .hdr-stack so they stay 6 px apart — see the CSS note. -->
+  <div class="hdr-stack">
+    <div class="hdr-row hdr-row1">
+      <span class="ready" id="ready"></span>
+      <!-- Each model has a state-aware button: Load when it is not in VRAM and Unload when it
+           is. #voxBtn appears only when /health reports the VoxCPM2 environment is installed. -->
+      <button id="cbBtn" class="sm" style="display:none"></button>
+      <button id="voxBtn" class="sm" style="display:none"></button>
+    </div>
+    <div class="hdr-row hdr-row2">
+      <!-- The aggregate model option performs an engine restart to release runtime memory; it is an action, not a model. -->
+      <button id="freeBtn" class="sm vram" style="display:none">⏏ Free Vocalis VRAM</button>
+      <button id="comfyBtn" class="sm vram" style="display:none">⏹ Stop ComfyUI</button>
+      <!-- #aceBtn's label is written entirely by acePaint(), same as #comfyBtn's, and for the
+           same reason: the text here is a placeholder that never shows, because the button
+           stays hidden until the first /acestep/status lands. It reads the systemd unit state,
+           NOT HTTP reachability — and here that matters twice over, because an ACE-Step that is
+           up and serving HTTP may still hold no model at all. -->
+      <button id="aceBtn" class="sm vram" style="display:none">⏹ Stop ACE-Step</button>
+    </div>
+    <!-- System-wide readouts occupy the rows below the controls and align to the right. -->
+    <div id="sysMem" style="display:none">
+      <div class="sysrow" id="swapLine" style="display:none"></div>
+      <div class="sysrow" id="psiLine" style="display:none"></div>
+      <div class="sysrow" id="boardTemp" style="display:none"></div>
+      <div class="sysrow" id="powerLine" style="display:none"></div>
+      <div class="sysrow" id="upsLine" style="display:none"></div>
+    </div>
+  </div>
+  <div id="vram"><div id="cpuLine" class="ubar-row" style="display:none"></div><div id="cpuMemLine" class="ubar-row" style="display:none"></div><div id="vramCards"></div></div>
+</header>
+
+<main>
+  <div class="tabs" id="tabs">
+    <button data-tab="playground" class="active">Playground</button>
+    <button data-tab="book">Book</button>
+    <button data-tab="voices">Voices</button>
+    <button data-tab="acestep">ACE-Step</button>
+    <button data-tab="voicestudio">Voice Studio</button>
+    <button data-tab="bulk">Bulk</button>
+    <button data-tab="nomi">Nomi</button>
+    <button data-tab="sillytavern">SillyTavern</button>
+    <button data-tab="llm" title="Load and unload the chat model — llama.cpp and KoboldCpp">LLM</button>
+    <button data-tab="settings" style="margin-left:auto" title="GPUs · KoboldCpp · admin login">⚙ Settings</button>
+  </div>
+  <div class="tabwrap">
+
+  <!-- ===== BOOK ===== -->
+{% include 'partials/panel-book.html' %}
+
+  <!-- ===== PLAYGROUND ===== -->
+{% include 'partials/panel-playground.html' %}
+
+  <!-- ===== VOICES ===== -->
+{% include 'partials/panel-voices.html' %}
+
+  <!-- ===== VOICE STUDIO: retained Speech and Stems workflows ===== -->
+{% include 'partials/panel-voicestudio.html' %}
+
+  <!-- ACE-Step runs through its authorized per-card backend while sharing app auth, settings, jobs, and device panels. -->
+{% include 'partials/panel-acestep.html' %}
+
+  <!-- ===== BULK (4.5) ===== -->
+{% include 'partials/panel-bulk.html' %}
+
+{% include 'partials/panel-nomi.html' %}
+
+  <!-- ===== SILLYTAVERN ===== -->
+{% include 'partials/panel-sillytavern.html' %}
+
+
+  <!-- ===== SETTINGS ===== -->
+  <!-- ===== LLM: llama.cpp | KoboldCpp (9.5-m1) ===== -->
+{% include 'partials/panel-llm.html' %}
+
+{% include 'partials/panel-settings.html' %}
+
+  </div><!-- /.tabwrap -->
+</main>
+
+<footer style="max-width:var(--shell);margin:0 auto;padding:6px 16px 28px;display:flex;justify-content:flex-end;align-items:center;">
+  <label style="display:flex;align-items:center;gap:6px;margin:0;color:var(--mut);">Theme
+    <select id="themeSel" style="width:auto;padding:4px 8px;"><option value="dark">Dark</option><option value="light">Light</option></select>
+  </label>
+</footer>
+
+<div id="overlay"><div class="modal"><h3 id="mTitle"></h3><div class="body" id="mBody"></div><div class="acts" id="mActs"></div></div></div>
+
+<script src="/webui/stream_player.js"></script>
+<!-- Load the app as one script entry point; modules register their own exports and side effects. -->
+<!-- The bundle is generated from src/webui/js/*.js with `npm run build`; edit sources, not the bundle. -->
+<script type="module" src="/webui/bundle/app.js"></script>
+</body>
+</html>

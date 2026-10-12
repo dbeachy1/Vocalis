@@ -1,0 +1,194 @@
+# Python virtual environment — recreated by setup.bat
+venv/
+
+# Generated audio output
+output/
+chunks/
+
+# Uploaded source documents (book library) — user data, not tracked
+books/
+
+# The Character & Worldbook editor store contains imported cards, lorebooks, revisions, and
+# proposals. It is routed into the vault on encrypted installs and must stay out of Git elsewhere.
+#
+# Anchor this pattern at the repository root so it cannot also ignore `src/wbedit/`.
+/wbedit/
+
+# The 4.x data directories — USER DATA, and the reason this block exists.
+#
+# uploads/        songs + stem sets YOU brought      (voiceswap.py: root/"uploads"/…)
+# voice_training/ training clips, their enhanced WAVs, and the prepped _datasets/
+#                 for runs in progress               (voicetrain.py: root/"voice_training")
+#
+# These directories contain uploaded audio, training sources, enhanced clips, and datasets.
+# Ignoring them prevents user data from being swept into commits or removed by cleanup commands.
+uploads/
+voice_training/
+
+# The trained-voice registry (*.pth + *.index + *.yaml). Moved here out of /ai-models/rvc:
+# each voice is 13-18 hours of GPU and cannot be re-downloaded, so it must NOT sit among
+# the public weights that can. The most expensive bytes in the repo. Never tracked.
+voice_models/
+
+# Shared MD5 audio cache (Nomi /speak + SillyTavern streaming)
+audio_cache/
+nomi/nomi_output/          # pre-3.0 store of the retired nomi_server (deleted in 5.0-M2)
+
+# Run logs (kept locally for troubleshooting, not tracked in git)
+logs/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Working and scratch files, including local test content.
+work/
+
+# Temporary handover docs and scratch notes are never tracked by default.
+*HANDOFF*.md
+AMD-todo.md
+TODO_3x.md
+
+# Backups the 3.x settings converter leaves beside the file it rewrote. The originals are
+# themselves ignored (voice_settings.yaml, below), so their backups must be too.
+*.pre3x.bak
+
+# PyTorch TunableOp's tuning dump. Written to the CWD of whatever launched the process —
+# i.e. the install root — the first time a ROCm box tunes its GEMMs. Machine-specific.
+tunableop_results*.csv
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editor noise
+*.swp
+*.swo
+.vscode/
+
+# Voice samples are user data and are never tracked.
+#
+# Voice samples are instance data, not shipped defaults. Keeping them out of Git avoids
+# overwriting local files during deployment and prevents plaintext from entering history.
+#
+# Ignore the whole folder because uploaded clips do not follow a reliable filename convention.
+#
+# Keep the directory empty in a fresh clone. Vault enablement requires that no unencrypted
+# sample files are present for migration; the application creates this directory as needed.
+#
+# The application creates this directory through the shared save path.
+voice_samples/
+
+# Create-a-voice audition candidates are durable local audio artifacts and must not be tracked.
+#
+# 🔴 ANCHORED, for the reason /wbedit/ at the top of this file is: a bare `voice_candidates/`
+# matches at any depth. Nothing under src/ is called that today, and that is exactly the kind of
+# fact that changes without anyone re-reading this line.
+/voice_candidates/
+
+# Local state — not committed. voice_settings.yaml is THE settings file (3.x):
+# every tab's section, incl. the Nomi map and the SillyTavern characters — and, since 5.0,
+# the KoboldCpp admin password (it moved out of app_settings.yaml, which cannot be encrypted).
+voice_settings.yaml
+app_settings.yaml
+
+# Web UI state includes selections and user-entered text; keep it local and out of Git.
+#
+# Structural vault names remain matchable by Git while file contents stay encrypted.
+ui_state.yaml
+
+# Clips favorites contain scene references and are routed through the vault.
+clip_favorites.yaml
+# Legacy spelling retained for upgraded installs and read during migration.
+clip_favourites.yaml
+# 11.2.7 — the Clips enhancement queue (scene refs, i.e. scene titles), now kept on the server.
+# Routed and structural like clip_favorites.yaml, and ignored for the same reason.
+scene_enhance_queue.yaml
+
+# Saved Create-a-voice forms contain user-authored descriptions and sample text.
+voice_templates.json
+
+# Saved song templates contain titles, lyrics, and captions.
+ace_templates.json
+
+# 8.0-m3f §4.5.3 — the saved-song library: an index and one FLAC per song. Both routed; the
+# index is structural so this line can match it, and the tree is ignored wholesale.
+ace_library.json
+# 8.0-m7 — the remembered candidates tray. Routed, so its NAME is in the clear and this
+# line can match it; the titles and seeds inside are ciphertext.
+ace_candidates.json
+
+# Virtual folders index local library organization and are stored in the vault.
+folders.yaml
+
+# LoRA Studio indexes and datasets are routed vault data and must stay out of Git.
+lora_subjects.json
+lora_prompt_templates.json
+lora_datasets/
+lora_faces/
+lora_generated/
+lora_training/
+lora_face_candidates/
+lora_tests/
+productions.json
+productions/
+ace_library/
+state/
+spike_out/
+
+# Admin login credential (username + salted password hash) — set via
+# set-admin-credentials.py; NEVER commit it
+admin_credentials.yaml
+
+# Per-instance paths, read by BOTH systemd (EnvironmentFile=) and the hand-run maintenance
+# tools (tts_utils.load_env_file). Machine-specific absolute paths — the .example IS committed.
+vocalis.env
+
+# 5.0 — the vault keyfile: the DEK, wrapped (design §4). NEVER commit it.
+# It is only ever the wrapped DEK plus an argon2 salt, so it is not a plaintext key — but it
+# is the ONE file that makes a backup restorable, and once a blob is in git history it is
+# there forever, on every clone and every remote. Losing it makes every backup permanently
+# unrecoverable EVEN IF you remember the password (design §13); leaking it hands an attacker
+# an offline target to grind the password against, at their leisure, with no rate limit.
+vault_keys.yaml
+vault_keys.yaml.part
+
+# The unlock sentinel lives WITH THE DATA (it is the whole point — a sentinel inside the
+# keyfile would validate against its own DEK and catch nothing). The store root is the
+# install root, so it lands here. It is per-store, and a committed one would be a lie about
+# a store it does not belong to.
+.vault_sentinel
+
+# Transient logs, configuration backups, crash artifacts, and scratch scripts belong here.
+#
+# Suffix-based ignore patterns may not match backups whose names append a marker after the
+# original extension. Centralizing transient files avoids relying on fragile filename patterns.
+#
+# ⚠️ A live output file is not a snapshot: COPY from anything a running process writes
+# (st.log, a database), never move it, or you break the writer.
+/temp/
+
+# 5.3 satellite: local venv, generated TLS material, runtime logs
+satellite/venv/
+satellite/certs/
+satellite/logs/
+satellite/satellite.yaml
+
+# `satellites.cert_dir()` writes uploaded certificates under the install root; keep them out of Git.
+/certs/
+
+
+# esbuild toolchain for the web UI bundle. The bundle is committed; deployed instances do not
+# need Node.js.
+/node_modules/
+
+# Ordinary worker worktrees are task-local implementation infrastructure.
+# Keep them out of Git status so no nested checkout can be accidentally staged.
+/.codex/
+
+# Local agent instructions can carry explicitly authorized test-environment credentials.
+# They belong to this checkout, never to shared Git history.
+/AGENTS.md

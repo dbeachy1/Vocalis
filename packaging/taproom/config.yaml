@@ -1,0 +1,44 @@
+dataRoot: /data/taproom/data
+listen: true
+listenAddress:
+  ipv4: 0.0.0.0
+  ipv6: '[::]'
+protocol:
+  ipv4: true
+  ipv6: false
+port: 8000
+heartbeatInterval: 0
+browserLaunch:
+  enabled: false
+whitelistMode: false
+enableForwardedWhitelist: false
+securityOverride: false
+disableCsrfProtection: false
+enableUserAccounts: true
+basicAuthMode: false
+perUserBasicAuth: false
+sso:
+  autheliaAuth: false
+  authentikAuth: false
+enableServerPlugins: true
+enableServerPluginsAutoUpdate: false
+pluginsPath: /opt/taproom/plugins
+storageProvidersPath: /opt/taproom/storage-providers
+storageProvidersRequiredId: vault
+enableExtensions: true
+enableExtensionsAutoUpdate: false
+extensions:
+  enabled: true
+  autoUpdate: false
+  models:
+    # October 10, 2026: returned to the model every existing store uses (this supersedes the
+    # earlier October 8 choice). Deliberately NO embeddingRevision: the model cache keys a
+    # non-main revision under <model>/<revision>/ and an unpinned install under main, so a pin would download the
+    # model again into the user's _cache instead of reusing the copy an adopted store already holds, and would fail
+    # offline. (Superseded: the October 8 pin of Xenova/all-mpnet-base-v2 at e086c5e0b3a57b0ce46dd6d9c0662948860b35f3.)
+    embedding: Xenova/multi-qa-mpnet-base-cos-v1
+logging:
+  enableAccessLog: false
+  debugMode: false
+  minLogLevel: 1
+  file: ../../logs/st
