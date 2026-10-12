@@ -1,0 +1,35 @@
+# Prettier, for the browser JavaScript. 8.3.2.
+#
+# Use two-space indentation and keep the release number. Prettier places opening braces on the same
+# line; the remaining options document deliberate formatting choices.
+#
+# ⚠️ YAML rather than .prettierrc.json because Prettier parses that one as STRICT JSON and rejects
+# comments outright — the reasoning below is worth more than the file extension.
+
+tabWidth: 2
+useTabs: false
+
+# A 140-column width is near the 95th percentile of code-line lengths here. It keeps common
+# declarations readable on one line while allowing the longest lines to wrap.
+printWidth: 140
+
+singleQuote: true
+
+# 🔴 preserve, NOT as-needed. Rewriting object KEYS is churn beyond the ask, and it is not
+# cosmetic: `'Authorization':` became `Authorization:` in the SillyTavern extension and took
+# test_st_extension_smoke.py red, because that test matches the QUOTED key deliberately — prose in
+# a docstring cannot contain the quotes, so they were its guard against a comment satisfying the
+# check. Every quoted key in the tree is a source-text assertion waiting to be broken, and the
+# negative ones break SILENTLY.
+# ⚠️ "preserve" does not RESTORE quotes already stripped — the files have to be checked out again.
+quoteProps: preserve
+
+semi: true
+arrowParens: avoid
+bracketSpacing: true
+trailingComma: all
+
+# 🔴 NOT COSMETIC. core.autocrlf is true here, so the index is LF and the worktree is CRLF, and
+# several .mjs harnesses match source BYTES off disk. Writing LF into the worktree would leave git
+# showing no diff at all while the harnesses read different bytes than they read today.
+endOfLine: crlf

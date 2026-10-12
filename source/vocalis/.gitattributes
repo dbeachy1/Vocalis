@@ -1,0 +1,22 @@
+# Windows batch files use CRLF in the working tree; cmd.exe misparses labels and `goto` in LF
+# batch files. They remain LF in the index like other text files.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts run on Linux. A CRLF checkout from Windows would make the shebang
+# `#!/usr/bin/env bash^M` and fail with "bad interpreter". Keep the existing LF convention.
+*.sh text eol=lf
+
+# Patches must apply on Linux; a CRLF diff fails with "corrupt patch" and names no useful cause.
+*.patch text eol=lf
+
+# verify-overlay.py carries a shebang and runs on Linux; CRLF would make it "bad interpreter".
+scripts/acestep/*.py text eol=lf
+
+# The lead-vocal separator child runs on the primary host and the satellite, and its bytes are
+# hashed on both sides to detect drift. A CRLF checkout on one
+# box and LF on the other would make identical content hash differently and stall the routing
+# permanently. `detect_script_sha` normalizes newlines as a belt-and-braces second line, but the
+# file should not be arriving in two shapes in the first place.
+scripts/leadvocal/detect.py text eol=lf
+satellite/leadvocal_detect.py text eol=lf

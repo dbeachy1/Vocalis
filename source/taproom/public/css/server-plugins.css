@@ -1,0 +1,98 @@
+/*
+ * TAPROOM §28 — the `Server plugins` section of the Extensions dialog.
+ *
+ * ⚠️ A NEW FILE ON PURPOSE, like buttons.css and spinning-icons.css before it. We pull from upstream
+ * regularly, and a file upstream does not have can never produce a merge conflict. Rules that belong to
+ * this section live here rather than being sprinkled into extensions-panel.css, which is upstream's.
+ *
+ * Built from `--SmartTheme*` variables throughout, so the section follows the user's theme exactly as the
+ * `Installed Extensions` rows above it do. It deliberately mirrors `.extension_block`'s border, radius and
+ * padding: this is one more list in a dialog full of lists, not a feature announcing itself.
+ */
+
+.extensions_info .serverPlugin_block {
+    padding: 5px;
+    margin-bottom: 5px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+}
+
+.extensions_info .serverPlugin_header {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 5px;
+}
+
+.extensions_info .serverPlugin_heading {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    min-width: 0;
+}
+
+.extensions_info .serverPlugin_name {
+    font-size: 1.05em;
+}
+
+.extensions_info .serverPlugin_version {
+    opacity: 0.8;
+    font-size: 0.8em;
+    font-weight: normal;
+}
+
+.extensions_info .serverPlugin_version:empty {
+    display: none;
+}
+
+.extensions_info .serverPlugin_status {
+    font-size: 0.8em;
+    white-space: nowrap;
+    opacity: 0.8;
+}
+
+/*
+ * 🔴 THE FAILED STATE IS THE ONE THING IN HERE THAT IS ALLOWED TO SHOUT. A plugin that threw during startup
+ * is invisible everywhere else in the application — this row is the only place a user can find out — so it
+ * gets a real colour rather than a themed one, for the same reason `.extension_name.update_available` does.
+ */
+.extensions_info .serverPlugin_status_failed {
+    color: var(--fullred, #b00);
+    opacity: 1;
+    font-weight: bold;
+}
+
+.extensions_info .serverPlugin_failed {
+    border-color: var(--fullred, #b00);
+}
+
+.extensions_info :is(.serverPlugin_description, .serverPlugin_error) {
+    font-size: 0.8em;
+    opacity: 0.8;
+    margin-top: 3px;
+}
+
+.extensions_info .serverPlugin_error {
+    /* An error message can be a long absolute path, and a dialog that scrolls sideways is a broken dialog. */
+    overflow-wrap: anywhere;
+    opacity: 1;
+}
+
+.extensions_info .serverPlugin_settingsToggle {
+    margin-top: 5px;
+}
+
+.extensions_info .serverPlugin_settingsBody {
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid var(--SmartThemeBorderColor);
+}
+
+/*
+ * The host's own message when a plugin's settings route could not be read at all — distinct from the
+ * fragment a plugin returns with a 503, which is the plugin's own words and is styled by the plugin.
+ */
+.extensions_info .pluginSettings_problem {
+    color: var(--fullred, #b00);
+}

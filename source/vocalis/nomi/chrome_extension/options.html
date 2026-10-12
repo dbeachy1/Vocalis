@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Vocalis TTS for Nomi — Settings</title>
+<style>
+  body{font:14px/1.5 system-ui,Segoe UI,Roboto,Arial;margin:26px;max-width:520px;color:#1b2230;background:#f4f6f9;}
+  h1{font-size:18px;margin:0 0 4px;}
+  .sub{color:#5c6675;margin:0 0 18px;}
+  label{display:block;margin:16px 0 5px;font-weight:600;}
+  input{width:100%;padding:9px 10px;border:1px solid #ccd3dd;border-radius:7px;font:inherit;box-sizing:border-box;}
+  input:focus{outline:none;border-color:#2f6fed;}
+  .hint{color:#5c6675;font-size:12.5px;margin-top:6px;}
+  code{background:#e7ecf3;border-radius:4px;padding:1px 5px;}
+  .row{display:flex;align-items:center;gap:12px;margin-top:18px;}
+  button{padding:9px 18px;border:0;border-radius:7px;background:#2f6fed;color:#fff;font:inherit;font-weight:600;cursor:pointer;}
+  button:hover{background:#255ad0;}
+  button.secondary{background:#e7ecf3;color:#1b2230;}
+  button.secondary:hover{background:#d8e0ea;}
+  button:disabled{opacity:.55;cursor:default;}
+  #status{color:#1a9e4b;font-weight:600;}
+  /* One element, three states. The color is set from JS alongside the text so a verdict can
+     never be left wearing the previous one's color — which is how "OK" ends up green over a
+     failure message. */
+  #result{margin-top:14px;padding:11px 13px;border-radius:7px;font-size:13.5px;line-height:1.5;display:none;}
+  #result.ok{display:block;background:#e6f7ec;border:1px solid #1a9e4b;color:#14612f;}
+  #result.bad{display:block;background:#fdeaea;border:1px solid #d23c3c;color:#8c1f1f;}
+  #result.busy{display:block;background:#eef1f5;border:1px solid #ccd3dd;color:#5c6675;}
+  #result b{display:block;margin-bottom:3px;}
+</style>
+</head>
+<body>
+  <h1>Vocalis TTS for Nomi</h1>
+  <p class="sub">Plays Nomi replies through your local Vocalis server (Chatterbox TTS). This is where messages are sent to be spoken (<code>/speak</code>).</p>
+
+  <label for="server">Vocalis server URL</label>
+  <input id="server" type="text" spellcheck="false" placeholder="http://127.0.0.1:7870">
+  <div class="hint">
+    Local (same machine): the address you open Vocalis at, for example <code>http://127.0.0.1:18770</code> for the Docker package or <code>http://127.0.0.1:7870</code> for a Vocalis started directly.<br>
+    Over the LAN with HTTPS: <code>https://your-server:7870</code> — the browser must trust that server's certificate.<br>
+    The port must be the one Vocalis answers on; change it here if you chose another at setup.<br>
+    No trailing slash. A non-localhost address must be <code>https://</code> — browsers block plain-HTTP requests from the nomi.ai page.
+  </div>
+
+  <label for="token">Pairing token</label>
+  <input id="token" type="text" spellcheck="false" autocomplete="off" placeholder="paste the token from Vocalis ▸ Settings ▸ Nomi extension">
+  <div class="hint">
+    <b>Required.</b> Vocalis refuses <code>/speak</code> without it — otherwise anyone who can
+    reach your server could use your GPU and add entries to your Nomi list.<br>
+    Get it in the Vocalis web UI: <b>⚙ Settings ▸ Nomi extension ▸ Copy</b>. It is a <b>different token</b>
+    from the SillyTavern one — they rotate independently, so pasting the wrong one will not work.<br>
+    Rotating it in Vocalis revokes this copy immediately; paste the new value here to pair again.
+  </div>
+
+  <div class="row">
+    <button id="save">Save</button>
+    <button id="test" class="secondary">Test</button>
+    <span id="status"></span>
+  </div>
+  <!-- The verdict gets its own line rather than sharing the status span: it is a sentence, not
+       a word, and three of its five outcomes name a fix the user has to read. -->
+  <div id="result" role="status" aria-live="polite"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

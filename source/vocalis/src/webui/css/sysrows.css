@@ -1,0 +1,26 @@
+  /* Place swap and memory-pressure readouts in the header's first column. */
+  #sysMem{display:contents;}
+  #swapLine {grid-column:1/-1;grid-row:3;justify-self:end;}
+  #psiLine  {grid-column:1/-1;grid-row:4;justify-self:end;}
+  /* Place UPS power and sensor values in their assigned columns; power yields columns 2–3. */
+  #powerLine{grid-column:2/-1;grid-row:5;justify-self:end;}
+  #upsLine{grid-column:1/2;grid-row:5;justify-self:end;width:0;overflow:visible;}
+  /* Align temperatures with the UPS row and allow overflow left beneath the brand. */
+  /* Keep the system readout on row 4; the brand and ACE-Step controls occupy separate rows. */
+  #boardTemp{grid-column:1/2;grid-row:4;justify-self:end;width:0;overflow:visible;}
+  .sysrow{display:flex;align-items:center;justify-content:flex-end;gap:5px;white-space:nowrap;}
+  /* `.ulab`'s 54px floor exists to line the strip's labels into a column; here it would only
+     push a short label ("swap") away from its own number, because this line is flush RIGHT
+     and has no column to join. Same type, no reserve. */
+  .sysrow .ulab{min-width:0;}
+  /* Swap use alone is normal. Apply amber to the affected readout when a row has multiple
+     values; the single-value memory-pressure row can use its row-level warning class. */
+  .sysrow.warn .ustat,.sysrow .ustat.warn{color:var(--warn);}
+  /* Critical UPS state overrides amber because low battery risks power loss during a write. */
+  .sysrow.crit .ustat{color:var(--err);font-weight:600;}
+  /* Keep these compact readouts in the existing grid; a third column would force CPU rows to wrap. */
+  /* Temperature is just another .ustat. It used to carry a min-width + right-align so it
+     lined up with a column above it — that column is gone, and all the reserved width did
+     was open a gap twice the size of every other gap on the row. Even spacing beats a
+     phantom grid. */
+  .utemp.hot,.utemp.hot b{color:var(--warn);}   /* ≥80 °C — worth noticing during an 18-hour training */

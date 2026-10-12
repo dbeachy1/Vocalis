@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Pinned source and license inputs for the retained Demucs Stems engine and statically linked lameenc/LAME libraries.",
+  "runtimeGraph": {
+    "demucs": {
+      "version": "4.0.1",
+      "url": "https://files.pythonhosted.org/packages/87/38/55f835ebd9f443465087a6954ede19d4a41aebdf5e28567e89b99d6d2f57/demucs-4.0.1.tar.gz",
+      "bytes": 1212924,
+      "sha256": "e45a5a788bae79767c37bbf6e69aae03862ddcca05550fb79b926346a177d713",
+      "publisherSha256": "e45a5a788bae79767c37bbf6e69aae03862ddcca05550fb79b926346a177d713",
+      "license": "MIT",
+      "licensePath": "LICENSE",
+      "licenseBytes": 1087,
+      "licenseSha256": "cf9b17822d1fcd4ff32ccbe14183386fb3adf6f2ff92dc184130823f7fc28173"
+    },
+    "lameenc": {
+      "version": "1.8.4",
+      "url": "https://github.com/chrisstaite/lameenc/tree/v1.8.4",
+      "revision": "813cce2f818dbd6888c0e02bc229e764e6491be6",
+      "archiveUrl": "https://codeload.github.com/chrisstaite/lameenc/tar.gz/refs/tags/v1.8.4",
+      "archiveBytes": 13499,
+      "archiveSha256": "70c7a23830c98139f2b8e2ebdd56990b3e8e50bb8eaf22daa7b8861b1f6bffcb",
+      "license": "LGPL-3.0-or-later",
+      "licensePath": "LICENSE",
+      "licenseSha256": "6039b8a570773eb83c43a7d3b332bbc9f805c6975411eaefd4120a39d9c5daeb",
+      "buildBoundary": "The Linux wheel statically incorporates LAME; preserve the complete wrapper source and app code so the extension can be rebuilt/relinked with a modified LAME version under LGPL-3.0-or-later section 4(d)(0)."
+    },
+    "lame": {
+      "version": "3.100",
+      "url": "https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz",
+      "archiveBytes": 1524133,
+      "archiveSha256": "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e",
+      "upstreamPinnedSha256": "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e",
+      "license": "LGPL-2.0",
+      "licensePaths": [
+        "COPYING",
+        "LICENSE"
+      ],
+      "buildRecipe": "lameenc v1.8.4 CMakeLists.txt downloads this exact archive, applies patch-lame.cmake and fixed-libmp3lame.sym, and builds static libmp3lame.a; setup.py links that archive into the Python extension."
+    }
+  },
+  "wheel": {
+    "filename": "lameenc-1.8.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_34_x86_64.whl",
+    "bytes": 247480,
+    "sha256": "18ba38c49759e217dd6fecf56ef92eab2a24f0a0d87ae4c3564ce4748d75b166",
+    "license": "LGPL-3.0-or-later"
+  },
+  "limits": [
+    "This lock records source correspondence and a rebuild route for lameenc and LAME, not an independent rebuild.",
+    "LAME's LGPL-2.0 grant and lameenc's LGPL-3.0-or-later grant are separate and both notices must be preserved.",
+    "Demucs is built from its exact MIT source archive; its Python package dependencies are pinned separately by requirements.cuda.lock and requirements.rocm.lock.",
+    "The lameenc and LAME source archives are also in the main image at /usr/share/licenses/vocalis/stems/source/."
+  ]
+}

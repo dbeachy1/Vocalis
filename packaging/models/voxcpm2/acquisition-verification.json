@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "status": "all-files-verified-outside-git",
+  "modelRepository": "openbmb/VoxCPM2",
+  "modelRevision": "32279effe8c19989596f05d353d1447f51d9e915",
+  "sourceRepository": "OpenBMB/VoxCPM",
+  "sourceRelease": "v2.0.0",
+  "sourceCommit": "a010d621ff9a1dce83ce9c934919b24f28073e90",
+  "modelLockPath": "packaging/models/voxcpm2/model-file-lock.json",
+  "modelLockSha256": "e2222809c5dcf0a71fef03e5d8d00a2e251c34b27a4e6a9a10cd71b4281f0ba2",
+  "metadataEvidenceSha256": "5c4b712bc1019aa7d029960d7a611821abbb7030c8a11ec7179cec2a5c19c5ce",
+  "acquisitionReportSha256": "118d839cbdc1d7db8fa28572bed4ba5d16862f6020cd16b304fa7a63c053849b",
+  "fileCount": 8,
+  "totalBytes": 4960730347,
+  "verificationMethod": "Each downloaded file matched its frozen Git blob SHA-1 or published LFS SHA-256 and exact size; downloaded SHA-256 is also recorded independently.",
+  "files": [
+    {
+      "path": "audiovae.pth",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/audiovae.pth",
+      "bytes": 376951122,
+      "expectedContentId": {
+        "algorithm": "sha256-lfs",
+        "value": "94b5d51e107e0507d4acc976cfdadb64edd6fd06d1f751dadbf2fd1594274bf1"
+      },
+      "gitBlobSha1": "036ef0b5ced85736b842e31d35bd39606845d830",
+      "lfsSha256": "94b5d51e107e0507d4acc976cfdadb64edd6fd06d1f751dadbf2fd1594274bf1",
+      "downloadedSha256": "94b5d51e107e0507d4acc976cfdadb64edd6fd06d1f751dadbf2fd1594274bf1",
+      "verification": "verified"
+    },
+    {
+      "path": "config.json",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/config.json",
+      "bytes": 4336,
+      "expectedContentId": {
+        "algorithm": "git-blob-sha1",
+        "value": "792f1c223ed607f9e508c0a0deb15dd9532483be"
+      },
+      "gitBlobSha1": "792f1c223ed607f9e508c0a0deb15dd9532483be",
+      "lfsSha256": null,
+      "downloadedSha256": "405f0dcd92f7feba6011ed4eac5c8d4f74cba9712f07fd5cfa3063bbdd95402c",
+      "verification": "verified"
+    },
+    {
+      "path": "model.safetensors",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/model.safetensors",
+      "bytes": 4580080592,
+      "expectedContentId": {
+        "algorithm": "sha256-lfs",
+        "value": "f7f964cfa9da23653baec6e6f7750719977ad944ed9f95fe52fe3a620506891d"
+      },
+      "gitBlobSha1": "d53929032ba7405f13a6236df11cd12da17d995a",
+      "lfsSha256": "f7f964cfa9da23653baec6e6f7750719977ad944ed9f95fe52fe3a620506891d",
+      "downloadedSha256": "f7f964cfa9da23653baec6e6f7750719977ad944ed9f95fe52fe3a620506891d",
+      "verification": "verified"
+    },
+    {
+      "path": "README.md",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/README.md",
+      "bytes": 7939,
+      "expectedContentId": {
+        "algorithm": "git-blob-sha1",
+        "value": "14573f986536306e3d9d65f988a3fc4b863b895c"
+      },
+      "gitBlobSha1": "14573f986536306e3d9d65f988a3fc4b863b895c",
+      "lfsSha256": null,
+      "downloadedSha256": "c18d2ffbfb2f0aec770481c967842aee6c200cde65f6b033efd892a849986fda",
+      "verification": "verified"
+    },
+    {
+      "path": "special_tokens_map.json",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/special_tokens_map.json",
+      "bytes": 1632,
+      "expectedContentId": {
+        "algorithm": "git-blob-sha1",
+        "value": "8619dda6f3eb6d60d0a1bb274820054e46f41699"
+      },
+      "gitBlobSha1": "8619dda6f3eb6d60d0a1bb274820054e46f41699",
+      "lfsSha256": null,
+      "downloadedSha256": "068594063e37662c02b21acf42ebb334ef6a74fb810e68a2368f88f08351de76",
+      "verification": "verified"
+    },
+    {
+      "path": "tokenization_voxcpm2.py",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/tokenization_voxcpm2.py",
+      "bytes": 2895,
+      "expectedContentId": {
+        "algorithm": "git-blob-sha1",
+        "value": "e7d768677298d058fa6ef8b160e3ca4430997fad"
+      },
+      "gitBlobSha1": "e7d768677298d058fa6ef8b160e3ca4430997fad",
+      "lfsSha256": null,
+      "downloadedSha256": "84489ea32b6ee0cae22ed5480cacb6df85c46624c3119be9a2021c3649a12729",
+      "verification": "verified"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/tokenizer_config.json",
+      "bytes": 5059,
+      "expectedContentId": {
+        "algorithm": "git-blob-sha1",
+        "value": "fecf4cdae73b57053cac2ad34c67febbe4e4f08b"
+      },
+      "gitBlobSha1": "fecf4cdae73b57053cac2ad34c67febbe4e4f08b",
+      "lfsSha256": null,
+      "downloadedSha256": "e78a3ebb48a0b9437efd1823b6b726c823da89e49dd8bcc90c02419d9baa772b",
+      "verification": "verified"
+    },
+    {
+      "path": "tokenizer.json",
+      "url": "https://huggingface.co/openbmb/VoxCPM2/resolve/32279effe8c19989596f05d353d1447f51d9e915/tokenizer.json",
+      "bytes": 3676772,
+      "expectedContentId": {
+        "algorithm": "git-blob-sha1",
+        "value": "41a5c2a8dba4058dd1ad73fb898abf5e4f64f0f9"
+      },
+      "gitBlobSha1": "41a5c2a8dba4058dd1ad73fb898abf5e4f64f0f9",
+      "lfsSha256": null,
+      "downloadedSha256": "f8984687e4a92a3503d521396d454b7d68e9fdaab2a0288eb3536c7c1aa4bc20",
+      "verification": "verified"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+# 🔴 LINE ENDINGS ARE PINNED, BECAUSE GIT FOR WINDOWS DECIDES OTHERWISE BY DEFAULT.
+#
+# Upstream ships no .gitattributes. Git for Windows sets `core.autocrlf=true` in its SYSTEM config
+# (C:/Program Files/Git/etc/gitconfig), so with nothing to override it every checkout on Windows rewrites
+# LF to CRLF, and every `git add` of an LF file prints:
+#
+#   warning: in the working copy of '<file>', LF will be replaced by CRLF the next time Git touches it
+#
+# The index has always held LF. The warning is git narrating a conversion nobody asked for, on every
+# commit, for every file. This makes the working tree match the index instead.
+#
+# ⚠️ THE FIX IS NOT TO WRITE CRLF. The repository content is LF; authoring CRLF would show every touched
+# file as wholly rewritten and turn a one-line change into a thousand-line diff.
+#
+# Committed rather than set as `core.autocrlf=input` in local config, because a local setting fixes one
+# clone on one machine and says nothing to the next one.
+
+# Everything git detects as text is LF in the index AND in the working tree.
+* text=auto eol=lf
+
+# Explicit, because `text=auto` guesses from content and a mis-detected binary is a corrupted binary.
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.webp   binary
+*.ico    binary
+*.woff   binary
+*.woff2  binary
+*.ttf    binary
+*.otf    binary
+*.eot    binary
+*.mp3    binary
+*.mp4    binary
+*.wav    binary
+*.ogg    binary
+*.webm   binary
+*.zip    binary
+*.gz     binary
+*.pdf    binary
+*.onnx   binary
+*.gguf   binary
+*.safetensors binary
+
+# Shell scripts break on CRLF — the shebang line takes the \r with it and the interpreter is not found.
+*.sh     text eol=lf
+
+# Windows batch files are the one place CRLF is correct.
+*.bat    text eol=crlf
+*.cmd    text eol=crlf

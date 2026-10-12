@@ -1,0 +1,30 @@
+Load the ACE-Step components at their target dtype to avoid temporary fp32 allocations. The VAE
+uses the same dtype value for loading and placement; the DiT loader already applies its dtype.
+Inactive proposal: this patch is not in apply-overlay.sh or verified by verify-overlay.py.
+Upstream base: 6d467e4b5081ccb0abf1ec1bf4fdf9051a2d34b0.
+
+--- a/acestep/core/generation/handler/init_service_loader_components.py
++++ b/acestep/core/generation/handler/init_service_loader_components.py
+@@ -50,7 +50,10 @@
+         if not os.path.exists(vae_checkpoint_path):
+             raise FileNotFoundError(f"VAE checkpoint not found at {vae_checkpoint_path}")
+ 
+-        self.vae = AutoencoderOobleck.from_pretrained(vae_checkpoint_path)
++        vae_dtype = self._get_vae_dtype(device if not self.offload_to_cpu else "cpu")
++        self.vae = AutoencoderOobleck.from_pretrained(
++            vae_checkpoint_path, torch_dtype=vae_dtype
++        )
+         if not self.offload_to_cpu:
+             vae_dtype = self._get_vae_dtype(device)
+             self.vae = self.vae.to(device).to(vae_dtype)
+@@ -92,7 +95,9 @@
+             raise FileNotFoundError(f"Text encoder not found at {text_encoder_path}")
+ 
+         self.text_tokenizer = AutoTokenizer.from_pretrained(text_encoder_path)
+-        self.text_encoder = AutoModel.from_pretrained(text_encoder_path)
++        self.text_encoder = AutoModel.from_pretrained(
++            text_encoder_path, torch_dtype=self.dtype
++        )
+         if not self.offload_to_cpu:
+             self.text_encoder = self.text_encoder.to(device).to(self.dtype)
+         else:

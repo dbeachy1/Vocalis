@@ -1,0 +1,36 @@
+    <!-- ST ▸ VOCALIS EXTENSION SETTINGS: server-owned settings for the optional Polish text and
+         send path. The prompt is intentionally edited here rather than copied into SillyTavern's
+         extension settings: Vocalis remains the single source of truth. -->
+    <div data-stpanel="extension-settings" style="display:none">
+      <div class="panel">
+        <div class="logwrap">
+          <h2 style="margin:0">Vocalis Extension Settings</h2>
+          <div style="flex:1"></div>
+          <span id="stExtensionSettingsRevision" class="small muted" aria-live="polite"></span>
+        </div>
+        <div class="small muted" style="margin-bottom:10px">
+          Configure <b>Polish Text and Send</b> for the Vocalis extension in SillyTavern. It uses
+          the current SillyTavern model and roleplay context, including World Info and Author's
+          Note. The intermediate polishing request stays outside chat history; only the validated
+          final message can be sent normally. While it is on, Enter polishes and sends, and
+          Ctrl+Enter sends your draft as typed.
+        </div>
+        <div style="display:grid;gap:8px;max-width:760px">
+          <label style="display:flex;align-items:center;gap:8px">
+            <input id="stExtensionEnabled" type="checkbox" checked>
+            <span>Enable Polish Text and Send</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:8px">
+            <input id="stExtensionImmediateSend" type="checkbox" checked>
+            <span>Send immediately after polishing</span>
+          </label>
+          <label for="stExtensionPrompt" class="small muted" style="margin-top:4px">Polishing prompt</label>
+          <textarea id="stExtensionPrompt" rows="18" spellcheck="false" style="width:100%;min-height:280px"></textarea>
+        </div>
+        <div class="row" style="margin-top:10px;align-items:center">
+          <button class="primary" id="stExtensionSave" disabled>Save</button>
+          <button class="sm" id="stExtensionRestore" style="margin-left:8px" disabled>Restore default prompt</button>
+          <span id="stExtensionSettingsStatus" class="small muted" style="margin-left:10px;min-height:1.2em" role="status" aria-live="polite"></span>
+        </div>
+      </div>
+    </div>

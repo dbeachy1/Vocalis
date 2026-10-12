@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Restores only the pinned Inno Setup compiler (NuGet package Tools.InnoSetup 6.7.3) in locked mode;
+       build-installer.ps1 reads the InnoSetupCompiler property this package defines. The package is
+       restored under obj\packages (git-ignored) so the build touches nothing outside this folder. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RestorePackagesPath>$(MSBuildThisFileDirectory)obj\packages</RestorePackagesPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Tools.InnoSetup" Version="6.7.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>

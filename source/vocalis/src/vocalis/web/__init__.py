@@ -1,0 +1,1 @@
+"""The HTTP surface is organized by route domain. Blueprints import shared state from `vocalis.runtime` and must not import `vocalis_server`; move shared helpers into runtime or inject them through a factory. CORS is configured once on the app. App-level login and vault gates run in that order before blueprint views."""

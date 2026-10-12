@@ -1,0 +1,31 @@
+**
+!packaging/
+!packaging/satellite/
+!packaging/satellite/Dockerfile
+!packaging/satellite/satellite_admin.py
+!source/
+!source/vocalis/
+!source/vocalis/satellite/
+!source/vocalis/satellite/*.py
+!source/vocalis/src/
+!source/vocalis/src/tts_utils.py
+!source/vocalis/src/engine_process.py
+!source/vocalis/LICENSE
+!packaging/models/
+!packaging/models/fetch_models.py
+!packaging/models/chatterbox/
+!packaging/models/chatterbox/manifest.json
+!packaging/models/chatterbox/NOTICE.md
+# The pinned nvidia-ml-py wheel, its lock and its license text (the NVIDIA image installs them).
+!packaging/nvml/
+!packaging/nvml/nvidia_ml_py-13.615.71-py3-none-any.whl
+!packaging/nvml/requirements.lock
+!packaging/nvml/LICENSE-nvidia-ml-py.txt
+# License texts and notices installed read-only in the image: the LGPL-2.1 and GPL-3.0 texts for every image, and the ROCm component notices
+# (a folder of text files and one JSON record) for the AMD image.
+!packaging/licenses/
+!packaging/licenses/LGPL-2.1.txt
+!packaging/licenses/GPL-3.0.txt
+!packaging/licenses/rocm-notice-artifacts.json
+!packaging/licenses/rocm/
+!packaging/licenses/rocm/*

@@ -1,0 +1,26 @@
+<section data-panel="voicestudio" style="display:none">
+  <div class="tabs" id="vsTabs">
+    <button data-vstab="stems" class="active">Stems</button>
+    <button data-vstab="speech">Speech</button>
+  </div>
+  <div class="vswrap">
+{% include 'partials/panel-voicestudio-stems.html' %}
+    <div data-vspanel="speech" style="display:none">
+      <div class="panel">
+        <h2>Speech</h2>
+        <div class="small muted" style="margin:-4px 0 8px">Your speech-material library. Upload a recording, add a Playground clip, isolate vocals from a stem set, or add a scene recording. The source stays available for cleanup and enhancement.</div>
+      </div>
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Speech clips <span id="spTotals" class="small muted" style="font-weight:400"></span></h2>
+          <div style="display:flex;gap:8px;align-items:center">
+            <span><input type="file" id="spFile" accept=".wav,.mp3,.flac,.ogg,.m4a,.opus" style="display:none"><label for="spFile" class="filebtn">⬆ Upload clip</label></span>
+            <input id="spFilter" class="filter" type="search" placeholder="Filter clips…" autocomplete="off" spellcheck="false"
+                   title="Show only the clips that match. Every word you type has to appear in the name.">
+            <button class="sm" id="spRefresh">↻ Refresh</button></div></div>
+        <div class="small muted" style="margin:-2px 0 8px">Uploads and clips added from Playground, Stems, or SillyTavern scenes appear in this shared library.</div>
+        <div id="spPlayerWrap" style="margin-bottom:8px;display:none"></div>
+        <div id="spList"><span class="muted">Loading…</span></div>
+      </div>
+    </div>
+  </div>
+</section>

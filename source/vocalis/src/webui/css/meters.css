@@ -1,0 +1,105 @@
+  /* Playground library table (2.3) */
+  .pgtable{width:100%;border-collapse:collapse;font-size:0.928571rem;}
+  .pgtable th{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);color:var(--mut);font-weight:600;white-space:nowrap;}
+  .pgtable th[data-sort]{cursor:pointer;user-select:none;} .pgtable th[data-sort]:hover{color:var(--fg);}
+  .pgtable td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:middle;}
+
+  /* Allow clip actions to wrap while keeping the duration column on one line. */
+  /* Assign surplus width to the name column and constrain unusually long metadata. */
+  .pgtable th.scname{width:100%;}
+  .pgtable td.scfrom{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pgtable td.scdate{white-space:nowrap;}
+  .pgtable td.sclen{white-space:nowrap;}
+  /* Keep metadata wrapping behavior consistent with the name column taking flexible width. */
+  .pgtable td.scacts{white-space:nowrap;}
+  .pgtable td.scacts > *{margin:2px 3px 2px 0;}
+
+  /* Mark completed enhancement as status while keeping the button available for recovery runs. */
+  .pgtable td.scacts button.scEnhDone{color:var(--mut);border-style:dashed;}
+  .pgtable td.scacts button.scEnhDone:hover{color:var(--fg);border-style:solid;}
+
+  /* Keep enhancement queue messages in a list layout so long text wraps within its cell. */
+  .scEnhHead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-bottom:6px;}
+  /* 🔴 `0 0 auto`, NEVER a zero basis — see above. `flex-wrap` is the narrow-window answer: a cell
+     drops to the next line WHOLE rather than stacking its own words. */
+  .scEnhHead>*{flex:0 0 auto;}
+  /* The one cell that is a sentence rather than a label keeps its shrink, so a genuinely narrow
+     window wraps it AT SPACES instead of pushing the header into a horizontal overflow. Same call,
+     same reason, as `#loraTestVerdict` in lora.css. */
+  .scEnhHead>.scEnhNote{flex:0 1 auto;min-width:0;}
+  .scEnhCounts{font-variant-numeric:tabular-nums;}
+
+  /* TEN ROWS, STATED AS TEN ROWS. The height is derived from the row height rather than being a
+     second number to keep in step with it. An eleventh item is left half-visible at the bottom
+     edge, which says "there is more below" better than a scrollbar on its own does. */
+  .scEnhQ{--scEnhRow:28px;}
+  /* Constrain the queue to its content width so the close button stays beside the message. */
+  .scEnhList{max-height:calc(var(--scEnhRow) * 10.5);width:min(100%,760px);
+             overflow-y:auto;overflow-x:hidden;
+             border:1px solid var(--line);border-radius:6px;background:var(--panel2);}
+  .scEnhItem{display:flex;align-items:center;gap:8px;min-height:var(--scEnhRow);padding:0 8px;
+             border-bottom:1px solid var(--line);}
+  .scEnhItem:last-child{border-bottom:none;}
+  .scEnhItem:nth-child(even){background:var(--stripe);}   /* the ACE library's own striping */
+  .scEnhItem:hover{background:var(--pill);}
+  .scEnhGrip{color:var(--mut);cursor:grab;user-select:none;letter-spacing:-2px;}
+  .scEnhItem:active .scEnhGrip{cursor:grabbing;}
+  /* A row that is mid-START cannot be reordered (see scEnhStrip), and the grip must say so rather
+     than accept a gesture that does nothing. */
+  .scEnhItem[draggable="false"]{cursor:default;}
+  .scEnhItem[draggable="false"] .scEnhGrip{cursor:default;opacity:.3;}
+  .scEnhPos{color:var(--mut);font-variant-numeric:tabular-nums;text-align:right;min-width:2.2em;
+            font-size:max(0.75rem,12px);}
+  /* 🔴 `min-width:0` AND `overflow`, or a long scene name widens the box and pushes the ✕ off the
+     right-hand edge: a flex item's default `min-width` is `auto`, i.e. its min-content, and text
+     does not shrink below that on its own. This is the one column that absorbs the slack. */
+  .scEnhName{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .scEnhState{color:var(--mut);white-space:nowrap;font-size:max(0.75rem,12px);}
+  /* The ✕ is a verb, not a decoration: full row height so it is an easy target, and it colors to
+     --err on hover so there is no doubt which row it belongs to. */
+  .scEnhX{background:none;border:none;color:var(--mut);cursor:pointer;padding:0 4px;
+          align-self:stretch;line-height:1;}
+  .scEnhX:hover{color:var(--err);}
+  /* Drag feedback. The insertion point is drawn as a rule ON an existing row rather than as a
+     placeholder that takes up space: every height change under the cursor mid-drag is a chance to
+     lose the drag, and an inset shadow changes no box at all. */
+  .scEnhItem.scEnhDragging{opacity:.4;}
+  .scEnhItem.scEnhDropBefore{box-shadow:inset 0 2px 0 var(--acc);}
+  .scEnhItem.scEnhDropAfter{box-shadow:inset 0 -2px 0 var(--acc);}
+  /* 6.1-m1b §3 step 5 — "the row shows the pending change in color; nothing has been written."
+     A left rail as well as a tint, because a tint alone is easy to miss on a long chapter list
+     and these rows are a promise about what Apply will do. Color-mix keeps them legible in both
+     themes without a second palette: --warn for a replaced line, --ok for an inserted one. */
+  .pgtable tr.scStaged td{border-bottom-color:transparent;}
+  .pgtable tr.scStagedRep td{background:color-mix(in srgb,var(--warn) 14%,transparent);}
+  .pgtable tr.scStagedRep td:first-child{box-shadow:inset 3px 0 0 var(--warn);}
+  .pgtable tr.scStagedIns td{background:color-mix(in srgb,var(--ok) 14%,transparent);}
+  .pgtable tr.scStagedIns td:first-child{box-shadow:inset 3px 0 0 var(--ok);}
+  .pgrow{cursor:pointer;} .pgrow:hover td{background:var(--panel2);}
+  .pgrow.active td{background:var(--pill);}   /* the clip that's loaded/playing */
+  /* Make the expanded player row appear as part of the active clip row. */
+  .pgtable tr.pgrow.active td{border-bottom-color:transparent;}
+  .pgtable tr.pgplayrow td{background:var(--pill);padding:0 8px 8px;}
+  /* per-card GPU load: thin blue bar under the VRAM bar, % at the end */
+  .ubar-row{display:flex;align-items:center;gap:5px;margin-top:3px;flex-wrap:wrap;}
+  /* Match GPU MEM's trough so CPU/GPU load and memory rows read as one instrument. Keep `.ubar`
+     scoped to these readouts; `.bar` is shared with training progress. */
+  .ubar{flex:1 1 50px;min-width:40px;height:9px;background:var(--barbg);
+        border:1px solid var(--line);border-radius:5px;overflow:hidden;}
+  /* Keep the meter trough at a fixed share of the row so readouts cannot change its width. */
+  #vram>.ubar-row>.ubar{flex:0 0 max(120px,calc(100% - 275px));}
+  #vram>.ubar-row>.upct{margin-left:auto;}
+  .ufill{height:100%;background:var(--acc);border-radius:5px;}
+  /* Memory is GREEN in this strip and load is BLUE — the GPU MEM bar directly above says so.
+     The CPU MEM bar is the same quantity for the other chip, so it is the same color. */
+  .ufill.mem{background:var(--ok);position:relative;}
+  /* Anchor the reclaimable memory segment inside the existing bar without changing total width. */
+  .ufill.mem>.memarc{position:absolute;right:0;top:0;height:100%;
+                     background:var(--vused);border-radius:0 5px 5px 0;}
+  /* Keep readout values at full contrast and units muted; `--line` is reserved for borders. */
+  .upct{font-size:max(0.75rem,12px);color:var(--fg);min-width:30px;text-align:right;font-variant-numeric:tabular-nums;}
+  .usep{font-size:max(0.75rem,12px);color:var(--mut);opacity:.55;}      /* the dividers along the sensor row */
+  /* Match the parenthesized in-use figure to the corresponding green memory-bar segment. */
+  .ureal{color:var(--ok);}
+  .ustat{font-size:max(0.75rem,12px);color:var(--fg);font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .ustat b{font-weight:400;color:var(--mut);}              /* the name + unit, quieter than the number */

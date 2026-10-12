@@ -1,0 +1,30 @@
+    <div data-llmpanel="api" style="display:none">
+      <!-- LLM ▸ API (11.1); behavior is js/llm/api.js. #apiToken is type="text" class="masked", never type="password"
+           and no "key" in its id — ⚙ Settings ▸ llama.cpp's token-field rule; that partial has the reasoning. -->
+      <div class="panel" id="apiMain">
+        <h2>Hosted provider</h2>
+        <div class="row"><div style="flex:0 0 auto;min-width:200px"><label for="apiProvider">Provider</label>
+          <select id="apiProvider"><option value="openrouter">OpenRouter</option><option value="featherless">Featherless</option></select></div></div>
+        <div class="row" style="margin-top:10px;align-items:flex-end">
+          <div style="flex:1;min-width:260px"><label for="apiToken">API key</label>
+            <input type="text" id="apiToken" class="masked" autocomplete="off" spellcheck="false" placeholder="paste a key"></div>
+          <div style="flex:0 0 auto"><button class="primary" id="apiKeySave">Save key</button></div>
+          <div style="flex:0 0 auto"><button id="apiKeyRemove" style="display:none">Remove</button></div>
+        </div>
+        <div class="small muted" id="apiKeyState" style="margin-top:4px">—</div>
+        <div class="row" style="margin-top:10px;align-items:center">
+          <div style="flex:0 0 auto"><button id="apiConnect">Connect</button></div>
+          <div style="flex:1;min-width:240px"><span class="small" id="apiConnectState"></span></div>
+        </div>
+      </div>
+      <div class="panel" id="apiModelPanel">
+        <h2>Model</h2>
+        <label for="apiSearch">Search models</label>
+        <div style="position:relative"><input type="text" id="apiSearch" autocomplete="off" spellcheck="false" placeholder="type at least 2 characters, e.g. glm">
+          <span id="apiSearchSpin" class="spin" style="display:none;position:absolute;right:10px;top:50%;margin-top:-6px"></span></div>
+        <div class="small muted" id="apiSearchState" style="margin-top:4px"></div>
+        <div id="apiResults" class="apiresults" style="display:none"></div>
+        <div class="small" id="apiSelected" style="margin-top:10px">—</div>
+        <div class="small muted" id="apiPrivacy" style="margin-top:8px"></div>
+      </div>
+    </div>

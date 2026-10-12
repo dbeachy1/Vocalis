@@ -1,0 +1,84 @@
+  /* A collapsed stem set reuses one player and selector pills in both Stems views. */
+  .stemset{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--panel2);}
+  .stemhead{display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;}
+  .stemhead:hover{border-color:var(--acc);}
+  .stemhead .grow{flex:1;min-width:0;}
+  .stemhead .t{font-weight:600;} .stemhead .m{color:var(--mut);font-size:0.857143rem;}
+  .stemhead .caret{color:var(--mut);width:12px;flex:0 0 auto;transition:transform .15s;}
+  .stemset.open .caret{transform:rotate(90deg);}
+  .stembody{display:none;padding:0 10px 10px;}
+  .stemset.open .stembody{display:block;}
+  .stemplay{display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+            padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);}
+  .stempills{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px;}
+  /* A pill is the SELECTOR — clicking one re-points the single player above it. The
+     active one is filled, so "which stem am I hearing" is never a guess. */
+  button.pill{background:var(--pill);color:var(--acc);border:1px solid transparent;border-radius:20px;
+              padding:3px 12px;font-size:0.857143rem;cursor:pointer;}
+  button.pill:hover{border-color:var(--acc);}
+  button.pill.on{background:var(--acc);color:var(--accfg);border-color:var(--acc);}
+  /* Use heading weight because these pills name the two Stems views. */
+  .viewpills{display:flex;gap:6px;align-items:center;flex:0 0 auto;}
+  .viewpills button.pill{font-size:1rem;font-weight:600;padding:5px 16px;}
+  .badge{font-size:0.785714rem;border-radius:10px;padding:0 7px;border:1px solid var(--line);color:var(--mut);}
+  .badge.up{color:var(--ok);border-color:var(--ok);}
+  /* 4.4: a cleaned clip wears a LIGHT-green badge (--cln), independent of the dark-green
+     "Full quality ✨" (--ok). A clip can wear both — cleaned and enhanced are separate facts. */
+  .badge.cleaned{color:var(--cln);border-color:var(--cln);}
+  /* 8.4 — a lead extraction that came back under ~15s of usable audio. The only other two
+     badge variants are greens, and a thin result is precisely not that. */
+  .badge.warn{color:var(--warn);border-color:var(--warn);}
+  a.dl{color:var(--dl);text-decoration:none;font-weight:600;} a.dl:hover{text-decoration:underline;}
+  /* Give unclassed links a theme-aware color; button-like links define their own. */
+  a{color:var(--acc);} a:hover{color:var(--acc);filter:brightness(1.15);}
+  .bookcard{cursor:pointer;} .bookcard:hover{border-color:var(--acc);}
+  /* The shelf card can grow by several export rows. Keep its book-level controls beside the
+     book heading; otherwise the far-right delete button lines up with a codec's delete button. */
+  .bookcard>.vpick{align-self:flex-start;}
+  .bookcard>button{align-self:flex-start;}
+  .book-full-download{margin-top:5px;}
+  .full-export{display:flex;align-items:center;gap:7px;margin-top:4px;}
+  .full-export .dlbtn{margin-left:0;}
+  /* The picked book stays lit: its chapters are what the panel below is showing, and on a
+     long list the only other clue is off-screen. Same treatment as .vsrow.active. */
+  .bookcard.active{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc);}
+  /* Keep the format picker as wide as the build action, with distinct control rows. */
+  #outActions{display:grid;grid-template-columns:max-content max-content;gap:8px 12px;align-items:start;}
+  #outActions > :not(#outClear){grid-column:1;}
+  #outRename{justify-self:start;}
+  #outConcatControls{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:8px;width:100%;min-width:0;}
+  #outConcatFormat,#outConcatBitrate{width:100%;min-width:0;}
+  #outConcat{width:100%;}
+  #outClear{grid-column:2;grid-row:3;}
+  /* modal */
+  #overlay{position:fixed;inset:0;background:var(--scrim);display:none;align-items:center;justify-content:center;z-index:50;}
+  #overlay.on{display:flex;}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:520px;width:92%;padding:18px;box-shadow:0 20px 60px rgba(0,0,0,.5);}
+  .modal h3{margin:0 0 8px;font-size:1.142857rem;} .modal .body{color:var(--fg);margin-bottom:16px;line-height:1.5;}
+  .modal .acts{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;}
+  /* 4.4 Clean up workspace — wide enough for the Trim timeline */
+  .modal.wide{max-width:700px;}
+  /* 9.6 — opt-in, for the merge dialog. A panel taller than the viewport pushes its own
+     buttons off the bottom of the screen, which reads as a dialog you cannot confirm. The
+     column + min-height:0 pair is what actually lets the body scroll: a flex ITEM refuses
+     to shrink below its content without it, so `overflow-y` alone does nothing. */
+  .modal.tall{max-height:90vh;display:flex;flex-direction:column;}
+  .modal.tall .body{overflow-y:auto;min-height:0;flex:1 1 auto;}
+  .clnsec{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0;}
+  .clnsec.off{opacity:.55;}
+  .clnhd{display:flex;align-items:center;gap:8px;font-weight:600;}
+  .clnrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+  .clnrow input[type=range]{flex:1;min-width:160px;}
+  /* the kept/dropped timeline: one bar, green segments kept, red dropped, gaps neutral */
+  .clnbar{position:relative;height:24px;border-radius:6px;background:var(--barbg);border:1px solid var(--line);overflow:hidden;margin:8px 0 4px;}
+  .clnseg{position:absolute;top:0;bottom:0;}
+  .clnseg.keep{background:var(--cln);}
+  .clnseg.drop{background:var(--err);opacity:.75;}
+  .clnread{font-size:0.857143rem;color:var(--mut);}
+  /* the 20-second denoise preview: two labeled rows, players aligned under a fixed label column */
+  .clnab{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+  .clnabrow{display:flex;align-items:center;gap:10px;}
+  .clnablbl{min-width:70px;font-size:0.857143rem;font-weight:600;color:var(--mut);}
+  .clnabrow audio{flex:1;height:34px;min-width:0;}
+  .clnlog{background:var(--barbg);border:1px solid var(--line);border-radius:6px;padding:8px;
+          font-family:ui-monospace,monospace;font-size:0.857143rem;max-height:150px;overflow:auto;white-space:pre-wrap;}

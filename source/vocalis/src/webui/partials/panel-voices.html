@@ -1,0 +1,143 @@
+  <section data-panel="voices" style="display:none">
+    <!-- Use one voice list filtered by origin: uploaded voices or generated voices. -->
+    <div class="tabs" id="vTabs">
+      <button data-vtab="upload" class="active">Upload a voice</button>
+      <button data-vtab="create" id="vTabCreate" style="display:none" title="Design a brand-new voice from a description with VoxCPM2">Create a voice</button>
+    </div>
+    <div class="vcwrap">
+
+    <div data-vcpanel="upload">
+    <div class="panel">
+      <h2>Upload a voice</h2>
+      <div class="row">
+        <div style="flex:0"><input type="file" id="vAddFile" accept="audio/*"></div>
+        <!-- Prefilled from the chosen file the moment you pick one, and editable. A filename
+             is a meaningful default HERE because you picked that file; a designed voice has
+             nothing to fall back on, which is why Create demands a name instead (§14.2). -->
+        <div style="flex:1"><label>Name</label><input type="text" id="vAddName" placeholder="pick a file, or type a name"></div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="vAddBtn">Upload</button></div>
+      </div>
+      <div class="small muted" style="margin-top:6px">Any audio is transcoded to WAV and peak-normalized to −1 dBFS. 10–60 s recommended.</div>
+    </div>
+    </div>
+
+    <div data-vcpanel="create" style="display:none">
+    <div class="panel">
+      <!-- Treat sample-text language as a preset for Chatterbox; VoxCPM2 uses its input text without a language tag. -->
+      <div class="logwrap"><h2 style="margin:0">Create a voice</h2>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:flex-end">
+          <span style="display:flex;gap:6px;align-items:center">
+            <label for="vcLang" class="small muted" style="margin:0">Sample text language</label>
+            <select id="vcLang" class="sm" style="width:auto"
+                    title="A PRESET, not a setting — it just drops a ready-made example sentence into the Sample text box below, and matches the accent in the description.&#10;&#10;This is NOT required to generate speech in any language. VoxCPM2 has no language setting at all: the TEXT is what determines the language. Type or paste your own words in any of these 30 and it will speak them, whatever this box says.&#10;&#10;Anything you have typed yourself is never overwritten."></select>
+          </span>
+          <!-- Select which ready-made passage for the chosen language populates the sample field; this does not alter engine parameters. -->
+          <span style="display:flex;gap:6px;align-items:center">
+            <label for="vcLen" class="small muted" style="margin:0">Approximate length</label>
+            <select id="vcLen" class="sm" style="width:auto"
+                    title="Also a PRESET, not a setting — it swaps the Sample text box for a shorter or longer ready-made passage in the language above. Each one continues the last, so a longer choice extends what you were already reading rather than replacing it.&#10;&#10;The seconds are APPROXIMATE. VoxCPM2's speaking pace varies between draws and between languages; these are sized from a measured read, not guaranteed by one.&#10;&#10;10 s is the safe choice. 60 s is what Chatterbox would rather clone from, but it is past the point where VoxCPM2's own output starts to drift — see the note under the box.&#10;&#10;Anything you have typed yourself is never overwritten."></select>
+          </span>
+        </div></div>
+      <div class="small muted" style="margin:6px 0 10px">Describe a voice and give it a sentence to speak. VoxCPM2 <b>designs</b> it from scratch — no recording needed — then it becomes an ordinary voice the rest of Vocalis clones. <span id="vcModelState" class="muted"></span></div>
+      <div id="vcNotLoaded" class="small" style="display:none;margin:-4px 0 10px;padding:8px 10px;border:1px solid var(--line);border-radius:6px">
+        VoxCPM2 isn't loaded — Generate will start it for you (about 11s a card).
+        <button class="xs" id="vcLoadBtn">⬇ Load it now</button>
+        <span class="muted">— optional, to get that wait out of the way first. It holds one card per GPU (~7 GB each) and unloads itself once you've been idle for ten minutes.</span>
+      </div>
+      <!-- Voice templates save a reusable description and sample text for later selection. -->
+      <div class="row" style="align-items:flex-end;gap:8px;margin-bottom:10px">
+        <div style="flex:1 1 240px;min-width:0">
+          <label for="vcTpl">Template <span class="muted small">— a saved description + sample text + steps. Picking one fills the boxes below; it never generates.</span></label>
+          <select id="vcTpl" style="width:100%"></select>
+          <!-- Show the current box contents because a template name alone does not reflect later edits. -->
+          <div id="vcTplState" class="small muted" style="margin-top:3px;min-height:1.2em"></div>
+        </div>
+        <div style="flex:0 0 auto"><label for="vcTplSort">Sort</label>
+          <select id="vcTplSort" title="Favorites always float to the top of whichever order you pick.">
+            <option value="name">Name</option>
+            <option value="new">Newest first</option>
+          </select></div>
+        <div style="flex:0 0 auto;display:flex;gap:6px">
+          <button id="vcTplFav" class="xs" title="Favorite this template — ★ float to the top of the list" disabled>☆</button>
+          <!-- Use Save for creating a template; editing an existing template is a separate action. -->
+          <button id="vcTplUpdate" class="xs" title="Save the boxes below back into the selected template, replacing what it held" disabled>💾 Save</button>
+          <button id="vcTplSave" class="xs" title="Save what is in the boxes below as a NEW template, leaving the selected one alone">💾 Save as…</button>
+          <button id="vcTplDel" class="xs danger" title="Delete the selected template. The voices you made with it are untouched." disabled>✕</button>
+        </div>
+      </div>
+      <label>Description <span class="muted small">— who is this voice? End with quality words; avoid negatives/effects (they backfire).</span></label>
+      <textarea id="vcPrompt" rows="2" spellcheck="false">a 20-year-old woman with a Midwestern American accent, warm and clear, studio-quality recording, close to the microphone</textarea>
+      <label style="margin-top:8px">Sample text <span class="muted small">— the words it speaks (see the length note below). Editable.</span></label>
+      <textarea id="vcSample" rows="3">Oh, hi! It's so good to see you. Honestly, I've been having kind of a rough day. But seeing you here, right now, it just turned everything around. I promise, this is going to be wonderful.</textarea>
+      <!-- Show both the preferred reference length and the engine-specific supported range. -->
+      <div class="small muted" style="margin-top:6px"><b>Length:</b> a longer reference clones better — 10 s is the floor, around 60 s is ideal, and past 60 s is diminishing returns rather than harm. But VoxCPM2 drifts as one take runs long: by about 36 s clips pick up echo, breath pops and artifacts near the end, and Chatterbox will clone those too. <span id="vcLenNote"></span></div>
+      <!-- No Seed box (4.8-m3 §14.2/§14.3). It was an implementation detail wearing a label:
+           nobody thinks "I would like two candidates, therefore I shall leave the seed blank."
+           The count is now simply one candidate per free card, as fast as possible, and the
+           seed is still recorded in the provenance sidecar if it's ever wanted. -->
+      <!-- Batch uses the same one-candidate-per-free-card round as Generate, repeated to the requested count. -->
+      <div class="row" style="margin-top:8px">
+        <div style="flex:0;min-width:150px"><label>Quality steps <span class="muted small" title="More steps = higher quality and detail, but slower to generate. 30 is best quality; lower it only if you want faster drafts.">ⓘ</span></label>
+          <input type="number" id="vcSteps" min="4" max="30" step="1" value="30"></div>
+        <div style="flex:0;min-width:150px"><label>Batch size <span class="muted small" title="How many candidates to make, one round after another, from the description and sample text above. Only the seed changes between them.&#10;&#10;It runs on the SERVER, so you can close this tab or the laptop lid and the run carries on. A round is one candidate per free GPU, so 100 on a two-card box is about 50 rounds.&#10;&#10;It yields to renders: if something else needs the GPUs the batch waits for them rather than taking them.">ⓘ</span></label>
+          <input type="number" id="vcBatchN" min="1" max="500" step="1" value="20"></div>
+        <div style="flex:1"></div>
+        <div style="flex:0;align-self:flex-end;display:flex;gap:6px">
+          <button id="vcBatchBtn" title="Run the batch — leave it going overnight">▶ Batch</button>
+          <button class="primary" id="vcGenBtn">Generate</button></div>
+      </div>
+      <div id="vcStatus" class="small muted" style="margin-top:10px"></div>
+      <div id="vcBatch" class="small" style="display:none;margin-top:8px;padding:8px 10px;border:1px solid var(--line);border-radius:6px"></div>
+      <div id="vcLog" class="small muted" style="margin-top:6px;display:none;white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;line-height:1.5;padding:8px 10px;border:1px solid var(--line);border-radius:6px;max-height:160px;overflow:auto"></div>
+      <!-- The candidate list is SERVER-BACKED and APPEND-ONLY (§18.5). Its header carries the two
+           controls that make an unbounded list livable: a selection, and the size on disk —
+           "mass-delete is a control he has no reason to reach for until the volume is full". -->
+      <div id="vcCandHead" class="row" style="display:none;align-items:center;gap:10px;margin:12px 0 0">
+        <label class="small" style="flex:0 0 auto;display:flex;align-items:center;gap:6px;margin:0;cursor:pointer">
+          <input type="checkbox" id="vcSelAll" style="margin:0"> Select all</label>
+        <!-- Keep Autoplay at its intrinsic width so the control does not expand and displace neighboring actions. -->
+        <div id="vcCandTotals" class="small muted" style="flex:0 1 auto;min-width:0"></div>
+        <span class="vsep"></span>
+        <!-- Autoplay: a triage loop, not a jukebox. Ticking it plays the top row; SAVING or
+             DELETING a row plays the next one; a clip reaching its end plays nothing. All of the
+             behavior is in js/voice/autoplay.js, which observes this list rather than being
+             called by it — nothing in the inline script below knows this control exists. -->
+        <label class="small" style="flex:0 0 auto;display:flex;align-items:center;gap:6px;margin:0;cursor:pointer"
+               title="Play the top candidate, and move to the next one each time you save or delete. A clip that simply finishes does not advance.">
+          <input type="checkbox" id="vcAutoplay" style="margin:0"> Autoplay</label>
+        <div style="flex:1 1 auto"></div>
+        <!-- §17.4 — the way out of the render cap, AT THE TOP. The one below the rows could not be
+             found underneath a hundred audio players. Its own element so the totals line stays
+             plain text: it is the sentence that says nothing here expires, and it must not become
+             markup that a stub-DOM test can only read as empty. -->
+        <div id="vcCandMoreTop" class="small" style="flex:0 0 auto;display:none"></div>
+        <!-- Soft-delete voices so the last removal can be undone without restoring unrelated items. -->
+        <button class="recover xs" id="vcUndel" style="flex:0 0 auto" disabled
+                title="Put back the clips from your last ✕ delete. Only the most recent one is held — the next delete is what finally removes it from disk.">↩ Undelete last</button>
+        <button class="danger xs" id="vcDelSel" style="flex:0 0 auto" disabled>✕ Delete selected</button>
+      </div>
+      <div id="vcCandidates" style="margin-top:6px"></div>
+      <div id="vcCandMore" class="small muted" style="margin-top:8px;display:none"></div>
+    </div>
+    </div>
+
+    </div>
+
+    <div class="panel">
+      <!-- The heading names the ORIGIN this tab is showing ("Uploaded voices — 27"), because
+           the list below is filtered to it. One element, retitled and refiltered on tab
+           switch — see renderVoiceList(). -->
+      <div class="logwrap"><h2 style="margin:0"><span id="vListTitle">Voices</span> <span id="vTotals" class="small muted" style="font-weight:400"></span></h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="vFilter" class="filter" type="search" placeholder="Filter voices…" autocomplete="off" spellcheck="false"
+                 title="Show only the voices that match. Every word you type has to appear in the label or the filename.">
+          <!-- ONE sort setting shared by both sub-tabs (§16.5): Uploaded and Created are two
+               views of one store, and an order that changed when you switched tabs would read
+               as a bug. Favorites float to the top of either order — ★ does not filter. -->
+          <select id="vSort" class="sm" title="Order the list. Favorites (★) always float to the top of whichever order you pick — starring never hides anything.">
+            <option value="added">Recently added</option>
+            <option value="name">Name</option></select>
+          <button class="sm danger" id="vDelSel" disabled title="Delete every voice you have ticked. Tick rows with the checkbox on the left of each one.">🗑 Delete selected</button><button class="sm" id="vRefresh" style="margin-left:8px" title="Refresh all files in the voice_samples folder — rescans and picks up any audio (WAV, MP3, FLAC…) added or removed since the page loaded.">↻</button></div></div>
+      <div id="vList"><span class="muted">Loading…</span></div>
+    </div>
+  </section>

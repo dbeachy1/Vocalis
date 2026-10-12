@@ -1,0 +1,9 @@
+--- a/df/utils.py
++++ b/df/utils.py
+@@ -143,5 +143,5 @@ def get_git_root():
+         git_local_dir = os.path.dirname(os.path.abspath(__file__))
+         args = ["git", "-C", git_local_dir, "rev-parse", "--show-toplevel"]
+         return subprocess.check_output(args).strip().decode()
+-    except subprocess.CalledProcessError:
++    except (subprocess.CalledProcessError, FileNotFoundError):
+         return None

@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "distribution": "audio-separator",
+  "derived_version": "0.44.5+vocalis.2",
+  "source": {
+    "repository": "https://github.com/nomadkaraoke/python-audio-separator",
+    "release_tag": "v0.44.5",
+    "commit": "4fe3540c249ff130bd5395c0e9377b3d16970c1a",
+    "tag_evidence": "Official GitHub Releases lists v0.44.5 at commit 4fe3540; official commit metadata resolves this to the pinned full commit.",
+    "archive_url": "https://codeload.github.com/nomadkaraoke/python-audio-separator/tar.gz/4fe3540c249ff130bd5395c0e9377b3d16970c1a",
+    "archive_bytes": 130870389,
+    "archive_sha256": "db73624abb0345884b1ad366c11e283286e08900ba1fdc4c535ee3d95c1fec17",
+    "upstream_license": "MIT",
+    "license_path": "LICENSE",
+    "license_sha256": "0623e284f0f187120f131eb203155f0258c3e41866fd71b6b5e09b3c48ff9b46",
+    "upstream_pyproject_sha256": "4edeac2a1b95ad51d510b0c42d85e169cd515e16481bc0a1daa82d0ca4b974bf",
+    "package_file_manifest": "audio-separator-source-files.json",
+    "package_file_manifest_sha256": "df869ec6459ea3f27fc9064f8665e4052c0d30ba00c550e3cb4b0a5dc99ca876",
+    "package_file_count": 100,
+    "package_file_bytes": 2142954
+  },
+  "patch": {
+    "path": "audio-separator.patch",
+    "sha256": "26c5ff80e81a916648b3d324983b7b8d730284da5a5024f8c847d74b2f37695b",
+    "changes": [
+      "tool.poetry.version: 0.44.5 -> 0.44.5+vocalis.2",
+      "remove only the non-Windows diffq>=0.2 runtime requirement; preserve the separate Windows diffq-fixed requirement",
+      "audio_separator/separator/common_separator.py write_audio: librosa.get_duration(filename=...) -> librosa.get_duration(path=...); librosa 1.0.0, which the profile locks pin, removed the filename= keyword, so every save of a separated stem raised TypeError"
+    ],
+    "runtime_source_files": [
+      {
+        "path": "audio_separator/separator/common_separator.py",
+        "upstream_sha256": "531c48740ca235365fedad9a9df9d2e65d92bb65b9ca4dd243fdef587afccb6d",
+        "patched_sha256": "4afbd4cacfcb2d382d7f27e31fe2a46f6ebf4e4ba5f2fc3c33bb01fdf0514dce",
+        "lines_changed": 1
+      }
+    ]
+  },
+  "build_backend": {
+    "name": "poetry-core",
+    "version": "2.5.0",
+    "license": "MIT",
+    "filename": "poetry_core-2.5.0-py3-none-any.whl",
+    "url": "https://files.pythonhosted.org/packages/b7/25/7ed0a2ea4fe12f7fd0394387b5debbcd6fdbd06e5ac9daab96ba11471da8/poetry_core-2.5.0-py3-none-any.whl",
+    "bytes": 413562,
+    "sha256": "98ee465b66f7e14bb9fbe68fb5e00d0cff184f036993ec94610ae4b5612f3add",
+    "requires_dist": []
+  },
+  "expected_result": {
+    "filename": "audio_separator-0.44.5+vocalis.2-py3-none-any.whl",
+    "pure_python": true,
+    "requires_dist_removed": [
+      "diffq>=0.2; platform != \"win32\""
+    ],
+    "requires_dist_preserved": [
+      "diffq-fixed>=0.2; platform == \"win32\""
+    ],
+    "runtime_source_changes": 1
+  },
+  "patched_pyproject_sha256": "53780505057e9a9386abf05433e8e75a0950c7b7b0c639a3c0d1d19d38483d45",
+  "build_proof": {
+    "result_sha256": "d85fe3cdd543316a3e66378433891b6a37969120890d72ba730ef30d9b8360d2",
+    "python_version": "3.14.6",
+    "builder_behavior": "Poetry Core 2.5.0 backend imported from its exact wheel after verified extraction; no package dependencies installed; network unused",
+    "baseline_wheel_sha256": "83c0ea87f65abad112f5be1876eae3191eaf0b44055846e36fd463761dee62c1",
+    "derived_wheel": {
+      "filename": "audio_separator-0.44.5+vocalis.2-py3-none-any.whl",
+      "bytes": 411277,
+      "sha256": "7c8a74d9886ad2338e70e4cdffc9f22a3b700012ce8c34ef62a96fc1b537595d",
+      "license_sha256": "0623e284f0f187120f131eb203155f0258c3e41866fd71b6b5e09b3c48ff9b46"
+    },
+    "repeat_wheel_sha256": "7c8a74d9886ad2338e70e4cdffc9f22a3b700012ce8c34ef62a96fc1b537595d",
+    "identical_independent_builds": true,
+    "metadata_diff": {
+      "removedRequiresDist": [
+        "Requires-Dist: diffq (>=0.2) ; sys_platform != \"win32\""
+      ],
+      "addedRequiresDist": [],
+      "baseVersion": "Version: 0.44.5",
+      "derivedVersion": "Version: 0.44.5+vocalis.2"
+    },
+    "pep517_frontend_check": {
+      "result_sha256": "7d4c395a1e77c4b470d96425cbd915136189fbe05e405d9bfd0ece34d07fca18",
+      "command": "python -m pip wheel --no-build-isolation --no-deps --no-index --no-cache-dir",
+      "exit_code": 0,
+      "wheel_sha256": "7c8a74d9886ad2338e70e4cdffc9f22a3b700012ce8c34ef62a96fc1b537595d",
+      "matches_backend_wheel": true
+    }
+  },
+  "profiles": {
+    "rocm": {
+      "requirements_input": "requirements.rocm.in",
+      "requirements_input_sha256": "3fdd2a5d72c2dfb8466df855c42fee0d20bfb247d2cbc2fd16aea197bd069cca",
+      "requirements_lock": "requirements.rocm.lock",
+      "requirements_lock_sha256": "4ff7b36874cbaca6e2774e0d1551a50df74ed9c5be0c133ee592211f24da52df",
+      "resolved_package_count": 67,
+      "target": "CPython 3.12, Linux x86_64",
+      "resolver": "uv pip compile --no-build --no-python-downloads --generate-hashes; repeated offline from exact task cache"
+    },
+    "cuda": {
+      "requirements_input": "requirements.cuda.in",
+      "requirements_input_sha256": "008506417045ad702b2399728515f830c24f417db20b8e8b53a21fc8dedcd97c",
+      "requirements_lock": "requirements.cuda.lock",
+      "requirements_lock_sha256": "72d7c7468e108346c279f1752d7ccab2481a01234b11820be2511b44544e2b80",
+      "resolved_package_count": 79,
+      "target": "CPython 3.12, Linux x86_64",
+      "resolver": "uv pip compile --no-build --no-python-downloads --generate-hashes; repeated offline from exact task cache"
+    }
+  }
+}

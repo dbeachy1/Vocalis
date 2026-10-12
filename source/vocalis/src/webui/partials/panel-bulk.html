@@ -1,0 +1,96 @@
+  <section data-panel="bulk" style="display:none">
+    <div class="panel">
+      <h2>Bulk</h2>
+      <div class="small muted" style="margin:-4px 0 8px">
+        A one-shot batch pass: drop a pile of files, pick a format, get them back as a single ZIP.
+        Nothing is added to your library — the inputs are throwaway copies and the ZIP is the only thing kept.
+      </div>
+      <!-- Clean up FIRST: it is step 1 of the sanctioned chain (clean → enhance is one-way —
+           4.4 §6, and cleanup.py: "denoise never runs on already-enhanced audio"), so the tabs
+           read left-to-right in pipeline order and ▸ Copy to Enhance points forward. -->
+      <div class="tabs" id="blkModeTabs" style="margin-bottom:10px">
+        <button data-blkmode="cleanup" class="active">Clean up</button>
+        <button data-blkmode="enhance">Enhance</button>
+      </div>
+      <div class="small muted" id="blkModeBlurb" style="margin:-4px 0 8px"></div>
+
+      <!-- SETUP state -->
+      <div id="blkSetup">
+        <div class="row">
+          <div style="flex:1"><label>Files</label>
+            <input type="file" id="blkFiles" multiple accept="audio/*,.wav,.mp3,.flac,.ogg,.m4a,.opus"><span id="blkChosen"></span>
+            <div class="small muted" id="blkStageNote" style="margin-top:4px">Files upload as you pick them and stay here until you run or remove them — picking more adds to the list.</div>
+            <div id="blkStaged" style="margin-top:6px"></div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:8px;align-items:flex-end">
+          <div style="flex:0 0 auto" title="WAV is lossless (no re-encode). 256k is the house default for enhanced speech — enhancement doubles the band the encoder must pay for, so 256k is where the headroom lands. 320k mono buys little over it; 192k is acceptable. Output is mono either way.">
+            <label>Output format</label>
+            <select id="blkFormat" style="width:auto">
+              <option id="blkSourceOpt" value="source" style="display:none">Match source</option>
+              <option value="mp3_256k" selected>MP3 256 kbps (recommended)</option>
+              <option value="mp3_320k">MP3 320 kbps</option>
+              <option value="mp3_192k">MP3 192 kbps</option>
+              <option value="wav">WAV (44.1 kHz mono)</option>
+            </select>
+          </div>
+          <div style="flex:0 0 auto" id="blkNfeWrap" title="The diffusion solver's step count. More steps increase solver work and may improve coherence; they do not change the generated bandwidth.">
+            <label>Steps</label><select id="blkNfe" style="width:auto"></select>
+          </div>
+          <div style="flex:1;min-width:220px;align-self:center"><div class="small muted" id="blkPick"></div></div>
+        </div>
+        <div id="blkCardsWrap" style="margin-top:8px;display:none">
+          <label>GPUs for this batch</label>
+          <div id="blkCards" class="small"></div>
+          <div class="small muted" style="margin-top:2px">All ticked by default. Untick a card to keep it free (to render on it while the batch grinds through the rest) — the batch only shares the box, so a render you start elsewhere always takes priority and the batch waits, then resumes.</div>
+        </div>
+        <div class="small muted" id="blkMono" style="margin-top:6px">
+          Enhanced output is <b>mono</b> — the AI speech model rebuilds a single voice channel, so stereo isn't available.
+        </div>
+        <div class="row" style="margin-top:10px">
+          <!-- flex:0 0 auto, NOT flex:0 — the latter is basis:0% WITH shrink, so the wrapper
+               collapses and the label wraps ("▶ Clean up batch" broke onto three lines). -->
+          <div style="flex:0 0 auto"><button class="go" id="blkGo" style="white-space:nowrap" disabled>▶ Enhance batch</button></div>
+          <div class="small muted" id="blkGoNote" style="flex:1;align-self:center"></div>
+        </div>
+      </div>
+
+      <!-- RUNNING state -->
+      <div id="blkRunning" style="display:none">
+        <div class="row" id="blkProgWrap" style="margin:2px 0 8px;align-items:center;gap:10px">
+          <div class="small muted" id="blkProgLabel" style="flex:0 0 auto;white-space:nowrap"></div>
+          <div class="bar" style="flex:1;height:14px;margin:0"><div id="blkProgFill" class="vvoc" style="width:0%"></div></div>
+          <div class="small" id="blkProgPct" style="flex:0 0 auto;min-width:44px;text-align:right;font-variant-numeric:tabular-nums"></div>
+        </div>
+        <div class="row">
+          <div style="flex:0"><button class="danger" id="blkCancel">■ Cancel</button></div>
+          <div class="small muted" id="blkRunNote" style="flex:1;align-self:center"></div>
+        </div>
+      </div>
+
+      <!-- DONE / last-batch state -->
+      <div id="blkDone" style="display:none">
+        <div id="blkSummary" class="small" style="margin-bottom:10px"></div>
+        <div class="row">
+          <div style="flex:0 0 auto"><button class="go" id="blkDownload" style="white-space:nowrap">⬇ Download ZIP</button></div>
+          <!-- Clean up only, and blue not green: green "goes on the commit, not the rehearsal"
+               (see button.go above), and Download is the commit here. Hidden in Enhance — the
+               chain is one-way, so there is nothing to hand on to. -->
+          <div style="flex:0 0 auto" id="blkToEnhanceWrap" title="Copy these cleaned files into the Enhance tab's staging area and go there. Replaces whatever Enhance has staged.">
+            <button class="primary" id="blkToEnhance" style="white-space:nowrap">Copy to Enhance ▸</button></div>
+          <!-- .row is align-items:flex-end, so a SHORT button lands on the row's bottom edge —
+               level with the tall Download ZIP rather than beside its middle. The note next to
+               it already opts out with align-self:center; Clear needs the same. -->
+          <div style="flex:0 0 auto;align-self:center"><button class="danger sm" id="blkClear" style="white-space:nowrap">✕ Clear</button></div>
+          <div class="small muted" style="flex:1;align-self:center">The batch is kept until you upload a new one or press Clear. Re-download is free.</div>
+        </div>
+        <div id="blkNames" class="small muted" style="margin-top:10px;max-height:170px;overflow:auto;border:1px solid var(--line);border-radius:7px;padding:6px 10px"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="logwrap"><h2 style="margin:0">Live log</h2>
+        <label style="display:inline;margin:0;color:var(--fg)"><input type="checkbox" id="blkAutoscroll" checked> auto-scroll</label></div>
+      <div id="blkLog"><span class="muted ph">Pick some files and press Enhance to begin.</span></div>
+    </div>
+  </section>

@@ -1,0 +1,75 @@
+  .muted{color:var(--mut);} .small{font-size:0.857143rem;}
+  /* Keep the admin token in a text input to avoid password-manager behavior; disable spellcheck. */
+  .masked{-webkit-text-security:disc;}
+  /* rows for output/voices/library */
+  .item{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--panel2);}
+  .item .grow{flex:1;min-width:0;} .item .t{font-weight:600;} .item .m{color:var(--mut);font-size:0.857143rem;}
+  /* Give the shared voice player a full-width line below each row's controls. */
+  #vList .item{flex-wrap:wrap;}
+  #vList .vplayer{flex:0 0 100%;}
+  #vList .vplayer audio{display:block;width:100%;}
+  .vsrow:hover{border-color:var(--acc);}                       /* picker rows are clickable */
+  .vsrow.active,.vslibrow.active{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc);}
+  /* ── 8.9: virtual folders ──────────────────────────────────────────────────────────────
+     🔴 A FOLDER ROW IS A SIBLING OF .item, NOT A CONTAINER OF ONE. The open folder's children
+     are ordinary rows emitted directly after it — one flat array, see ui/folders.js — so there
+     is no wrapper element to indent, nothing nested to lay out, and no second row style to keep
+     in step with .item. That is the layout half of what "one level" bought. */
+  .vfolder{display:flex;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:var(--panel);}
+  .vfolder.open{border-color:var(--acc);background:var(--panel2);}
+  /* The name is a BUTTON spanning the row, so the whole strip opens the folder. A caret-only
+     hit box would be a ~12px target on a 40px row. */
+  .vfoldname{flex:1 1 auto;min-width:0;display:flex;align-items:center;gap:7px;background:none;border:0;color:inherit;font:inherit;font-weight:600;text-align:left;cursor:pointer;padding:2px 0;}
+  .vfoldname:hover .vfname{text-decoration:underline;}
+  .vfcaret{flex:0 0 auto;color:var(--mut);width:0.9em;}
+  .vficon{flex:0 0 auto;}
+  /* Keep actions and counts fixed-width; only the folder name may shrink and ellipsize. */
+  .vfname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .vfn{flex:0 0 auto;font-weight:400;}
+  .vfacts{flex:0 0 auto;display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  /* The divider between the folder block and the unfiled rows below it. */
+  .vfgap{height:1px;background:var(--line);margin:2px 2px 10px;}
+  /* The "in Keepers" tag on a hit that a filter has flattened out of its folder. */
+  .vftag{flex:0 0 auto;color:var(--mut);font-size:0.785714rem;border:1px solid var(--line);border-radius:10px;padding:0 7px;white-space:nowrap;}
+  /* The tick column: flex:0, so selecting can never reflow the row's own buttons. */
+  .vpick{flex:0 0 auto;display:flex;align-items:center;}
+  /* 🔴 INSIDE #aceLibrary A FOLDER ROW IS A GRID ITEM, NOT A ROW. That host is a four-track grid
+     whose song rows use `display:contents` so their cells land in the tracks directly; a folder
+     row is one element, so without an explicit span it would sit in track 1 and leave the other
+     three empty beside it. It also opts OUT of the zebra: the stripes are painted per cell on
+     `.acesong` and a folder is not one of those rows. */
+  #aceLibrary > .vfolder{grid-column:1/-1;margin:8px 0 6px;}
+  #aceLibrary > .vfgap{grid-column:1/-1;}
+  /* A folder row that a filter has flattened: still a destination, no longer openable, so it must
+     not look pressable. Same box, no hover affordance, no pointer. */
+  .vftarget{cursor:default;}
+  .vftarget:hover .vfname{text-decoration:none;}
+  /* 🔴 THE DROP TARGET HAS TO BE VISIBLE FROM UNDER A DRAG IMAGE. The cursor is carrying a
+     translucent copy of the row, so a 1px border change is not readable — this is a filled state,
+     not an outline one. `.vfgap` is 1px tall on its own, so it grows into a real target. */
+  .vfolder.vfdrop{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 18%,var(--panel2));}
+  .vfgap.vfdrop{height:10px;background:var(--acc);border-radius:5px;margin:6px 2px;}
+  /* 🔴 EVERY TRAVELING ROW IS DIMMED, NOT JUST THE ONE UNDER THE CURSOR. Dragging a ticked row
+     takes the whole tick set, and the browser's drag image shows only the row you grabbed — so
+     without this, moving six rows and moving one look identical right up until they land. */
+  .item[draggable='true']{cursor:grab;}
+  .item[draggable='true']:active{cursor:grabbing;}
+  /* Dim every dragged row type because the browser drag image shows only the grabbed row. */
+  .item.vfdragging,.acesong.vfdragging,.vslgroup.vfdragging{opacity:.45;}
+  /* Folder look (both layers): a tab bar sits flush on ONE parent card that
+     encloses its contents — not equal-rank stacks of cards. The square
+     top-left corner joins the card to the tab row above it. The main tabs get
+     .tabwrap; Voice Studio's sub-tabs nest .vswrap inside it. */
+  #tabs,#vsTabs{margin-bottom:0;}
+  .tabwrap,.vswrap,.stwrap{border:1px solid var(--line);border-radius:0 10px 10px 10px;padding:12px 12px 0;margin-bottom:14px;}
+  .flag{color:var(--warn);font-size:0.785714rem;border:1px solid var(--warn);border-radius:10px;padding:0 7px;}
+  audio{height:32px;vertical-align:middle;}
+  /* Use a fixed metadata column so candidate players align across rows. */
+  .vcmeta,.row>.vcmeta{flex:0 0 360px;min-width:0;white-space:nowrap;overflow:hidden;
+          text-overflow:ellipsis;font-variant-numeric:tabular-nums;}
+  /* Alternate row shading to make removals and edits in the candidate list easier to track. */
+  #vcCandidates>[data-vccard]:nth-child(even){background:var(--stripe);}
+
+  /* Tint the in-row player to associate it with its owning item. */
+  .vslplayrow:has(#vsLibPlayer){background:var(--pill);border-radius:6px;padding:0 8px 8px;margin-bottom:8px;}
+  .vslplayrow #vsLibPlayer{margin-top:0;}

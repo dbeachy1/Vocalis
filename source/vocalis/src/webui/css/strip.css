@@ -1,0 +1,81 @@
+  /* Stack host-wide CPU readouts above the per-card subsystem rows. */
+  /* Takes the rest of the header — the bars inside are flex:1, so they need the width. */
+  #vram{display:flex;flex-direction:column;gap:3px;flex:1;}
+  /* Stack subsystem cards vertically at all widths. */
+  /* Show host CPU readouts before subsystem cards; row order follows the data ownership. */
+  #vramCards{display:flex;flex-direction:column;gap:12px;}
+  /* The same 12px a card gets from its neighbour, minus `#vram`'s own 3px column gap: without it
+     the first card's caption sits 3px under CPU MEM and the two read as one block. */
+  #vramCards:not(:empty){margin-top:9px;}
+  .card{min-width:260px;}
+  .card .cap{display:flex;justify-content:space-between;font-size:0.785714rem;color:var(--mut);}
+  .bar{height:9px;background:var(--barbg);border:1px solid var(--line);border-radius:5px;overflow:hidden;margin-top:2px;position:relative;}
+  .bar>div{position:absolute;left:0;top:0;height:100%;transition:width .4s;}
+  /* Every row in the strip opens with a label of the same width, so GPU MEM / GPU / CPU
+     stack into one column and their bars all start at the same x. */
+  .ulab{flex:0 0 auto;min-width:54px;font-size:max(0.75rem,12px);color:var(--mut);white-space:nowrap;}
+  #vramCards .brow{display:flex;align-items:center;gap:5px;}
+  #vramCards .brow .bar{flex:1 1 40px;margin-top:0;}
+  /* Linear interpolation over one sample interval keeps the 4 Hz strip from appearing stepped. */
+  /* ⚠️ The reclaimable slice glides on the SAME curve as the fill it sits in. The strip samples
+     4×/s and the fills glide linearly over one interval; a second segment without this would lag
+     visibly behind the edge it is anchored to. */
+  /* `left` glides too, because GPU MEM's light-green segment is now positioned by where the
+     Vocalis segment ends. Without it the boundary would jump 4x/s while the width it carries
+     glided — the two halves of one edge moving on different clocks. */
+  #vram .bar>div,#vram .ufill,#vram .ufill>.memarc{transition:width .25s linear,left .25s linear;}
+  .bar .vvoc{background:var(--ok);}       /* dark green — Vocalis's share, FIRST, from the left */
+  /* light green — other processes, picking up where Vocalis ends. It also carries amdgpu's own
+     per-card overhead (page tables, ring buffers — ~0.2 GB, attributable to no process), which is
+     why this segment never reaches zero on an idle box and why its tooltip says "+ driver". */
+  .bar .vused{background:var(--vused);}
+  /* Training progress. Epochs give a real percentage; the stages either side of them
+     (prep/preprocess/extract, then index/deploy) genuinely have none — so they sweep
+     instead of inventing a number. */
+  .bar>div.indet{width:32%;background:var(--ok);animation:indet 1.3s ease-in-out infinite;transition:none;}
+  @keyframes indet{0%{left:-32%;}100%{left:100%;}}
+  .chaps{max-height:180px;overflow:auto;border:1px solid var(--line);border-radius:7px;}
+  .chap{display:flex;justify-content:space-between;padding:4px 10px;border-bottom:1px solid var(--line);font-size:0.928571rem;}
+  .chap:last-child{border-bottom:0;} .chap.done{color:var(--ok);} .chap .w{color:var(--mut);}
+  .gpu{display:flex;align-items:center;gap:10px;padding:6px 0;} .gpu input[type=checkbox]{width:16px;height:16px;}
+  /* Keep unreachable satellites visible but dimmed and configurable while offline. */
+  /* Keep the label beside its controls instead of pushing them to the far edge of a wide panel. */
+  /* ⟳ Reconnect. Sized to the glyph so it reads as a control ON the row rather than another
+     panel button, and it must not grow the row height — the label column is measured from
+     these rows and a taller row would shift every one of them. */
+  .dev .devSync{margin:0;padding:1px 7px;line-height:1.4;min-width:0;}
+  .dev .dlab{flex:0 0 auto;width:var(--dlabw,auto);max-width:100%;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .dev.off{opacity:.55;} .devgrp{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);}
+  /* Indent subsystem checkboxes beneath their parent label using the checkbox width and row gap. */
+  .devuses{margin:0 0 7px 26px;display:flex;flex-direction:column;gap:2px;}
+  .devuses[hidden]{display:none;}
+  .devuses label{display:flex;align-items:center;gap:7px;margin:0;cursor:pointer;color:var(--mut);font-size:0.928571rem;}
+  .devuses label:hover{color:var(--fg);}
+  .devuses input[type=checkbox]{width:13px;height:13px;flex:0 0 auto;}
+  .sathdr{color:var(--acc);} .sathdr b{color:var(--acc);}
+  /* A vertical rule between two groups of controls on one row. Sized in `em` so it tracks the
+     UI-font slider (§ Appearance) instead of staying 16px while the text around it grows, and
+     `align-self:center` because a 1px box in a flex row would otherwise stretch to the tallest
+     item — which is the Delete button, not the text it is separating. */
+  .vsep{flex:0 0 auto;align-self:center;width:1px;height:1.15em;background:var(--line);margin:0 2px;}
+  .fp{background:var(--barbg);border:1px solid var(--line);border-radius:6px;padding:8px 10px;
+      font-size:0.857143rem;line-height:1.5;word-break:break-all;white-space:pre-wrap;margin:0;}
+  /* Satellites (5.3-m2). The security badge is amber when the link is NOT pinned — unpinned
+     self-signed TLS is barely better than plain HTTP against an active attacker on the LAN,
+     so it must not read as reassuring. */
+  /* October 11, 2026 (Doug, on Settings > Satellites: "Look how dim that text is, and it's like the
+     most important line on there"): the container `#satList` carries `class="small muted"` (it has to,
+     for its "—" placeholder), and `color` inherits, so every unclassed piece of a row — the name, the
+     separators, "pinned" — was painted `--mut`. A row therefore sets its own `color:var(--fg)`; what is
+     meant to be secondary (the URL, the second line, the control labels) already says `.muted` itself.
+     The name is also pinned to `--fg` + bold explicitly so no future wrapper can dim it again. */
+  .satrow{padding:8px 0;border-bottom:1px solid var(--line);color:var(--fg);} .satrow:last-child{border-bottom:0;}
+  .satrow .satname{color:var(--fg);font-weight:700;}
+  .satrow .warn{color:var(--warn);}
+  /* Same inherited-muted cause on the local device rows: `#devList` is `class="small muted"` too, so
+     "cuda:0 — Card name" was dim. The `.devuses` sub-labels keep their own deliberate `--mut`. */
+  #devList .dlab{color:var(--fg);}
+  #strip{display:none;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    margin-bottom:10px;font-variant-numeric:tabular-nums;} #strip.live{display:block;}
+  #strip .big{font-size:1.071429rem;} #strip .sub{color:var(--mut);font-size:0.857143rem;margin-top:3px;}
+  .pill{display:inline-block;background:var(--pill);color:var(--acc);border-radius:20px;padding:1px 9px;font-size:0.857143rem;}

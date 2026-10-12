@@ -1,0 +1,16 @@
+node_modules/
+*.tsbuildinfo
+.vitest/
+coverage/
+
+# Downstream addition (Vocalis, October 10, 2026): build output is never committed here. The image build produces it
+# from this source and the lockfile (dist/ for the extension; plugin/index.bundle.* for the server plugin, whose
+# committed entry is the shim plugin/index.js).
+/dist/
+/plugin/index.bundle.js
+/plugin/index.bundle.js.map
+/plugin/index.bundle.d.ts
+
+# Old build output locations (no longer used — kept to avoid confusion)
+server-plugin/dist/
+extension/dist/

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{CSRF}}">
+  <title>Vocalis setup</title>
+  <style>
+    :root { color-scheme: dark; font: 16px/1.5 system-ui, sans-serif; }
+    body { margin: 0; background: #101318; color: #e7eaf0; }
+    main { max-width: 36rem; margin: 8vh auto; padding: 2rem; }
+    section { background: #1a2029; border: 1px solid #303a49; border-radius: .7rem; padding: 1.5rem; }
+    label { display: block; margin: 1rem 0 .25rem; }
+    input { box-sizing: border-box; width: 100%; padding: .7rem; color: inherit; background: #11161d; border: 1px solid #536174; border-radius: .35rem; }
+    button { margin-top: 1.25rem; padding: .7rem 1rem; }
+    pre { overflow-wrap: anywhere; white-space: pre-wrap; padding: 1rem; background: #11161d; }
+    [hidden] { display: none !important; }
+    .error { color: #ffb0a8; }
+  </style>
+</head>
+<body data-mode="{{MODE}}">
+<main>
+  <h1>Vocalis encrypted setup</h1>
+  <section>
+    <p id="intro">Vocalis stores its data in an encrypted vault. Create a nonblank login password and save the recovery key shown after setup.</p>
+    <div id="fresh">
+      <label for="username">Username</label><input id="username" autocomplete="username" value="admin">
+      <label for="password">Password</label><input id="password" type="password" autocomplete="new-password" required>
+      <label for="confirm">Confirm password</label><input id="confirm" type="password" autocomplete="new-password" required>
+      <button id="create">Create encrypted vault</button>
+    </div>
+    <div id="existing" hidden>
+      <p>Sign in with the existing administrator credentials, then initialize the empty vault.</p>
+      <label for="existing-username">Username</label><input id="existing-username" autocomplete="username" required>
+      <label for="init-password">Current password</label><input id="init-password" type="password" autocomplete="current-password" required>
+      <button id="initialize">Initialize vault</button>
+    </div>
+    <div id="recovery" hidden>
+      <p>The vault is initialized. Use its recovery key to restore access and set a nonblank password.</p>
+      <label for="recovery-key">Recovery key</label><input id="recovery-key" autocomplete="off" required>
+      <label for="new-password">New password</label><input id="new-password" type="password" autocomplete="new-password" required>
+      <button id="recover">Recover vault</button>
+    </div>
+    <p id="credentials-error" hidden>The administrator credential file is unreadable. It has been preserved. Repair that file or use the vault recovery key if the vault is initialized.</p>
+    <p id="status" role="status"></p>
+    <div id="recovery-result" hidden>
+      <h2>Save this recovery key now</h2>
+      <p>It is shown once and cannot be retrieved later. Keep it separate from your password.</p>
+      <pre id="recovery-value"></pre>
+      <button id="continue">Open Vocalis</button>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  const mode = document.body.dataset.mode;
+  const csrf = document.querySelector('meta[name="csrf-token"]').content;
+  const show = (id, visible) => { document.getElementById(id).hidden = !visible; };
+  show('fresh', mode === 'fresh');
+  show('existing', mode === 'existing-credentials');
+  show('recovery', mode === 'recovery');
+  show('credentials-error', mode === 'credentials-error');
+  if (mode === 'existing-credentials') {
+    document.getElementById('intro').textContent = 'The saved administrator credentials remain in place. Sign in, then initialize the vault.';
+  }
+  const post = async (path, body) => {
+    const response = await fetch(path, {method: 'POST', headers: {
+      'Content-Type': 'application/json', 'X-CSRF-Token': csrf
+    }, body: JSON.stringify(body)});
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || data.error || `Request failed (${response.status})`);
+    return data;
+  };
+  const status = document.getElementById('status');
+  const showResult = (data) => {
+    if (data.suk) sessionStorage.setItem('vocalis-suk', data.suk);
+    document.getElementById('recovery-value').textContent = data.recovery_key || '';
+    show('fresh', false); show('existing', false); show('recovery', false);
+    show('recovery-result', Boolean(data.recovery_key));
+    if (!data.recovery_key) location.assign('/');
+  };
+  document.getElementById('create').addEventListener('click', async () => {
+    status.className = 'error'; status.textContent = '';
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
+    if (!username || !password.trim() || password !== document.getElementById('confirm').value) {
+      status.textContent = 'Enter a username and matching nonblank passwords.'; return;
+    }
+    try {
+      await post('/admin/set-credentials', {username, password});
+      showResult(await post('/vault/init', {password}));
+    } catch (error) { status.textContent = error.message; }
+  });
+  document.getElementById('initialize').addEventListener('click', async () => {
+    status.className = 'error'; status.textContent = '';
+    try {
+      const password = document.getElementById('init-password').value;
+      await post('/login', {username: document.getElementById('existing-username').value.trim(), password});
+      showResult(await post('/vault/init', {password}));
+    }
+    catch (error) { status.textContent = error.message; }
+  });
+  document.getElementById('recover').addEventListener('click', async () => {
+    status.className = 'error'; status.textContent = '';
+    const newPassword = document.getElementById('new-password').value;
+    if (!newPassword.trim()) { status.textContent = 'A nonblank password is required.'; return; }
+    try {
+      const data = await post('/vault/recover', {
+        recovery_key: document.getElementById('recovery-key').value,
+        new_password: newPassword
+      });
+      if (data.suk) sessionStorage.setItem('vocalis-suk', data.suk);
+      location.assign('/');
+    } catch (error) { status.textContent = error.message; }
+  });
+  document.getElementById('continue').addEventListener('click', () => location.assign('/'));
+})();
+</script>
+</body>
+</html>

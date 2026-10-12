@@ -1,0 +1,77 @@
+<!-- Stems markup is maintained in this partial, separate from the Voice Studio shell. -->
+    <div data-vspanel="stems">
+      <div class="panel">
+        <h2>Stems</h2>
+        <div class="small muted" style="margin:-4px 0 8px">Split a song into vocals and instrumental audio or full stems with Demucs. Stems are kept as WAV editing material in one shared store, so a song split here is ready for later listening or source preparation.</div>
+        <div class="row">
+          <div class="item" style="flex:1;min-width:300px;margin:0"><div class="grow">
+            <div class="t" id="ssTraySong">🎵 <span class="muted">no song picked — choose one below</span></div>
+            <div class="m" id="ssTraySongMeta"></div>
+            <audio id="ssTrayAudio" controls preload="none" style="display:none;width:100%;max-width:380px;margin-top:6px"></audio></div></div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div style="flex:0 0 auto"><label>Mode</label><div class="moderow">
+            <label style="display:inline-flex;align-items:center;gap:5px;color:var(--fg);cursor:pointer"><input type="radio" name="ssMode" value="2stem"> Vocals + Instrumental (2-stem)</label>
+            <label style="display:inline-flex;align-items:center;gap:5px;color:var(--fg);cursor:pointer" title="Also gives you the vocals + instrumental — every set carries a 2-stem base, so a 4-stem split includes them too."><input type="radio" name="ssMode" value="4stem"> Full stems (vocals / drums / bass / other)</label>
+            <label style="display:inline-flex;align-items:center;gap:5px;color:var(--fg);cursor:pointer" title="Cuts out passages with backing vocals and leaves the isolated lead vocal, with reverb removed. The result has no instrumental because the remaining vocal no longer spans the whole song."><input type="radio" name="ssMode" value="lead" checked> Lead vocals only</label>
+            <span id="ssDereverbWrap" class="modeopts" style="display:none" title="Takes the reverb off the lead vocal, so the saved vocal is dry; on by default. But de-reverb is a separation model too, and it can come back drier and duller or eat sibilance and breath tails: clear this and split again if the first result sounds dull or lifeless. The full wet vocal stays in the set, so that re-run costs the cut and no Demucs at all — seconds, not another split."><label style="display:inline-flex;align-items:center;gap:6px;color:var(--fg)"><input type="checkbox" id="ssDereverb" checked> Remove reverb</label><label style="display:inline-flex;align-items:center;gap:6px;color:var(--fg)" title="The level at which a passage counts as having backing vocals in it, in dB below the vocal's peak. MEASURED over eight real songs: the default keeps a median 32% of a track but anywhere from nothing to 81% depending on how it was mixed, so this is the knob that makes a stubborn song work. RAISE it toward -24 to keep more (use it when a song comes back with less than you expected); LOWER it toward -36 to cut harder (use it when you can still hear harmonies in the result). The set records what it was cut at. NOTE: this is not the fix for a set flagged 'may be unusable' — when the detection itself is untrustworthy, every value here either keeps the whole song or none of it. Listen to the Vocals pill and judge that one yourself.">Backing threshold <input type="number" id="ssBackingDb" value="-30" min="-45" max="-18" step="1" style="width:62px"> dB</label></span></div></div>
+          <div style="flex:0 0 auto" title="Which card runs the split. auto = the card with the most free VRAM when the job starts."><label>GPU</label><select id="ssDevice" style="width:auto"><option value="auto">auto</option></select></div>
+          <div style="flex:0 0 auto;align-self:flex-end"><button class="go" id="ssSplit" disabled>▶ Split</button></div>
+          <div style="flex:0;align-self:flex-end"><button class="danger" id="ssCancel" style="display:none">■ Cancel</button></div>
+        </div>
+        <div class="small" id="ssSplitNote" style="margin-top:6px"></div>
+        <div id="ssQueueWrap" class="small" style="margin-top:10px;border-top:1px solid var(--line);padding-top:8px" title="Everything Split will work through, in order. Uploading songs or picking one below puts it here — then press Split once and each is done in turn with the settings above, so ten songs is one press and a walk away. The queue survives a reload."><div class="row" style="gap:8px;align-items:center"><b>Split queue</b> <span id="ssQueueNote" class="muted"></span><span class="grow"></span><button class="sm" id="ssQueueClear" title="Empty the queue. Nothing already split is touched.">Clear</button></div>
+        <div id="ssQueue" style="margin-top:6px"></div></div>
+      </div>
+
+      <div class="panel">
+        <div class="logwrap"><h2 style="margin:0">Live log</h2><div id="ssStrip" class="small muted"></div></div>
+        <div id="ssLog"><span class="muted ph">Queue songs below and press ▶ Split — progress shows here.</span></div>
+      </div>
+
+      <!-- Songs and stem sets share one card; `ssSetView` remembers the selected view across reloads. -->
+      <div class="panel">
+        <div class="logwrap"><div class="viewpills">
+            <button class="pill on" data-ssview="songs" title="What you can split - ACE-Step generations and your uploads.">🎵 Songs</button>
+            <button class="pill" data-ssview="lib" title="What a split produced - every stem set on disk.">🎚 Your stems</button>
+            <span id="ssPickerTotals" class="small muted"></span><span id="ssLibTotals" class="small muted" style="display:none"></span></div>
+          <div id="ssSongsTools" style="display:flex;gap:8px;align-items:center">
+            <span><input type="file" id="ssSongFile" accept=".wav,.mp3,.flac,.ogg,.m4a,.opus" multiple style="display:none"><label for="ssSongFile" class="filebtn">⬆ Upload songs</label></span>
+            <input id="ssPickerFilter" class="filter" type="search" placeholder="Filter songs…" autocomplete="off" spellcheck="false"
+                   title="Show only the songs that match. Every word you type has to appear in the title.">
+            <button class="sm" id="ssPickerRefresh">↻ Refresh</button></div>
+          <div id="ssLibTools" style="display:none;gap:8px;align-items:center">
+            <input id="ssLibFilter" class="filter" type="search" placeholder="Filter stems…" autocomplete="off" spellcheck="false"
+                   title="Show only the sets that match. Every word you type has to appear in the song's name.">
+            <button class="sm" id="ssLibRefresh">↻ Refresh</button></div></div>
+        <div data-ssviewpanel="songs">
+        <div class="small muted" style="margin:-2px 0 8px">ACE-Step generations plus your uploads, newest first, 25 to a page — click one to select it. <b>This song list uses the shared song store. A <span class="badge">stems stored</span> badge means this song's stems are already on disk — they are the sets listed further down, and deleting a song here never touches them.</div><div id="ssSrcBulk" class="row" style="display:none;gap:8px;align-items:center;margin-bottom:8px"></div>
+        <div id="ssPicker"><span class="muted">Loading…</span></div><div id="ssPickerPager" class="small" style="display:none;margin-top:8px;text-align:center"></div>
+        </div>
+        <div data-ssviewpanel="lib" style="display:none">
+        <!-- 7.5.17 — the multi-select bar. Hidden until something is ticked: it sits directly
+             above the library, and a permanently-present delete control over gigabytes of his
+             audio is a bigger invitation to a mis-click than it is a discoverability win. See
+             `ssPickSync` in js/media/stems.js. -->
+        <div id="ssBulk" class="row" style="display:none;gap:8px;align-items:center;margin-bottom:8px">
+          <b id="ssBulkNote" class="small"></b><span class="grow"></span>
+          <button class="sm" id="ssBulkAll" title="Tick every set the filter is currently showing">Select all</button>
+          <button class="sm" id="ssBulkNone" title="Clear the selection">Clear</button>
+          <button class="sm" id="ssBulkImport" title="Combine the selected vocal tracks into one speech clip. A set with no isolated lead contributes its vocals.">Combine vocals into Speech</button><button class="sm danger" id="ssBulkDel" title="Delete every ticked stem set in one go">🗑 Delete selected</button></div>
+        <div class="small muted" style="margin:-4px 0 8px">Every stem set you have, whoever made it — click a row to open it, then a pill to play that stem. <b>⬇ All</b> downloads the set. Add an isolated vocal to the shared Speech library when you want to prepare it as source material.</div>
+        <div id="ssLib"><span class="muted">No stems yet — split a song from the 🎵 Songs pill, or upload a set below.</span></div>
+          <!-- "I already have clean stems" (§7). Collapsed and last: it is the path most
+               people never take, and it should not cost the ones who do not a screenful. -->
+        <details id="ssUpWrap">
+          <summary style="cursor:pointer;font-weight:600">Bring your own stems <span class="small muted" style="font-weight:400">— already have a clean vocal + instrumental? Upload them and skip Demucs entirely.</span></summary>
+          <div class="small muted" style="margin:8px 0">Name the files after the stem they hold: <code>vocals</code>, <code>instrumental</code>, <code>drums</code>, <code>bass</code>, <code>other</code> (Demucs's own <code>no_vocals</code> is understood too). An uploaded set is independent of a source song and can be listened to here. A set with no vocal is still kept; there's just no vocal in it to use.</div>
+          <div class="row" style="align-items:flex-end">
+            <div style="flex:1;min-width:200px"><label>Name</label><input type="text" id="ssUpName" placeholder="e.g. Buttons (studio stems)" maxlength="48"></div>
+            <div style="flex:0 0 auto"><input type="file" id="ssUpFiles" accept=".wav,.mp3,.flac,.ogg,.m4a,.opus" multiple style="display:none"><label for="ssUpFiles" class="filebtn">⬆ Choose stem files</label></div>
+            <div style="flex:0 0 auto"><button class="ok" id="ssUpGo" disabled>Upload stem set</button></div>
+          </div>
+          <div class="small" id="ssUpNote" style="margin-top:6px"></div>
+        </details>
+        </div>
+      </div>
+    </div>

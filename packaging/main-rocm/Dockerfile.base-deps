@@ -1,0 +1,83 @@
+# syntax=docker/dockerfile:1.6
+# Build the pinned ROCm Chatterbox Python environment from verified local inputs.
+ARG UBUNTU_IMAGE=ubuntu@sha256:88a381d5b5eeb2b35d3ad70925a362c37ce569daf43ede89ff818ec20e4d3794
+
+FROM ${UBUNTU_IMAGE} AS build
+ENV DEBIAN_FRONTEND=noninteractive \
+    ROCM_SDK_TARGET_FAMILY=gfx1201 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libssl3t64 libffi8 libbz2-1.0 liblzma5 zlib1g \
+    libsqlite3-0 libstdc++6 libgcc-s1 libgomp1 libnuma1 libelf1 \
+    libdrm2 libatomic1 \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements-base.lock /usr/share/vocalis-g1/requirements-base.lock
+COPY --from=pythonruntime /cpython-3.12.15+20261003-x86_64-unknown-linux-gnu-install_only_stripped.tar.gz /tmp/python.tar.gz
+
+RUN echo '731af898886c5f821890dc901eca3c651cca8e51fa7308c159d12a1194aeac91  /tmp/python.tar.gz' | sha256sum -c - \
+    && mkdir -p /opt/python/3.12.15 \
+    && tar -xzf /tmp/python.tar.gz -C /opt/python/3.12.15 --strip-components=1 \
+    && /opt/python/3.12.15/bin/python3.12 -m venv /opt/venv/chatterbox
+
+RUN --mount=type=bind,from=rocmwheels,target=/rocmwheels,readonly \
+    /opt/venv/chatterbox/bin/python -m pip install \
+      --no-index --no-cache-dir --no-deps --require-hashes \
+      --only-binary=:all: --find-links=/rocmwheels \
+      -r /usr/share/vocalis-g1/requirements-base.lock
+
+RUN /opt/venv/chatterbox/bin/python - <<'PY'
+import importlib.metadata as metadata
+import subprocess
+import sys
+
+for removed_distribution in ("pykakasi", "jaconv", "deprecated", "wrapt"):
+    try:
+        metadata.version(removed_distribution)
+    except metadata.PackageNotFoundError:
+        continue
+    raise SystemExit(f"removed Chatterbox dependency is still installed: {removed_distribution}")
+
+if sys.version_info[:3] != (3, 12, 15):
+    raise SystemExit(f"unexpected Python version: {sys.version}")
+if metadata.version("chatterbox-tts") != "0.1.7+vocalis.1":
+    raise SystemExit("unexpected Chatterbox wheel version")
+if metadata.version("torch") != "2.10.0+rocm7.14.1":
+    raise SystemExit("unexpected ROCm Torch version")
+if metadata.version("torchaudio") != "2.10.0+rocm7.14.1":
+    raise SystemExit("unexpected ROCm TorchAudio version")
+check = subprocess.run(
+    [sys.executable, "-m", "pip", "check"], capture_output=True, text=True
+)
+expected = {
+    'chatterbox-tts 0.1.7+vocalis.1 has requirement torch==2.6.0; python_version < "3.14", but you have torch 2.10.0+rocm7.14.1.',
+    'chatterbox-tts 0.1.7+vocalis.1 has requirement torchaudio==2.6.0; python_version < "3.14", but you have torchaudio 2.10.0+rocm7.14.1.',
+}
+actual = {line for line in check.stdout.splitlines() if line}
+if check.returncode != 1 or actual != expected:
+    raise SystemExit(f"unexpected dependency check result: {sorted(actual)}")
+print("ROCM_BASE_DEPENDENCIES=PASS")
+print("PYKAKASI_REMOVED=PASS")
+print("PIP_CHECK=PASS_WITH_TWO_DOCUMENTED_TORCH_OVERRIDES")
+PY
+
+FROM ${UBUNTU_IMAGE} AS runtime
+ENV DEBIAN_FRONTEND=noninteractive \
+    ROCM_SDK_TARGET_FAMILY=gfx1201 \
+    PATH=/opt/venv/chatterbox/bin:/opt/python/3.12.15/bin:$PATH \
+    PYTHONNOUSERSITE=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates libssl3t64 libffi8 libbz2-1.0 liblzma5 zlib1g \
+    libsqlite3-0 libstdc++6 libgcc-s1 libgomp1 libnuma1 libelf1 \
+    libdrm2 libatomic1 libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /opt/python/3.12.15 /opt/python/3.12.15
+COPY --from=build /opt/venv/chatterbox /opt/venv/chatterbox
+COPY --from=chatterbox /NOTICE.md /usr/share/licenses/vocalis-g1/chatterbox/NOTICE.md
+COPY --from=chatterbox /artifact-manifest.json /usr/share/licenses/vocalis-g1/chatterbox/artifact-manifest.json
+
+WORKDIR /opt/vocalis

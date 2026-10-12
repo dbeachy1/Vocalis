@@ -1,0 +1,105 @@
+import path from 'node:path';
+
+import express from 'express';
+import sanitize from 'sanitize-filename';
+import * as storage from '../storage.js';
+
+import { validateAssetFileName } from './assets.js';
+import { clientRelativePath } from '../util.js';
+import { log, LogClass } from '../logger.js';
+
+export const router = express.Router();
+
+router.post('/sanitize-filename', async (request, response) => {
+    try {
+        const fileName = String(request.body.fileName);
+        if (!fileName) {
+            return response.status(400).send('No fileName specified');
+        }
+
+        const sanitizedFilename = sanitize(fileName);
+        return response.send({ fileName: sanitizedFilename });
+    } catch (error) {
+        log.error(LogClass.NORMAL, 'Failed to sanitize a filename');
+        log.error(LogClass.SENSITIVE, error);
+        return response.sendStatus(500);
+    }
+});
+
+router.post('/upload', async (request, response) => {
+    try {
+        if (!request.body.name) {
+            return response.status(400).send('No upload name specified');
+        }
+
+        if (!request.body.data) {
+            return response.status(400).send('No upload data specified');
+        }
+
+        // Validate filename
+        const validation = validateAssetFileName(request.body.name);
+        if (validation.error)
+            return response.status(400).send(validation.message);
+
+        const pathToUpload = path.join(request.user.directories.files, request.body.name);
+        storage.writeFileSync(pathToUpload, request.body.data, 'base64');
+        const url = clientRelativePath(request.user.directories.root, pathToUpload);
+        log.info(LogClass.SENSITIVE, `Uploaded file: ${url} from ${request.user.profile.handle}`);
+        return response.send({ path: url });
+    } catch (error) {
+        log.error(LogClass.NORMAL, 'File upload failed');
+        log.error(LogClass.SENSITIVE, error);
+        return response.sendStatus(500);
+    }
+});
+
+router.post('/delete', async (request, response) => {
+    try {
+        if (!request.body.path) {
+            return response.status(400).send('No path specified');
+        }
+
+        const pathToDelete = path.join(request.user.directories.root, request.body.path);
+        if (!pathToDelete.startsWith(request.user.directories.files)) {
+            return response.status(400).send('Invalid path');
+        }
+
+        if (!storage.exists(pathToDelete)) {
+            return response.status(404).send('File not found');
+        }
+
+        storage.unlink(pathToDelete);
+        log.info(LogClass.SENSITIVE, `Deleted file: ${request.body.path} from ${request.user.profile.handle}`);
+        return response.sendStatus(200);
+    } catch (error) {
+        log.error(LogClass.NORMAL, 'File deletion failed');
+        log.error(LogClass.SENSITIVE, error);
+        return response.sendStatus(500);
+    }
+});
+
+router.post('/verify', async (request, response) => {
+    try {
+        if (!Array.isArray(request.body.urls)) {
+            return response.status(400).send('No URLs specified');
+        }
+
+        const verified = {};
+
+        for (const url of request.body.urls) {
+            const pathToVerify = path.join(request.user.directories.root, url);
+            if (!pathToVerify.startsWith(request.user.directories.files)) {
+                log.warn(LogClass.SENSITIVE, `File verification: Invalid path: ${pathToVerify}`);
+                continue;
+            }
+            const fileExists = storage.exists(pathToVerify);
+            verified[url] = fileExists;
+        }
+
+        return response.send(verified);
+    } catch (error) {
+        log.error(LogClass.NORMAL, 'File verification failed');
+        log.error(LogClass.SENSITIVE, error);
+        return response.sendStatus(500);
+    }
+});

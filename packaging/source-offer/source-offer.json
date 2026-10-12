@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "product": "Vocalis",
+  "productVersion": "12.1.1",
+  "componentLicenseScopes": [
+    {
+      "component": "Vocalis-owned application/runtime code",
+      "license": "Apache-2.0",
+      "licenseFile": "LICENSE",
+      "scopeNote": "Does not replace third-party component terms."
+    },
+    {
+      "component": "Taproom / SillyTavern",
+      "license": "AGPLv3",
+      "licenseFile": "source/taproom/LICENSE"
+    },
+    {
+      "component": "SillyTavern Vault",
+      "license": "AGPLv3",
+      "licenseFile": "source/vault/LICENSE"
+    },
+    {
+      "component": "Mnemosyne",
+      "license": "AGPL-3.0-only",
+      "licenseFile": "source/mnemosyne/LICENSE"
+    },
+    {
+      "component": "CacheLens",
+      "license": "AGPL-3.0-only",
+      "licenseFile": "source/cachelens/LICENSE"
+    },
+    {
+      "component": "MCP Client (Moeblack/sillytavern-mcp-client, with downstream changes)",
+      "license": "AGPL-3.0",
+      "licenseFile": "source/mcp-client/LICENSE"
+    },
+    {
+      "component": "Vocalis SillyTavern extension",
+      "license": "AGPL-3.0-only",
+      "licenseFile": "source/vocalis/sillytavern/extension/LICENSE"
+    }
+  ],
+  "separateSourceMaterials": [
+    {
+      "name": "FFmpeg 8.0.1 source archive",
+      "status": "available-upstream",
+      "url": "https://ffmpeg.org/releases/ffmpeg-8.0.1.tar.xz",
+      "sha256": "05ee0b03119b45c0bdb4df654b96802e909e0a752f72e4fe3794f487229e5a41",
+      "notes": "The application source ZIP contains our build recipe for FFmpeg (the ffmpeg-build stage of packaging/main-cuda/Dockerfile.app, with its locks ffmpeg-build.lock and ffmpeg-native.lock, and packaging/ffmpeg/); this link is the unmodified FFmpeg 8.0.1 release that recipe builds."
+    },
+    {
+      "name": "Other third-party open-source components",
+      "status": "unmodified-third-party",
+      "servedFile": "NOTICE.md",
+      "archivePath": "packaging/licenses/NOTICE.md",
+      "notes": "The third-party open-source components in this build are used unmodified. Where to get each one's source, by exact version, is listed in the license notices."
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+  /* The ACE-Step tab's per-card config rows (8.0-m2, §4.5.1).
+     One row per authorized card, each holding its own model — the dropdown IS the assignment,
+     because a backend is pinned to its card by HIP_VISIBLE_DEVICES at unit start and cannot be
+     told which card to use at render time. See js/ace/cards.js. */
+  /* 12px between CARDS against 4px between the two rows INSIDE one (see `.acelora` below): a card
+     that is two rows tall needs the gap between cards to be the bigger of the two, or its LoRA row
+     reads as belonging to the card underneath it. */
+  .acecards{display:flex;flex-direction:column;gap:12px;margin:8px 0 4px;}
+  /* 🔴 A GRID, NOT A FLEX ROW, and it matters at two cards rather than one. Flex would let each
+     row size its own columns, so `cuda:0` with a 19-character model name and `cuda:1` with a
+     16-character one would put their state text at different x — two lines that happen to be
+     near each other rather than a table. `grid-template-columns` on the ROW works because every
+     row declares the same three tracks; the alignment is per-row by construction. */
+  /* Five tracks since 8.0-m5b: device, model, Load, Unload, state. The buttons are inside
+     the grid rather than in a flex group so they stay column-aligned across both rows —
+     the same reason the row is a grid at all. */
+  .acecard{display:grid;grid-template-columns:auto auto auto auto 1fr;align-items:center;
+           column-gap:12px;row-gap:4px;}
+  .acecard .btn{white-space:nowrap;}
+  .acedev{color:var(--mut);min-width:60px;}
+  /* Wide enough for `acestep-v15-xl-sft` without the select collapsing to its placeholder width
+     while the inventory is still loading and the only option is an em-dash. */
+  .acemodel{min-width:220px;}
+  .acestate{color:var(--mut);font-size:0.857143rem;}
+  .acestate .ok{color:var(--ok);}
+  /* The candidates tray and the song library (8.0-m3h, §4.5.3). */
+  /* A grid so the three columns line up down BOTH lists — a title, what made it, and the
+     controls. Two lists that each sized their own columns would read as two unrelated tables
+     stacked, which is the opposite of "these are the same songs at two stages". */
+  /* Four shared tracks align rows; the player receives remaining width and the title is capped. */
+  /* Put the grid on the list so tracks align across rows; rows use `display:contents`. */
+  /* Stretch row cells to a common height so their separators align; center content within each cell. */
+  #aceTray,#aceLibrary{display:grid;
+          /* Let the title absorb flexible width while the player retains its minimum usable size. */
+          grid-template-columns:minmax(240px,1.4fr) auto minmax(240px,0.8fr) auto;
+          align-items:stretch;
+          /* Extend row stripes to the card edges rather than stopping at the first and last tracks. */
+          margin-left:-14px;margin-right:-14px;}
+  #aceTray>.acerow>*:first-child,#aceLibrary>.acesong>.acerow>*:first-child,
+  #aceTray>.small,#aceLibrary>.small{padding-left:14px;}
+  #aceTray>.acerow>*:last-child,#aceLibrary>.acesong>.acerow>*:last-child{padding-right:14px;}
+  #aceLibrary>.acesong>.acelyr{padding-left:14px;padding-right:14px;}
+  #aceTray>.acerow,#aceLibrary>.acesong,#aceLibrary>.acesong>.acerow{display:contents;}
+  /* ⚠️ A ROW THAT GENERATES NO BOX CANNOT CARRY PADDING OR A BORDER, so the cells carry them.
+     And the spacing is `padding-right`, NOT the grid's `column-gap`: a gap is dead space between
+     tracks, so the candidates' separator line would break into four dashes across it. */
+  /* Keep library rows a fixed height so content changes do not shift adjacent rows. */
+  .acerow>*{display:flex;align-items:center;min-width:0;padding:4px 12px 4px 0;min-height:42px;}
+  .acerow>*:last-child{padding-right:0;}
+  #aceTray>.acerow>*{border-bottom:1px solid var(--line);}
+  #aceTray>.acerow:last-child>*{border-bottom:none;}
+  /* The empty state is one plain div, not a row, so it must span rather than sit in column 1. */
+  #aceTray>.small,#aceLibrary>.small{grid-column:1/-1;}
+  /* The meta (card · model · seed) never wraps mid-token and never steals the player's width.
+     📌 tabular-nums so the digits line up down the column as well as the column lining up. */
+  /* 🔴 AND `min-width:max-content` HERE FOR THE SAME REASON AS `.aceacts` BELOW: this cell is
+     one unwrappable string in an `auto` track, so `.acerow>*`'s blanket `min-width:0` let the
+     track size below it and `seed 2129285338` ran out over the player beside it. Nothing in this
+     column can give; the two that CAN are the title (it ellipsizes) and the player (it has a
+     floor), and past those the row overflows and the page scrolls, which is the intended end. */
+  .acemeta{white-space:nowrap;font-variant-numeric:tabular-nums;min-width:max-content;}
+  /* 🔴 THE ELLIPSIS MOVED INWARD WHEN THE CELLS BECAME FLEX CONTAINERS, and it had to.
+     `text-overflow` truncates the inline content of a BLOCK container; a flex container's text
+     becomes an anonymous flex item and is never ellipsized — so leaving it here would have
+     silently turned a tidy "Ashes In The Ra…" into a title that shoved the whole column wider.
+     The cell lays the row out; `.acename` is the block that gets clipped. */
+  .acewhat{gap:6px;}
+  .acename{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+  /* Keep status and duration labels intact; truncate the title when the row is constrained. */
+  .acewhat>.muted{flex:0 0 auto;white-space:nowrap;}
+  /* The controls keep their own spacing and never wrap under the title: a row that reflows while
+     a song is playing moves the <audio> element out from under the cursor. */
+  /* Preserve the picker width so its contents do not wrap into extra grid rows. */
+  .aceacts{display:flex;align-items:center;gap:6px;white-space:nowrap;min-width:max-content;}
+  /* Keep bulk-discard labels on one line and provide room for the item count. */
+  #aceDiscardAll{white-space:nowrap;padding-left:12px;padding-right:12px;}
+  /* ⚠️ The player is a grid CELL now, not a flex child of .aceacts, so it stretches to its track
+     instead of sitting at whatever width the browser's default control happens to be. The 220px
+     cap that used to live here is exactly what made it tiny. */
+  /* A wrapper stretches to the row height and paints a continuous separator around the audio control. */
+  .acepcell{width:100%;min-width:0;}
+  .aceplayer{height:34px;width:100%;min-width:0;}
+  /* Keep a visible focus indicator because keyboard seeking focuses the audio element. */
+  .aceplayer:focus-visible{outline:2px solid var(--acc);outline-offset:2px;border-radius:999px;}
+  /* Anchors are used for the download so the browser handles it; make one look like the buttons
+     beside it rather than like body text. */
+  a.btn{display:inline-block;text-decoration:none;}
+
+  /* Keep lyrics beside, not inside, the grid cells; the wrapper spans the full row. */
+  /* ⚠️ `min-width:0`, and it is load-bearing rather than tidiness. A grid item that SPANS tracks
+     still contributes to their intrinsic sizing, so without this a long line of lyrics could
+     widen the `auto` meta track — and every player in the list would shift sideways the moment a
+     row opened. That is the horizontal half of "it jumps when I open it". */
+  #aceLibrary>.acesong>.acelyr{grid-column:1/-1;min-width:0;}
+  /* Alternate row shades to separate items without adding a second border. */
+  /* ⚠️ `:not(.acedlhead)` — the format picker is the grid's first child now, so without this it
+     would be striped like a song. Excluding it also shifts which songs are odd, which is
+     immaterial: any consistent parity alternates. */
+  #aceLibrary>.acesong:not(.acedlhead):nth-child(odd)>.acerow>*,
+  #aceLibrary>.acesong:not(.acedlhead):nth-child(odd)>.acelyr{background:var(--stripe);}
+  /* Style the picker as a control rather than as a striped library row. */
+  .acedlhead>.acerow>*{cursor:default;min-height:0;padding-top:14px;padding-bottom:8px;}
+  /* The title and its blurb are ONE cell spanning three tracks — a flex box laid out exactly like
+     the heading row it replaced. `.acerow>*` already makes every cell a flex container; this only
+     un-does the `align-items:center` default, because a 1rem title and a 0.857rem blurb sitting on
+     their shared baseline is what the old row did and what reads right. */
+  .acedlttl>h3{white-space:nowrap;}
+  /* Keep the library header on one line; ellipsize its blurb before the action buttons wrap. */
+  .acedlttl>.small{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  /* Place library-wide actions in the heading cell so they do not consume the per-row action track. */
+  .acelibtools{display:inline-flex;align-items:center;gap:6px;flex:0 0 auto;align-self:center;}
+  /* Span the filter and bulk-action bar across all library tracks. */
+  .acelibbar{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:8px;
+             padding:6px 14px 10px;border-bottom:1px solid var(--line);}
+  /* The pager is OUTSIDE the grid (see TRAY_HTML), so it is an ordinary block and centers like
+     the Sources one. Hidden entirely at one page — a pager over a single page is debris. */
+  .acelibpager{margin-top:8px;text-align:center;font-size:0.857143rem;display:none;}
+  /* Align the picker with the download action at the end of the cell. */
+  .acedlpick{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+             font-size:0.857143rem;color:var(--mut);margin-left:auto;
+             border:1px solid var(--line);border-radius:999px;padding:4px 12px;}
+  /* ⚠️ The open row must not be told apart by a SHADE — it sits among two of them already, and a
+     third gray is the "reads as one color" problem again. --pill is the palette's selection
+     color on both skins, and the accent bar says which edge the selection starts at. */
+  #aceLibrary>.acesong.open>.acerow>*,
+  #aceLibrary>.acesong.open>.acelyr{background:var(--pill);}
+  #aceLibrary>.acesong.open>.acerow>*:first-child{box-shadow:inset 2px 0 0 var(--acc);}
+  /* The whole row is the hit target for opening it, so the whole row says so. */
+  #aceLibrary>.acesong>.acerow>*{cursor:pointer;}
+  /* Keep lyrics in the page flow instead of creating a nested scroll area. */
+  .acelyr{padding:2px 0 12px 2px;}
+  .acelyrcap{color:var(--mut);font-size:0.857143rem;margin-bottom:6px;}
+  /* `pre-wrap`, so [verse] / [chorus] markers and the line breaks between them survive, but a
+     long line still wraps rather than pushing the page sideways. Read-only by being text. */
+  .acelyrtext{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+              font-size:0.857143rem;line-height:1.5;background:var(--barbg);border:1px solid var(--line);
+              border-radius:6px;padding:8px 10px;color:var(--fg);}
+  /* Use the warning accent to make the favorite marker read as state, like the template star. */
+  .favmark{color:var(--warn);}
+  /* Give the saved-song download a full text label and primary-action emphasis. */
+  .acedl{background:var(--acc);color:#fff;border:1px solid var(--acc);border-radius:999px;
+         padding:5px 14px;font-weight:600;white-space:nowrap;line-height:1.2;}
+  .acedl:hover{filter:brightness(1.12);color:#fff;}
+  .acedl:focus-visible{outline:2px solid var(--fg);outline-offset:2px;}
+  /* Keep buttons on one line; the row layout owns any needed wrapping. */
+  section[data-panel="acestep"] button{white-space:nowrap;}
+
+  /* In running state, place the spinner below the label and retain the stop affordance. */
+  #aceForever.on{display:inline-flex;flex-direction:column;align-items:center;gap:4px;
+                 line-height:1.2;}
+  #aceForever.on .spin{margin-right:0;}

@@ -1,0 +1,368 @@
+/*
+ * Cache Lens.
+ *
+ * The bar is the whole display, and it has exactly two coloured segments: the green head the backend reused
+ * and the red tail it had to reprocess. The unfilled remainder is headroom in the context window. Nothing
+ * here should ever grow a third segment — see DESIGN.md §3 for why that would be a lie. The prefix tick is
+ * a hairline over the segments, not a segment: it marks a prediction against the measurement, and it is
+ * deliberately the thinnest mark on the bar.
+ */
+
+.cachelens {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75em;
+    font-size: 0.95em;
+    text-align: left;
+}
+
+.cachelens-mode {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--SmartThemeBorderColor);
+}
+
+.cachelens-mode-line {
+    line-height: 1.35;
+}
+
+/* The version of the code that drew the panel. Small and quiet — it is an identity stamp, not a finding —
+   but never muted away, because its whole job is to survive being screenshotted. */
+.cachelens-version {
+    align-self: flex-start;
+    font-size: 0.85em;
+    letter-spacing: 0.03em;
+    opacity: 0.8;
+    text-transform: uppercase;
+}
+
+.cachelens-muted {
+    opacity: 0.65;
+}
+
+.cachelens-warn {
+    color: var(--warning, #d9a441);
+}
+
+.cachelens-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+}
+
+.cachelens-row {
+    padding: 0.3em 0;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+}
+
+.cachelens-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75em;
+    cursor: pointer;
+}
+
+.cachelens-id {
+    flex: 0 0 3.5em;
+    font-family: var(--monoFontFamily, monospace);
+    opacity: 0.8;
+}
+
+/* A raw generation request — a SillyTavern quiet generation, not a roleplay turn
+   (DESIGN_RAW_GENERATION_ROWS.md §10). Identified through all of: a visible RAW badge, this alternate
+   background plus a left accent, and the whole-row title/aria-label panel.js sets — colour and hover are
+   never the only indicators, so none of them may be dropped for the others.
+
+   🔴 STATIC FALLBACK DECLARED FIRST, `color-mix()` SECOND. An engine that cannot parse the `color-mix()`
+   declaration treats the whole declaration as invalid and keeps the one before it, so the plain `rgba(...)`
+   below is not a design compromise — it is what every non-`color-mix()` engine actually renders, and it must
+   stay readable on its own rather than existing only as a placeholder waiting to be overridden. */
+.cachelens-row-raw {
+    position: relative;
+    padding-left: 0.6em;
+    background: rgba(108, 142, 191, 0.08);
+    background: color-mix(in srgb, var(--SmartThemeQuoteColor, #6c8ebf) 8%, transparent);
+    border-left: 3px solid var(--SmartThemeQuoteColor, #6c8ebf);
+}
+
+/* Focusable (panel.js sets `tabIndex = 0`) so a keyboard/screen-reader user can reach the row's title/
+   aria-label even though the row itself has no click action to trigger. */
+.cachelens-row-raw:focus,
+.cachelens-row-raw:focus-visible {
+    outline: 2px solid var(--SmartThemeQuoteColor, #6c8ebf);
+    outline-offset: 1px;
+}
+
+/* Both message and raw row heads are expandable and use the same pointer affordance. */
+
+.cachelens-id-raw {
+    display: inline-flex;
+    align-items: center;
+    flex: 0 0 auto;
+    min-width: 3.5em;
+    gap: 0.35em;
+}
+
+.cachelens-raw-badge {
+    display: inline-block;
+    padding: 0.05em 0.4em;
+    border-radius: 3px;
+    font-family: var(--monoFontFamily, monospace);
+    font-size: 0.78em;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--SmartThemeQuoteColor, #6c8ebf);
+    /* Same static-first, color-mix()-second order as `.cachelens-row-raw` above, for the same reason. */
+    background: rgba(108, 142, 191, 0.18);
+    background: color-mix(in srgb, var(--SmartThemeQuoteColor, #6c8ebf) 18%, transparent);
+}
+
+/* The quiet request's own seq, printed beside the badge — secondary, so it is quieter than the badge itself. */
+.cachelens-raw-seq {
+    font-family: var(--monoFontFamily, monospace);
+    font-size: 0.78em;
+    opacity: 0.6;
+}
+
+/* Width is the CONTEXT WINDOW, not the prompt, so rows are comparable to each other. */
+.cachelens-bar {
+    position: relative;
+    flex: 1 1 auto;
+    display: flex;
+    height: 1.1em;
+    min-width: 8em;
+    border-radius: 2px;
+    overflow: hidden;
+    background: rgba(128, 128, 128, 0.18);
+}
+
+/* The prefix prediction, marked against the measurement. A hairline — never a third segment. */
+.cachelens-tick {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45);
+    pointer-events: auto;
+}
+
+.cachelens-green {
+    background: #3f9a52;
+}
+
+.cachelens-red {
+    background: #b4453f;
+}
+
+.cachelens-bar-greyed {
+    background: repeating-linear-gradient(45deg, rgba(128, 128, 128, 0.35), rgba(128, 128, 128, 0.35) 4px, rgba(128, 128, 128, 0.15) 4px, rgba(128, 128, 128, 0.15) 8px);
+}
+
+.cachelens-bar-empty {
+    background: transparent;
+    border: 1px dashed rgba(128, 128, 128, 0.4);
+}
+
+/* Drawn from the prefix prediction because the backend reported no measurement for this turn.
+   Inset, and a shadow rather than a border or an outline: a border would change the bar's height and an
+   outline is already spoken for by `-nowindow`, which a predicted bar can carry at the same time. */
+.cachelens-bar-predicted {
+    box-shadow: inset 0 0 0 1px rgba(128, 128, 128, 0.5);
+}
+
+/* Whether the change below is what the turn actually paid for. Only ever printed from the backend's own
+   numbers — a verdict derived from the prefix would be the cost/cause confusion returning in prose. */
+.cachelens-verdict {
+    margin: 0.35em 0;
+    white-space: normal;
+    opacity: 0.9;
+}
+
+.cachelens-verdict-paid-in-full {
+    color: #e07a75;
+}
+
+.cachelens-verdict-recovered,
+.cachelens-verdict-no-divergence {
+    color: #6ecb7f;
+}
+
+/* No recorded context window, or counts still in characters: scaled to the prompt, so the tail is not
+   headroom. */
+.cachelens-bar-nowindow {
+    outline: 1px dotted rgba(217, 164, 65, 0.7);
+    outline-offset: -1px;
+}
+
+/* Character-derived proportions, until the tokenizer answers. */
+.cachelens-bar-provisional {
+    opacity: 0.55;
+}
+
+/* The collapsed row shows its id, bar, summary, and controls. Measurement and change details live in the
+   expandable drawer; obsolete per-row count, change, and measurement columns have no corresponding elements. */
+
+/* The one line next to the bar — `cached N (x%) · uncached N (y%)`, or the muted equivalent (`bar.js`'s
+   `summaryFor`). Monospace so the numbers line up down the list, the same reason the bar's own neighbours
+   always were. */
+/* Rows use message order, so this timestamp distinguishes when each measurement occurred. It is context, not
+   the measurement itself. */
+.cachelens-when {
+    color: var(--SmartThemeBodyColor);
+    opacity: 0.55;
+    font-size: 0.85em;
+    white-space: nowrap;
+    margin-left: 0.5em;
+}
+
+.cachelens-summary {
+    flex: 0 0 auto;
+    font-family: var(--monoFontFamily, monospace);
+    white-space: nowrap;
+}
+
+/* Matches the bar's own green/red exactly — this is the same split, spelled out in numbers. */
+.cachelens-summary-cached {
+    color: #6ecb7f;
+}
+
+.cachelens-summary-uncached {
+    color: #e07a75;
+}
+
+/* A small bordered button, not underlined text — `.cachelens-copy` was a `<span>` styled as a link; this is
+   an actual `<button>` (`panel.js`'s `renderViewButton`), for both row kinds now, so it gets button styling
+   rather than the old link-like treatment. */
+.cachelens-view {
+    flex: 0 0 auto;
+    padding: 0.1em 0.6em;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 3px;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    opacity: 0.85;
+}
+
+.cachelens-view:hover {
+    opacity: 1;
+    border-color: var(--SmartThemeQuoteColor, #6c8ebf);
+}
+
+/* ▸ collapsed / ▾ expanded — `aria-hidden`, since `.cachelens-head`'s own `aria-expanded` is what a screen
+   reader actually announces; this is a purely visual echo of the same state. */
+.cachelens-chevron {
+    flex: 0 0 auto;
+    opacity: 0.6;
+}
+
+/* A break in the row numbering, said where the break is. Rows are numbered by chat message and a message
+   with no recorded prompt has no row — silence about that looks exactly like a dropped turn. */
+.cachelens-gap {
+    padding: 0.2em 0 0.2em 4.25em;
+    font-size: 0.85em;
+    font-style: italic;
+    opacity: 0.6;
+}
+
+.cachelens-note {
+    padding-left: 4.25em;
+    font-size: 0.9em;
+    opacity: 0.8;
+}
+
+/* A note with something further to say. Dotted, so a reader can see there is a tooltip without hunting for
+   one — the caveat about what `modified by` does NOT cover is the whole reason these carry titles. */
+.cachelens-note-caveat {
+    border-bottom: 1px dotted currentColor;
+    cursor: help;
+}
+
+.cachelens-expansion {
+    margin: 0.4em 0 0.4em 4.25em;
+    padding: 0.5em;
+    border-left: 2px solid rgba(128, 128, 128, 0.35);
+    font-family: var(--monoFontFamily, monospace);
+    font-size: 0.9em;
+    overflow-x: auto;
+}
+
+/* One label/value row of the drawer's plain-English detail list (`panel.js`'s `detail()`). The label sits in
+   a fixed-width column so the values line up underneath each other, the same alignment `.cachelens-line-label`
+   already gives the diff view directly below this list. */
+.cachelens-detail {
+    display: flex;
+    gap: 0.6em;
+    margin-bottom: 0.3em;
+    line-height: 1.4;
+}
+
+.cachelens-detail-label {
+    flex: 0 0 11em;
+    opacity: 0.7;
+}
+
+.cachelens-detail-value {
+    flex: 1 1 auto;
+}
+
+/* A caveat worth a second look — "unreadableStamp", a greyed comparison, a missing client-side component —
+   the same warning colour `.cachelens-warn` uses everywhere else in this panel. */
+.cachelens-detail.cachelens-warn .cachelens-detail-value {
+    color: var(--warning, #d9a441);
+}
+
+.cachelens-line,
+.cachelens-ruler {
+    white-space: pre;
+    line-height: 1.4;
+}
+
+.cachelens-line-label {
+    display: inline-block;
+    width: 3.5em;
+    opacity: 0.6;
+}
+
+.cachelens-shared {
+    color: #6ecb7f;
+}
+
+.cachelens-divergent {
+    color: #e07a75;
+}
+
+.cachelens-ellipsis {
+    opacity: 0.5;
+}
+
+.cachelens-unattributed {
+    margin-top: 0.4em;
+    white-space: normal;
+    opacity: 0.7;
+}
+
+.cachelens-full {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    text-align: left;
+}
+
+.cachelens-full-label {
+    font-weight: bold;
+}
+
+.cachelens-full-text {
+    max-height: 60vh;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: var(--monoFontFamily, monospace);
+    font-size: 0.85em;
+}

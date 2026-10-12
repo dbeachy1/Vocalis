@@ -1,0 +1,15 @@
+**
+!packaging
+!packaging/leadvocal
+!packaging/leadvocal/**
+!packaging/acestep
+!packaging/acestep/dwt1d-distribution.lock.json
+!packaging/acestep/dwt1d-source-artifact.lock.json
+!packaging/acestep/dwt1d-derivation.md
+!packaging/acestep/dwt1d-source
+!packaging/acestep/dwt1d-source/**
+!packaging/licenses
+!packaging/licenses/copy_locked_wheel_notices.py
+!packaging/licenses/apt-runtime-source-artifacts.json
+!packaging/main-cuda
+!packaging/main-cuda/ffmpeg-native.lock

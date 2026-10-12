@@ -1,0 +1,13 @@
+<!-- Lifted out of `panel-settings.html` UNCHANGED at 9.5-m3 - see GRANDFATHERED_PARTIALS in tests/test_webui_size.py for why, and why not one byte was edited. -->
+    <div class="panel">
+      <h2>Satellites</h2>
+      <div class="small muted" style="margin:-4px 0 8px">A <b>satellite</b> is Vocalis running on another machine, lending its GPU to this one. Its cards appear in <b>Devices</b> above and are used like any other. Speech is rendered there and sent back — nothing is written to that machine's disk, and it never talks to your browser.</div>
+      <div id="satList" class="small muted">—</div>
+      <div class="row" style="margin-top:10px;align-items:flex-end">
+        <div style="flex:0 0 auto"><label>Name</label><input id="satName" placeholder="gpu-node" style="width:120px" spellcheck="false" autocomplete="off"></div>
+        <div style="flex:1"><label>URL</label><input id="satUrl" placeholder="https://gpu-node.example:7880" spellcheck="false" autocomplete="off"></div>
+        <div style="flex:0 0 auto"><button id="satAdd" class="primary">Add satellite</button></div>
+      </div>
+      <div id="satErr" class="small" style="display:none;color:var(--err);margin-top:6px"></div>
+      <div class="small muted" style="margin-top:6px">The name is cosmetic — it's what the logs and the device rows call it. The URL must match a name in that machine's certificate. Adding one generates a shared secret and <b>shows it once</b>.</div>
+    </div>

@@ -1,0 +1,97 @@
+node_modules/
+/.codex/
+public/chats/
+public/characters/
+public/User Avatars/
+public/backgrounds/
+public/groups/
+public/group chats/
+public/worlds/
+public/user/
+public/css/bg_load.css
+public/themes/
+public/OpenAI Settings/
+public/KoboldAI Settings/
+public/NovelAI Settings/
+public/TextGen Settings/
+public/instruct/
+public/context/
+public/scripts/extensions/third-party/
+public/stats.json
+/uploads/
+*.jsonl
+/config.conf
+/config.yaml
+/config.conf.bak
+# Written beside config.yaml, and instance-specific for the same reason config.yaml is: it records which
+# storage providers THIS install has actually run.
+/providers.json
+/docker/config
+/docker/user
+/docker/extensions
+/docker/data
+/docker/dist
+.DS_Store
+public/settings.json
+/thumbnails
+whitelist.txt
+.vscode/**
+!.vscode/extensions.json
+.idea/
+.windsurf/
+secrets.json
+/dist
+/backups/
+public/movingUI/
+public/QuickReplies/
+content.log
+cloudflared.exe
+public/assets/
+access.log
+# The server log and its rotated archives. The _DEBUG variant
+# contains conversation content in the clear and must never be committed.
+#
+# 🔴 THE SECOND LINE IS NOT REDUNDANT, AND THE REASON IT EXISTS IS A NEAR MISS. `*.log` matches only
+# names ENDING in `.log`, so it covers `st_DEBUG.log` and misses `st_DEBUG.log.pre-gate3-20260721` —
+# the diagnostic-snapshot convention this work uses constantly moves `.log` out of final position and
+# silently leaves the copy untracked-but-not-ignored, one `git add -A` away from a commit. Found on
+# the AMD test host install 2026-07-21 with two plaintext debug copies and a pre-redaction copy of st.log
+# exposed that way. A commit is not undone by `rm`: the blob survives deletion, survives a later
+# ignore fix, and if pushed it is on GitHub in the repository whose entire purpose is that this
+# content stays encrypted at rest.
+*.log
+*.log.*
+# Same failure, applied to the files that carry credentials rather than conversations. `/config.yaml`
+# is anchored and exact, so every `config.yaml.bak-pre-debugoff-20260721` was a config full of tokens
+# and proxy credentials sitting unignored beside it.
+config.yaml.*
+secrets.json.*
+providers.json.*
+# 🔴 THE RULE THAT REPLACES ALL OF THE ABOVE: PRESERVE DIAGNOSTIC COPIES IN `temp/`, NOT BESIDE THE
+# ORIGINAL. Every pattern above exists because a snapshot was named by appending a suffix, which moved
+# the real extension out of final position and slipped past the glob that was supposed to catch it.
+# Chasing that with one more pattern per suffix style is whack-a-mole and eventually misses one — and
+# the thing it misses is a plaintext chat log in a repository that exists to keep chats encrypted.
+# `temp/` ends the game: the directory is ignored wholesale, so ANY filename inside it is safe, and no
+# future snapshot needs a new rule. `cp st_DEBUG.log temp/pre-gate3-20260721.log` and move on.
+# README.md is the one tracked file, so the folder exists in a fresh clone and explains itself.
+/temp/*
+!/temp/README.md
+/vectors/
+/cache/
+public/css/user.css
+public/error/
+/plugins/
+# A storage provider is trusted with every byte of user data, and the one we run is private.
+# This fork is public. It must never carry a provider's source.
+/storage-providers/
+/data
+/default/scaffold
+public/scripts/extensions/third-party
+/certs
+.aider*
+.env
+/StartDev.bat
+yarn.lock
+*.code-workspace
+test-results/

@@ -1,0 +1,34 @@
+// The same checker, over `tools/` — and a SECOND config rather than a second `include` entry, for one reason.
+//
+// 🔴 `tools/deploy-gates/*.mjs` RUN HALF IN NODE AND HALF IN A BROWSER. They drive the live install through
+// Playwright, and the callbacks handed to `page.evaluate()` and `waitForFunction()` execute inside the page,
+// where `document` is real. Those files therefore need `lib: DOM`.
+//
+// 🔴 AND `src/` MUST NOT HAVE IT. Mnemosyne is a SERVER plugin: `panel-view.js` builds the panel's markup as
+// strings and hands them to the host, and it has never had a `document`. Put `DOM` in the main config to
+// satisfy these three files and `document.createElement(…)` inside a renderer starts type-checking cleanly —
+// and fails at runtime, on a user's install, in a process holding a decrypted store. One `lib` cannot be
+// right for both halves, so there are two configs and `npm run types` runs both.
+//
+// ⚠️ The gates are checked but are NOT part of `npm test`'s type gate in the way `src/` is: see
+// tests/types.test.js, which runs both configs. They are dev tooling that talks to a running server, so they
+// are the one place in this repository where being unable to compile-check the real dependency is acceptable
+// — the module they import lives in Taproom's `node_modules` and is declared in
+// types/tools/playwright.d.ts.
+{
+  "extends": "./tsconfig.json",
+
+  "compilerOptions": {
+    // ⚠️ `DOM` is here and nowhere else. `DOM.Iterable` too, because the page-side callbacks spread
+    // `querySelectorAll` results.
+    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+  },
+
+  "include": [
+    "tools/**/*.mjs",
+    "types/*.d.ts",
+    "types/tools/*.d.ts"
+  ],
+
+  "exclude": ["node_modules", "src", "tests", "temp", "out", "tmp"]
+}

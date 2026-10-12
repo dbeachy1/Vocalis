@@ -1,0 +1,981 @@
+{
+  "candidate_plan_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/runtime-wheel-plan-candidate.json",
+  "candidate_plan_sha256": "7d50838b2d6d5c30fd9b29066ad9c3277d394f2858ff910c1d577bff795ac432",
+  "derived_dwt_lock_path": "packaging/acestep/dwt1d-distribution.lock.json",
+  "derived_dwt_lock_sha256": "46956dad1024e96bdf322f07b5120f79a7dc13ec2959fbd41acaa4f4a43c0b2b",
+  "files": [
+    {
+      "bytes": 380935,
+      "filename": "accelerate-1.12.0-py3-none-any.whl",
+      "name": "accelerate",
+      "origin": "acquired-common-wheel",
+      "sha256": "3e2091cd341423207e2f084a6654b1efcd250dc326f2a37d6dde446e07cabb11",
+      "source_candidate_version": "1.12.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/accelerate-1.12.0-py3-none-any.whl",
+      "version": "1.12.0"
+    },
+    {
+      "bytes": 15896,
+      "filename": "aiofiles-24.1.0-py3-none-any.whl",
+      "name": "aiofiles",
+      "origin": "g1-rocm",
+      "sha256": "b4ec55f4195e3eb5d7abd1bf7e061763e864dd4954231fb8539a0ef8bb8260e5",
+      "source_candidate_version": "24.1.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/aiofiles-24.1.0-py3-none-any.whl",
+      "version": "24.1.0"
+    },
+    {
+      "bytes": 5303,
+      "filename": "annotated_doc-0.0.4-py3-none-any.whl",
+      "name": "annotated-doc",
+      "origin": "acquired-common-wheel",
+      "sha256": "571ac1dc6991c450b25a9c2d84a3705e2ae7a53467b5d111c24fa8baabbed320",
+      "source_candidate_version": "0.0.4",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/annotated_doc-0.0.4-py3-none-any.whl",
+      "version": "0.0.4"
+    },
+    {
+      "bytes": 13643,
+      "filename": "annotated_types-0.7.0-py3-none-any.whl",
+      "name": "annotated-types",
+      "origin": "acquired-common-wheel",
+      "sha256": "1f02e8b43a8fbbc3f3e0d4f0f4bfc8131bcb4eebe8849b8e5c773f3a1c582a53",
+      "source_candidate_version": "0.7.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/annotated_types-0.7.0-py3-none-any.whl",
+      "version": "0.7.0"
+    },
+    {
+      "bytes": 113592,
+      "filename": "anyio-4.12.1-py3-none-any.whl",
+      "name": "anyio",
+      "origin": "acquired-common-wheel",
+      "sha256": "d405828884fc140aa80a3c667b8beed277f1dfedec42ba031bd6ac3db606ab6c",
+      "source_candidate_version": "4.12.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/anyio-4.12.1-py3-none-any.whl",
+      "version": "4.12.1"
+    },
+    {
+      "bytes": 1419762,
+      "filename": "brotli-1.2.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "brotli",
+      "origin": "g1-rocm",
+      "sha256": "072e7624b1fc4d601036ab3f4f27942ef772887e876beff0301d261210bca97f",
+      "source_candidate_version": "1.2.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/brotli-1.2.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "1.2.0"
+    },
+    {
+      "bytes": 152900,
+      "filename": "certifi-2026.1.4-py3-none-any.whl",
+      "name": "certifi",
+      "origin": "acquired-common-wheel",
+      "sha256": "9943707519e4add1115f44c2bc244f782c0249876bf51b6599fee1ffbedd685c",
+      "source_candidate_version": "2026.1.4",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/certifi-2026.1.4-py3-none-any.whl",
+      "version": "2026.1.4"
+    },
+    {
+      "bytes": 219572,
+      "filename": "cffi-2.0.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "cffi",
+      "origin": "acquired-common-wheel",
+      "sha256": "3e17ed538242334bf70832644a32a7aae3d83b57567f9fd60a26257e992b79ba",
+      "source_candidate_version": "2.0.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/cffi-2.0.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "2.0.0"
+    },
+    {
+      "bytes": 53402,
+      "filename": "charset_normalizer-3.4.4-py3-none-any.whl",
+      "name": "charset-normalizer",
+      "origin": "acquired-common-wheel",
+      "sha256": "7a32c560861a02ff789ad905a2fe94e3f840803362c84fecf1851cb4cf3dc37f",
+      "source_candidate_version": "3.4.4",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/charset_normalizer-3.4.4-py3-none-any.whl",
+      "version": "3.4.4"
+    },
+    {
+      "bytes": 108274,
+      "filename": "click-8.3.1-py3-none-any.whl",
+      "name": "click",
+      "origin": "acquired-common-wheel",
+      "sha256": "981153a64e25f12d547d3426c367a4857371575ee7ad18df2a6183ab0545b2a6",
+      "source_candidate_version": "8.3.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/click-8.3.1-py3-none-any.whl",
+      "version": "8.3.1"
+    },
+    {
+      "bytes": 362601,
+      "filename": "contourpy-1.3.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "contourpy",
+      "origin": "enhance-rocm",
+      "sha256": "4d00e655fcef08aba35ec9610536bfe90267d7ab5ba944f7032549c55a146da1",
+      "source_candidate_version": "1.3.3",
+      "source_path": ".codex/packaging-probes/enhance-inputs-20261008/new-wheels/contourpy-1.3.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "1.3.3"
+    },
+    {
+      "bytes": 8321,
+      "filename": "cycler-0.12.1-py3-none-any.whl",
+      "name": "cycler",
+      "origin": "enhance-rocm",
+      "sha256": "85cef7cff222d8644161529808465972e51340599459b8ac3ccbac5a854e0d30",
+      "source_candidate_version": "0.12.1",
+      "source_path": ".codex/packaging-probes/enhance-inputs-20261008/new-wheels/cycler-0.12.1-py3-none-any.whl",
+      "version": "0.12.1"
+    },
+    {
+      "bytes": 5001536,
+      "filename": "diffusers-0.37.1-py3-none-any.whl",
+      "name": "diffusers",
+      "origin": "acquired-common-wheel",
+      "sha256": "0537c0b28cb53cf39d6195489bcf8f833986df556c10f5e28ab7427b86fc8b90",
+      "source_candidate_version": "0.37.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/diffusers-0.37.1-py3-none-any.whl",
+      "version": "0.37.1"
+    },
+    {
+      "bytes": 45550,
+      "filename": "diskcache-5.6.3-py3-none-any.whl",
+      "name": "diskcache",
+      "origin": "acquired-common-wheel",
+      "sha256": "5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19",
+      "source_candidate_version": "5.6.3",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/diskcache-5.6.3-py3-none-any.whl",
+      "version": "5.6.3"
+    },
+    {
+      "bytes": 65638,
+      "filename": "einops-0.8.2-py3-none-any.whl",
+      "name": "einops",
+      "origin": "g1-rocm",
+      "sha256": "54058201ac7087911181bfec4af6091bb59380360f069276601256a76af08193",
+      "source_candidate_version": "0.8.2",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/einops-0.8.2-py3-none-any.whl",
+      "version": "0.8.2"
+    },
+    {
+      "bytes": 102958,
+      "filename": "einx-0.3.0-py3-none-any.whl",
+      "name": "einx",
+      "origin": "acquired-common-wheel",
+      "sha256": "367d62bab8dbb8c4937308512abb6f746cc0920990589892ba0d281356d39345",
+      "source_candidate_version": "0.3.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/einx-0.3.0-py3-none-any.whl",
+      "version": "0.3.0"
+    },
+    {
+      "bytes": 103094,
+      "filename": "fastapi-0.128.0-py3-none-any.whl",
+      "name": "fastapi",
+      "origin": "acquired-common-wheel",
+      "sha256": "aebd93f9716ee3b4f4fcfe13ffb7cf308d99c9f3ab5622d8877441072561582d",
+      "source_candidate_version": "0.128.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/fastapi-0.128.0-py3-none-any.whl",
+      "version": "0.128.0"
+    },
+    {
+      "bytes": 5614,
+      "filename": "ffmpy-1.0.0-py3-none-any.whl",
+      "name": "ffmpy",
+      "origin": "g1-rocm",
+      "sha256": "5640e5f0fd03fb6236d0e119b16ccf6522db1c826fdf35dcb87087b60fd7504f",
+      "source_candidate_version": "1.0.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/ffmpy-1.0.0-py3-none-any.whl",
+      "version": "1.0.0"
+    },
+    {
+      "bytes": 16701,
+      "filename": "filelock-3.20.3-py3-none-any.whl",
+      "name": "filelock",
+      "origin": "acquired-common-wheel",
+      "sha256": "4b0dda527ee31078689fc205ec4f1c1bf7d56cf88b6dc9426c4f230e46c2dce1",
+      "source_candidate_version": "3.20.3",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/filelock-3.20.3-py3-none-any.whl",
+      "version": "3.20.3"
+    },
+    {
+      "bytes": 1148996,
+      "filename": "fonttools-4.61.1-py3-none-any.whl",
+      "name": "fonttools",
+      "origin": "acquired-common-wheel",
+      "sha256": "17d2bf5d541add43822bcf0c43d7d847b160c9bb01d15d5007d84e2217aaa371",
+      "source_candidate_version": "4.61.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/fonttools-4.61.1-py3-none-any.whl",
+      "version": "4.61.1"
+    },
+    {
+      "bytes": 16264,
+      "filename": "frozendict-2.4.7-py3-none-any.whl",
+      "name": "frozendict",
+      "origin": "acquired-common-wheel",
+      "sha256": "972af65924ea25cf5b4d9326d549e69a9a4918d8a76a9d3a7cd174d98b237550",
+      "source_candidate_version": "2.4.7",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/frozendict-2.4.7-py3-none-any.whl",
+      "version": "2.4.7"
+    },
+    {
+      "bytes": 201838,
+      "filename": "fsspec-2026.1.0-py3-none-any.whl",
+      "name": "fsspec",
+      "origin": "acquired-common-wheel",
+      "sha256": "cb76aa913c2285a3b49bdd5fc55b1d7c708d7208126b60f2eb8194fe1b4cbdcc",
+      "source_candidate_version": "2026.1.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/fsspec-2026.1.0-py3-none-any.whl",
+      "version": "2026.1.0"
+    },
+    {
+      "bytes": 22985535,
+      "filename": "gradio-6.2.0-py3-none-any.whl",
+      "name": "gradio",
+      "origin": "acquired-common-wheel",
+      "sha256": "65bcd9e26e77e9be8d688abdb18351d3f537ed16418c4274a513f280894317ed",
+      "source_candidate_version": "6.2.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/gradio-6.2.0-py3-none-any.whl",
+      "version": "6.2.0"
+    },
+    {
+      "bytes": 55566,
+      "filename": "gradio_client-2.0.2-py3-none-any.whl",
+      "name": "gradio-client",
+      "origin": "acquired-common-wheel",
+      "sha256": "46a7f63eaa7758fe2e38be7f78f26a1fff48a7b526ebdd87141b050e08556622",
+      "source_candidate_version": "2.0.2",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/gradio_client-2.0.2-py3-none-any.whl",
+      "version": "2.0.2"
+    },
+    {
+      "bytes": 14090,
+      "filename": "groovy-0.1.2-py3-none-any.whl",
+      "name": "groovy",
+      "origin": "g1-rocm",
+      "sha256": "7f7975bab18c729a257a8b1ae9dcd70b7cafb1720481beae47719af57c35fa64",
+      "source_candidate_version": "0.1.2",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/groovy-0.1.2-py3-none-any.whl",
+      "version": "0.1.2"
+    },
+    {
+      "bytes": 37515,
+      "filename": "h11-0.16.0-py3-none-any.whl",
+      "name": "h11",
+      "origin": "g1-rocm",
+      "sha256": "63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86",
+      "source_candidate_version": "0.16.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/h11-0.16.0-py3-none-any.whl",
+      "version": "0.16.0"
+    },
+    {
+      "bytes": 3320214,
+      "filename": "hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "hf-xet",
+      "origin": "acquired-common-wheel",
+      "sha256": "3651fd5bfe0281951b988c0facbe726aa5e347b103a675f49a3fa8144c7968fd",
+      "source_candidate_version": "1.2.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/hf_xet-1.2.0-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "1.2.0"
+    },
+    {
+      "bytes": 78784,
+      "filename": "httpcore-1.0.9-py3-none-any.whl",
+      "name": "httpcore",
+      "origin": "g1-rocm",
+      "sha256": "2d400746a40668fc9dec9810239072b40b4484b640a8c38fd654a024c7a1bf55",
+      "source_candidate_version": "1.0.9",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/httpcore-1.0.9-py3-none-any.whl",
+      "version": "1.0.9"
+    },
+    {
+      "bytes": 517655,
+      "filename": "httptools-0.7.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl",
+      "name": "httptools",
+      "origin": "acquired-common-wheel",
+      "sha256": "2c15f37ef679ab9ecc06bfc4e6e8628c32a8e4b305459de7cf6785acd57e4d03",
+      "source_candidate_version": "0.7.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/httptools-0.7.1-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl",
+      "version": "0.7.1"
+    },
+    {
+      "bytes": 73517,
+      "filename": "httpx-0.28.1-py3-none-any.whl",
+      "name": "httpx",
+      "origin": "g1-rocm",
+      "sha256": "d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad",
+      "source_candidate_version": "0.28.1",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/httpx-0.28.1-py3-none-any.whl",
+      "version": "0.28.1"
+    },
+    {
+      "bytes": 566094,
+      "filename": "huggingface_hub-0.36.0-py3-none-any.whl",
+      "name": "huggingface-hub",
+      "origin": "acquired-common-wheel",
+      "sha256": "7bcc9ad17d5b3f07b57c78e79d527102d08313caa278a641993acddcb894548d",
+      "source_candidate_version": "0.36.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/huggingface_hub-0.36.0-py3-none-any.whl",
+      "version": "0.36.0"
+    },
+    {
+      "bytes": 71008,
+      "filename": "idna-3.11-py3-none-any.whl",
+      "name": "idna",
+      "origin": "acquired-common-wheel",
+      "sha256": "771a87f49d9defaf64091e6e6fe9c18d4833f140bd19464795bc32d966ca37ea",
+      "source_candidate_version": "3.11",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/idna-3.11-py3-none-any.whl",
+      "version": "3.11"
+    },
+    {
+      "bytes": 27865,
+      "filename": "importlib_metadata-8.7.1-py3-none-any.whl",
+      "name": "importlib-metadata",
+      "origin": "acquired-common-wheel",
+      "sha256": "5a1f80bf1daa489495071efbb095d75a634cf28a8bc299581244063b53176151",
+      "source_candidate_version": "8.7.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/importlib_metadata-8.7.1-py3-none-any.whl",
+      "version": "8.7.1"
+    },
+    {
+      "bytes": 134899,
+      "filename": "jinja2-3.1.6-py3-none-any.whl",
+      "name": "jinja2",
+      "origin": "g1-rocm",
+      "sha256": "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67",
+      "source_candidate_version": "3.1.6",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/jinja2-3.1.6-py3-none-any.whl",
+      "version": "3.1.6"
+    },
+    {
+      "bytes": 1474756,
+      "filename": "kiwisolver-1.4.9-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "kiwisolver",
+      "origin": "acquired-common-wheel",
+      "sha256": "f6008a4919fdbc0b0097089f67a1eb55d950ed7e90ce2cc3e640abadd2757a04",
+      "source_candidate_version": "1.4.9",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/kiwisolver-1.4.9-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "1.4.9"
+    },
+    {
+      "bytes": 56275176,
+      "filename": "llvmlite-0.46.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "llvmlite",
+      "origin": "acquired-common-wheel",
+      "sha256": "3535bd2bb6a2d7ae4012681ac228e5132cdb75fefb1bcb24e33f2f3e0c865ed4",
+      "source_candidate_version": "0.46.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/llvmlite-0.46.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "0.46.0"
+    },
+    {
+      "bytes": 61595,
+      "filename": "loguru-0.7.3-py3-none-any.whl",
+      "name": "loguru",
+      "origin": "acquired-common-wheel",
+      "sha256": "31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c",
+      "source_candidate_version": "0.7.3",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/loguru-0.7.3-py3-none-any.whl",
+      "version": "0.7.3"
+    },
+    {
+      "bytes": 76319,
+      "filename": "lycoris_lora-3.4.0-py3-none-any.whl",
+      "name": "lycoris-lora",
+      "origin": "acquired-common-wheel",
+      "sha256": "88ce950017206b9932209d8f17c472d65e117115dbe693da94e3307061631379",
+      "source_candidate_version": "3.4.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/lycoris_lora-3.4.0-py3-none-any.whl",
+      "version": "3.4.0"
+    },
+    {
+      "bytes": 87321,
+      "filename": "markdown_it_py-4.0.0-py3-none-any.whl",
+      "name": "markdown-it-py",
+      "origin": "acquired-common-wheel",
+      "sha256": "87327c59b172c5011896038353a81343b6754500a08cd7a4973bb48c6d578147",
+      "source_candidate_version": "4.0.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/markdown_it_py-4.0.0-py3-none-any.whl",
+      "version": "4.0.0"
+    },
+    {
+      "bytes": 22947,
+      "filename": "markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "markupsafe",
+      "origin": "g1-rocm",
+      "sha256": "d6dd0be5b5b189d31db7cda48b91d7e0a9795f31430b7f271219ab30f1d3ac9d",
+      "source_candidate_version": "3.0.3",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "3.0.3"
+    },
+    {
+      "bytes": 8716944,
+      "filename": "matplotlib-3.10.8-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "matplotlib",
+      "origin": "acquired-common-wheel",
+      "sha256": "3ab4aabc72de4ff77b3ec33a6d78a68227bf1123465887f9905ba79184a1cc04",
+      "source_candidate_version": "3.10.8",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/matplotlib-3.10.8-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "3.10.8"
+    },
+    {
+      "bytes": 9979,
+      "filename": "mdurl-0.1.2-py3-none-any.whl",
+      "name": "mdurl",
+      "origin": "g1-rocm",
+      "sha256": "84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8",
+      "source_candidate_version": "0.1.2",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/mdurl-0.1.2-py3-none-any.whl",
+      "version": "0.1.2"
+    },
+    {
+      "bytes": 6050825,
+      "filename": "modelscope-1.34.0-py3-none-any.whl",
+      "name": "modelscope",
+      "origin": "acquired-common-wheel",
+      "sha256": "4629ace145972520b71b0ad02e4604282426c0cfae6a4b0922509898f3b269c8",
+      "source_candidate_version": "1.34.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/modelscope-1.34.0-py3-none-any.whl",
+      "version": "1.34.0"
+    },
+    {
+      "bytes": 536198,
+      "filename": "mpmath-1.3.0-py3-none-any.whl",
+      "name": "mpmath",
+      "origin": "g1-rocm",
+      "sha256": "a0b2b9fe80bbcd81a6647ff13108738cfb482d481d826cc0e02f5b35e5c88d2c",
+      "source_candidate_version": "1.3.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/mpmath-1.3.0-py3-none-any.whl",
+      "version": "1.3.0"
+    },
+    {
+      "bytes": 2068504,
+      "filename": "networkx-3.6.1-py3-none-any.whl",
+      "name": "networkx",
+      "origin": "g1-rocm",
+      "sha256": "d47fbf302e7d9cbbb9e2555a0d267983d2aa476bac30e90dfbe5669bd57f3762",
+      "source_candidate_version": "3.6.1",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/networkx-3.6.1-py3-none-any.whl",
+      "version": "3.6.1"
+    },
+    {
+      "bytes": 3801656,
+      "filename": "numba-0.63.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "numba",
+      "origin": "acquired-common-wheel",
+      "sha256": "5cfd45dbd3d409e713b1ccfdc2ee72ca82006860254429f4ef01867fdba5845f",
+      "source_candidate_version": "0.63.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/numba-0.63.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "0.63.1"
+    },
+    {
+      "bytes": 16606086,
+      "filename": "numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "numpy",
+      "origin": "acquired-common-wheel",
+      "sha256": "0d8163f43acde9a73c2a33605353a4f1bc4798745a8b1d73183b28e5b435ae28",
+      "source_candidate_version": "2.3.5",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "2.3.5"
+    },
+    {
+      "bytes": 139020,
+      "filename": "orjson-3.11.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "orjson",
+      "origin": "acquired-common-wheel",
+      "sha256": "c74099c6b230d4261fdc3169d50efc09abf38ace1a42ea2f9994b1d79153d477",
+      "source_candidate_version": "3.11.5",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/orjson-3.11.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "3.11.5"
+    },
+    {
+      "bytes": 74366,
+      "filename": "packaging-26.0-py3-none-any.whl",
+      "name": "packaging",
+      "origin": "acquired-common-wheel",
+      "sha256": "b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529",
+      "source_candidate_version": "26.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/packaging-26.0-py3-none-any.whl",
+      "version": "26.0"
+    },
+    {
+      "bytes": 12362693,
+      "filename": "pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "pandas",
+      "origin": "acquired-common-wheel",
+      "sha256": "b3d11d2fda7eb164ef27ffc14b4fcab16a80e1ce67e9f57e19ec0afaf715ba89",
+      "source_candidate_version": "2.3.3",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "2.3.3"
+    },
+    {
+      "bytes": 556960,
+      "filename": "peft-0.18.1-py3-none-any.whl",
+      "name": "peft",
+      "origin": "acquired-common-wheel",
+      "sha256": "0bf06847a3551e3019fc58c440cffc9a6b73e6e2962c95b52e224f77bbdb50f1",
+      "source_candidate_version": "0.18.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/peft-0.18.1-py3-none-any.whl",
+      "version": "0.18.1"
+    },
+    {
+      "bytes": 8044868,
+      "filename": "pillow-12.1.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "name": "pillow",
+      "origin": "acquired-common-wheel",
+      "sha256": "bef9768cab184e7ae6e559c032e95ba8d07b3023c289f79a2bd36e8bf85605a5",
+      "source_candidate_version": "12.1.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pillow-12.1.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl",
+      "version": "12.1.0"
+    },
+    {
+      "bytes": 154694,
+      "filename": "psutil-7.2.1-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "psutil",
+      "origin": "acquired-common-wheel",
+      "sha256": "5e38404ca2bb30ed7267a46c02f06ff842e92da3bb8c5bfdadbd35a5722314d8",
+      "source_candidate_version": "7.2.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/psutil-7.2.1-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "7.2.1"
+    },
+    {
+      "bytes": 48172,
+      "filename": "pycparser-3.0-py3-none-any.whl",
+      "name": "pycparser",
+      "origin": "g1-rocm",
+      "sha256": "b727414169a36b7d524c1c3e31839a521725078d7b2ff038656844266160a992",
+      "source_candidate_version": "3.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/pycparser-3.0-py3-none-any.whl",
+      "version": "3.0"
+    },
+    {
+      "bytes": 463580,
+      "filename": "pydantic-2.12.5-py3-none-any.whl",
+      "name": "pydantic",
+      "origin": "acquired-common-wheel",
+      "sha256": "e561593fccf61e8a20fc46dfc2dfe075b8be7d0188df33f221ad1f0139180f9d",
+      "source_candidate_version": "2.12.5",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pydantic-2.12.5-py3-none-any.whl",
+      "version": "2.12.5"
+    },
+    {
+      "bytes": 2075366,
+      "filename": "pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "pydantic-core",
+      "origin": "acquired-common-wheel",
+      "sha256": "eceb81a8d74f9267ef4081e246ffd6d129da5d87e37a77c9bde550cb04870c1c",
+      "source_candidate_version": "2.41.5",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pydantic_core-2.41.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "2.41.5"
+    },
+    {
+      "bytes": 32327,
+      "filename": "pydub-0.25.1-py2.py3-none-any.whl",
+      "name": "pydub",
+      "origin": "g1-rocm",
+      "sha256": "65617e33033874b59d87db603aa1ed450633288aefead953b30bded59cb599a6",
+      "source_candidate_version": "0.25.1",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/pydub-0.25.1-py2.py3-none-any.whl",
+      "version": "0.25.1"
+    },
+    {
+      "bytes": 1225217,
+      "filename": "pygments-2.19.2-py3-none-any.whl",
+      "name": "pygments",
+      "origin": "acquired-common-wheel",
+      "sha256": "86540386c03d588bb81d44bc3928634ff26449851e99741617ecb9037ee5ec0b",
+      "source_candidate_version": "2.19.2",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pygments-2.19.2-py3-none-any.whl",
+      "version": "2.19.2"
+    },
+    {
+      "bytes": 122781,
+      "filename": "pyparsing-3.3.2-py3-none-any.whl",
+      "name": "pyparsing",
+      "origin": "acquired-common-wheel",
+      "sha256": "850ba148bd908d7e2411587e247a1e4f0327839c40e2e5e6d05a007ecc69911d",
+      "source_candidate_version": "3.3.2",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pyparsing-3.3.2-py3-none-any.whl",
+      "version": "3.3.2"
+    },
+    {
+      "bytes": 229892,
+      "filename": "python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "name": "python-dateutil",
+      "origin": "g1-rocm",
+      "sha256": "a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427",
+      "source_candidate_version": "2.9.0.post0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/python_dateutil-2.9.0.post0-py2.py3-none-any.whl",
+      "version": "2.9.0.post0"
+    },
+    {
+      "bytes": 21230,
+      "filename": "python_dotenv-1.2.1-py3-none-any.whl",
+      "name": "python-dotenv",
+      "origin": "acquired-common-wheel",
+      "sha256": "b81ee9561e9ca4004139c6cbba3a238c32b03e4894671e181b671e8cb8425d61",
+      "source_candidate_version": "1.2.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/python_dotenv-1.2.1-py3-none-any.whl",
+      "version": "1.2.1"
+    },
+    {
+      "bytes": 24579,
+      "filename": "python_multipart-0.0.22-py3-none-any.whl",
+      "name": "python-multipart",
+      "origin": "acquired-common-wheel",
+      "sha256": "2b2cd894c83d21bf49d702499531c7bafd057d730c201782048f7945d82de155",
+      "source_candidate_version": "0.0.22",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/python_multipart-0.0.22-py3-none-any.whl",
+      "version": "0.0.22"
+    },
+    {
+      "bytes": 11949,
+      "filename": "pytorch_wavelets-1.3.0+vocalis.dwt1d.1-py3-none-any.whl",
+      "name": "pytorch-wavelets",
+      "origin": "derived-dwt1d",
+      "sha256": "0c9617b43fc124d3eb1db58693d4fef1dbc9692f2539eba0c048b4a61c382f09",
+      "source_candidate_version": "1.3.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/derived-wheelhouse/pytorch_wavelets-1.3.0+vocalis.dwt1d.1-py3-none-any.whl",
+      "version": "1.3.0+vocalis.dwt1d.1"
+    },
+    {
+      "bytes": 509225,
+      "filename": "pytz-2025.2-py2.py3-none-any.whl",
+      "name": "pytz",
+      "origin": "acquired-common-wheel",
+      "sha256": "5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00",
+      "source_candidate_version": "2025.2",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pytz-2025.2-py2.py3-none-any.whl",
+      "version": "2025.2"
+    },
+    {
+      "bytes": 4483843,
+      "filename": "pywavelets-1.9.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "pywavelets",
+      "origin": "acquired-common-wheel",
+      "sha256": "573b650805d2f3c981a0e5ae95191c781a722022c37a0f6eba3fa7eae8e0ee17",
+      "source_candidate_version": "1.9.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/pywavelets-1.9.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "1.9.0"
+    },
+    {
+      "bytes": 807870,
+      "filename": "pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "pyyaml",
+      "origin": "g1-rocm",
+      "sha256": "ba1cc08a7ccde2d2ec775841541641e4548226580ab850948cbfda66a1befcdc",
+      "source_candidate_version": "6.0.3",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/pyyaml-6.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "6.0.3"
+    },
+    {
+      "bytes": 803589,
+      "filename": "regex-2026.1.15-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "regex",
+      "origin": "acquired-common-wheel",
+      "sha256": "c32bef3e7aeee75746748643667668ef941d28b003bfc89994ecf09a10f7a1b5",
+      "source_candidate_version": "2026.1.15",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/regex-2026.1.15-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "2026.1.15"
+    },
+    {
+      "bytes": 64738,
+      "filename": "requests-2.32.5-py3-none-any.whl",
+      "name": "requests",
+      "origin": "acquired-common-wheel",
+      "sha256": "2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6",
+      "source_candidate_version": "2.32.5",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/requests-2.32.5-py3-none-any.whl",
+      "version": "2.32.5"
+    },
+    {
+      "bytes": 309952,
+      "filename": "rich-14.3.1-py3-none-any.whl",
+      "name": "rich",
+      "origin": "acquired-common-wheel",
+      "sha256": "da750b1aebbff0b372557426fb3f35ba56de8ef954b3190315eb64076d6fb54e",
+      "source_candidate_version": "14.3.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/rich-14.3.1-py3-none-any.whl",
+      "version": "14.3.1"
+    },
+    {
+      "bytes": 8959,
+      "filename": "safehttpx-0.1.7-py3-none-any.whl",
+      "name": "safehttpx",
+      "origin": "g1-rocm",
+      "sha256": "c4f4a162db6993464d7ca3d7cc4af0ffc6515a606dfd220b9f82c6945d869cde",
+      "source_candidate_version": "0.1.7",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/safehttpx-0.1.7-py3-none-any.whl",
+      "version": "0.1.7"
+    },
+    {
+      "bytes": 507152,
+      "filename": "safetensors-0.7.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "safetensors",
+      "origin": "acquired-common-wheel",
+      "sha256": "dac7252938f0696ddea46f5e855dd3138444e82236e3be475f54929f0c510d48",
+      "source_candidate_version": "0.7.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/safetensors-0.7.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "0.7.0"
+    },
+    {
+      "bytes": 35009148,
+      "filename": "scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "scipy",
+      "origin": "acquired-common-wheel",
+      "sha256": "9eeb9b5f5997f75507814ed9d298ab23f62cf79f5a3ef90031b1ee2506abdb5b",
+      "source_candidate_version": "1.17.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "1.17.0"
+    },
+    {
+      "bytes": 15552,
+      "filename": "semantic_version-2.10.0-py2.py3-none-any.whl",
+      "name": "semantic-version",
+      "origin": "g1-rocm",
+      "sha256": "de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177",
+      "source_candidate_version": "2.10.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/semantic_version-2.10.0-py2.py3-none-any.whl",
+      "version": "2.10.0"
+    },
+    {
+      "bytes": 2341722,
+      "filename": "setuptools-71.1.0-py3-none-any.whl",
+      "name": "setuptools",
+      "origin": "acquired-common-wheel",
+      "sha256": "33874fdc59b3188304b2e7c80d9029097ea31627180896fb549c578ceb8a0855",
+      "source_candidate_version": "71.1.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/setuptools-71.1.0-py3-none-any.whl",
+      "version": "71.1.0"
+    },
+    {
+      "bytes": 9755,
+      "filename": "shellingham-1.5.4-py2.py3-none-any.whl",
+      "name": "shellingham",
+      "origin": "g1-rocm",
+      "sha256": "7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686",
+      "source_candidate_version": "1.5.4",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/shellingham-1.5.4-py2.py3-none-any.whl",
+      "version": "1.5.4"
+    },
+    {
+      "bytes": 11050,
+      "filename": "six-1.17.0-py2.py3-none-any.whl",
+      "name": "six",
+      "origin": "g1-rocm",
+      "sha256": "4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274",
+      "source_candidate_version": "1.17.0",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/six-1.17.0-py2.py3-none-any.whl",
+      "version": "1.17.0"
+    },
+    {
+      "bytes": 25751,
+      "filename": "soundfile-0.13.1-py2.py3-none-any.whl",
+      "name": "soundfile",
+      "origin": "acquired-common-wheel",
+      "sha256": "a23c717560da2cf4c7b5ae1142514e0fd82d6bbd9dfc93a50423447142f2c445",
+      "source_candidate_version": "0.13.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/soundfile-0.13.1-py2.py3-none-any.whl",
+      "version": "0.13.1"
+    },
+    {
+      "bytes": 74033,
+      "filename": "starlette-0.50.0-py3-none-any.whl",
+      "name": "starlette",
+      "origin": "acquired-common-wheel",
+      "sha256": "9e5391843ec9b6e472eed1365a78c8098cfceb7a74bfd4d6b1c0c0095efb3bca",
+      "source_candidate_version": "0.50.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/starlette-0.50.0-py3-none-any.whl",
+      "version": "0.50.0"
+    },
+    {
+      "bytes": 6299353,
+      "filename": "sympy-1.14.0-py3-none-any.whl",
+      "name": "sympy",
+      "origin": "voxcpm-rocm",
+      "sha256": "e091cc3e99d2141a0ba2847328f5479b05d94a6635cb96148ccb3f34671bd8f5",
+      "source_candidate_version": "1.14.0",
+      "source_path": ".codex/packaging-probes/voxcpm-runtime-20261008/wheels/sympy-1.14.0-py3-none-any.whl",
+      "version": "1.14.0"
+    },
+    {
+      "bytes": 3274982,
+      "filename": "tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "tokenizers",
+      "origin": "g1-rocm",
+      "sha256": "369cc9fc8cc10cb24143873a0d95438bb8ee257bb80c71989e3ee290e8d72c67",
+      "source_candidate_version": "0.22.2",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/tokenizers-0.22.2-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "0.22.2"
+    },
+    {
+      "bytes": 16588,
+      "filename": "toml-0.10.2-py2.py3-none-any.whl",
+      "name": "toml",
+      "origin": "acquired-common-wheel",
+      "sha256": "806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b",
+      "source_candidate_version": "0.10.2",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/toml-0.10.2-py2.py3-none-any.whl",
+      "version": "0.10.2"
+    },
+    {
+      "bytes": 38901,
+      "filename": "tomlkit-0.13.3-py3-none-any.whl",
+      "name": "tomlkit",
+      "origin": "g1-rocm",
+      "sha256": "c89c649d79ee40629a9fda55f8ace8c6a1b42deb912b2a8fd8d942ddadb606b0",
+      "source_candidate_version": "0.13.3",
+      "source_path": ".codex/packaging-probes/chatterbox-rocm-runtime-20261008/wheelhouse/tomlkit-0.13.3-py3-none-any.whl",
+      "version": "0.13.3"
+    },
+    {
+      "bytes": 1164150,
+      "filename": "torchao-0.16.0-py3-none-any.whl",
+      "name": "torchao",
+      "origin": "acquired-common-wheel",
+      "sha256": "d0a8d773351fd17b95fee81dfbcbf98577b567dcdbec47d221b0ee258432101d",
+      "source_candidate_version": "0.16.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/torchao-0.16.0-py3-none-any.whl",
+      "version": "0.16.0"
+    },
+    {
+      "bytes": 2083121,
+      "filename": "torchcodec-0.10.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "name": "torchcodec",
+      "origin": "already-staged",
+      "sha256": "6e43184d83ccced965b31cad5bb6200c779646fee2ec153a6d784b4def40c91b",
+      "source_candidate_version": "0.10.0",
+      "source_path": ".codex/packaging-probes/acestep-codec-20261008/wheelhouse/torchcodec-0.10.0-cp312-cp312-manylinux_2_28_x86_64.whl",
+      "version": "0.10.0"
+    },
+    {
+      "bytes": 78540,
+      "filename": "tqdm-4.67.1-py3-none-any.whl",
+      "name": "tqdm",
+      "origin": "acquired-common-wheel",
+      "sha256": "26445eca388f82e72884e0d580d5464cd801a3ea01e63e5601bdff9ba6a48de2",
+      "source_candidate_version": "4.67.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/tqdm-4.67.1-py3-none-any.whl",
+      "version": "4.67.1"
+    },
+    {
+      "bytes": 11993498,
+      "filename": "transformers-4.57.6-py3-none-any.whl",
+      "name": "transformers",
+      "origin": "acquired-common-wheel",
+      "sha256": "4c9e9de11333ddfe5114bc872c9f370509198acf0b87a832a0ab9458e2bd0550",
+      "source_candidate_version": "4.57.6",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/transformers-4.57.6-py3-none-any.whl",
+      "version": "4.57.6"
+    },
+    {
+      "bytes": 47381,
+      "filename": "typer-0.21.1-py3-none-any.whl",
+      "name": "typer",
+      "origin": "acquired-common-wheel",
+      "sha256": "7985e89081c636b88d172c2ee0cfe33c253160994d47bdfdc302defd7d1f1d01",
+      "source_candidate_version": "0.21.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/typer-0.21.1-py3-none-any.whl",
+      "version": "0.21.1"
+    },
+    {
+      "bytes": 44614,
+      "filename": "typing_extensions-4.15.0-py3-none-any.whl",
+      "name": "typing-extensions",
+      "origin": "acquired-common-wheel",
+      "sha256": "f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548",
+      "source_candidate_version": "4.15.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/typing_extensions-4.15.0-py3-none-any.whl",
+      "version": "4.15.0"
+    },
+    {
+      "bytes": 14611,
+      "filename": "typing_inspection-0.4.2-py3-none-any.whl",
+      "name": "typing-inspection",
+      "origin": "acquired-common-wheel",
+      "sha256": "4ed1cacbdc298c220f1bd249ed5287caa16f34d44ef4e9c3d0cbad5b521545e7",
+      "source_candidate_version": "0.4.2",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/typing_inspection-0.4.2-py3-none-any.whl",
+      "version": "0.4.2"
+    },
+    {
+      "bytes": 348521,
+      "filename": "tzdata-2025.3-py2.py3-none-any.whl",
+      "name": "tzdata",
+      "origin": "acquired-common-wheel",
+      "sha256": "06a47e5700f3081aab02b2e513160914ff0694bce9947d6b76ebd6bf57cfc5d1",
+      "source_candidate_version": "2025.3",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/tzdata-2025.3-py2.py3-none-any.whl",
+      "version": "2025.3"
+    },
+    {
+      "bytes": 131584,
+      "filename": "urllib3-2.6.3-py3-none-any.whl",
+      "name": "urllib3",
+      "origin": "acquired-common-wheel",
+      "sha256": "bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4",
+      "source_candidate_version": "2.6.3",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/urllib3-2.6.3-py3-none-any.whl",
+      "version": "2.6.3"
+    },
+    {
+      "bytes": 68502,
+      "filename": "uvicorn-0.40.0-py3-none-any.whl",
+      "name": "uvicorn",
+      "origin": "acquired-common-wheel",
+      "sha256": "c6c8f55bc8bf13eb6fa9ff87ad62308bbbc33d0b67f84293151efe87e0d5f2ee",
+      "source_candidate_version": "0.40.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/uvicorn-0.40.0-py3-none-any.whl",
+      "version": "0.40.0"
+    },
+    {
+      "bytes": 4426307,
+      "filename": "uvloop-0.22.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "name": "uvloop",
+      "origin": "acquired-common-wheel",
+      "sha256": "7b5b1ac819a3f946d3b2ee07f09149578ae76066d70b44df3fa990add49a82e4",
+      "source_candidate_version": "0.22.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/uvloop-0.22.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl",
+      "version": "0.22.1"
+    },
+    {
+      "bytes": 52823,
+      "filename": "vector_quantize_pytorch-1.27.20-py3-none-any.whl",
+      "name": "vector-quantize-pytorch",
+      "origin": "acquired-common-wheel",
+      "sha256": "ab85fb622e900edf1317c7c77b3a23dd95995e0ce17a123b4ba6178c1c678335",
+      "source_candidate_version": "1.27.20",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/vector_quantize_pytorch-1.27.20-py3-none-any.whl",
+      "version": "1.27.20"
+    },
+    {
+      "bytes": 456812,
+      "filename": "watchfiles-1.1.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "name": "watchfiles",
+      "origin": "acquired-common-wheel",
+      "sha256": "1db5d7ae38ff20153d542460752ff397fcf5c96090c1230803713cf3147a6803",
+      "source_candidate_version": "1.1.1",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/watchfiles-1.1.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "version": "1.1.1"
+    },
+    {
+      "bytes": 171598,
+      "filename": "websockets-16.0-py3-none-any.whl",
+      "name": "websockets",
+      "origin": "acquired-common-wheel",
+      "sha256": "1637db62fad1dc833276dded54215f2c7fa46912301a24bd94d45d46a011ceec",
+      "source_candidate_version": "16.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/websockets-16.0-py3-none-any.whl",
+      "version": "16.0"
+    },
+    {
+      "bytes": 10276,
+      "filename": "zipp-3.23.0-py3-none-any.whl",
+      "name": "zipp",
+      "origin": "acquired-common-wheel",
+      "sha256": "071652d6115ed432f5ce1d34c336c0adfd6a884660d1e9712a256d3d3bd4b14e",
+      "source_candidate_version": "3.23.0",
+      "source_path": ".codex/packaging-probes/acestep-dependency-resolution-20261008/acquired-common-wheels/zipp-3.23.0-py3-none-any.whl",
+      "version": "3.23.0"
+    }
+  ],
+  "status": "staged-exact-rocm-common-closure; not installed or runtime-verified",
+  "total_bytes": 234525633,
+  "wheel_count": 97
+}

@@ -1,0 +1,9 @@
+# Retained LeadVocal inference; CUDA pair and provider stay vendor-matched.
+torch==2.10.0+cu128
+torchaudio==2.10.0+cu128
+torchvision==0.25.0+cu128
+audio-separator[gpu]==0.44.5+vocalis.2
+onnxruntime-gpu==1.22.0
+PyWavelets==1.9.0
+# The pinned UVR import uses audioread although audio-separator metadata omits it.
+audioread==3.1.0

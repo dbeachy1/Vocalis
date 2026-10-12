@@ -1,0 +1,44 @@
+  :root{--bg:#0e1116;--panel:#171b22;--panel2:#1e232c;--line:#2a303b;--fg:#e6e9ef;--mut:#8b93a2;
+        --acc:#4ea1ff;--ok:#3fb950;--warn:#d29922;--err:#f85149;--barbg:#0b0e13;--dl:#2bd4e6;--vio:#b18cff;--cln:#6ee7a8;
+        --accfg:#08111f;--vused:#7fd99a;--pill:#12304f;--scrim:rgba(3,6,10,.66);
+        /* Use a high-contrast neutral ring so hover remains visible on every button fill. */
+        --btnring:#ffffff;
+        /* A neutral gray stripe separates candidate rows from the blue-toned panel. */
+        --stripe:#26282c;
+        /* Shared maximum width keeps the shell consistent across panels; max-width still
+           allows it to contract on narrow windows. */
+        --shell:1800px;
+
+        /* Keep the app font scale centralized. All font sizes use `rem`; sensor-row text
+           uses a 12px minimum via `max()` so it scales up without shrinking below that floor. */
+        --fs:16px;}
+  /* `:root` IS `html`, so this reads the custom property declared immediately above it. Pinning
+     the root explicitly is what makes `rem` mean "the app's base size" rather than "whatever the
+     browser default happens to be" — and it is what a settings slider will write to. */
+  html{font-size:var(--fs);}
+  :root[data-theme="light"]{--bg:#f4f6f9;--panel:#ffffff;--panel2:#eef1f5;--line:#d6dce5;--fg:#1b2230;--mut:#5c6675;
+        --acc:#2f6fed;--ok:#1a9e4b;--warn:#b26a00;--err:#d23c3c;--barbg:#e6eaf0;--dl:#0891b2;--vio:#7c3aed;--cln:#1f9d5f;
+        --accfg:#ffffff;--vused:#7bd396;--pill:#dbe8ff;--scrim:rgba(20,28,40,.45);
+        /* ⚠️ NOT pure black: a #000 ring on a pale panel reads as a printing error next to
+           borders that are all soft grays. #10151d is the darkest ink already in this theme
+           (`--fg` is #1b2230), so the ring is the strongest thing on the row without leaving
+           the palette. */
+        --btnring:#10151d;
+        /* ⚠️ THE LIGHT THEME NEEDS ITS OWN, and it is not optional: `--panel` is pure #ffffff
+           here, so the dark stripe above would be a black bar. Same idea inverted — a flat pale
+           gray a step down from white. */
+        --stripe:#eff1f4;}
+  *{box-sizing:border-box;}
+  /* Inherited rem sizing keeps controls and labels synchronized with the app font-scale setting. */
+  body{margin:0;background:var(--bg);color:var(--fg);font:1rem/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;}
+  h1{font-size:1.142857rem;margin:0;font-weight:600;letter-spacing:.3px;}
+  h2{font-size:0.928571rem;margin:0 0 8px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;}
+
+  /* Accent explanatory copy without changing the low-contrast metadata style globally. */
+  .hintacc{color:var(--acc);}
+
+  /* Text that differs between the Docker package and a developer's source run. js/sys/model.js sets
+     <html data-docker="1|0"> from the first /health answer; until then BOTH variants stay hidden, so
+     the page never flashes the wrong one. Use on spans/divs: <span class="docker-only">...</span>. */
+  html:not([data-docker]) .docker-only, html:not([data-docker]) .plain-only,
+  html[data-docker="1"] .plain-only, html[data-docker="0"] .docker-only{display:none !important;}

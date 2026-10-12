@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/OpenBMB/VoxCPM",
+  "revision": "a010d621ff9a1dce83ce9c934919b24f28073e90",
+  "url": "https://codeload.github.com/OpenBMB/VoxCPM/tar.gz/a010d621ff9a1dce83ce9c934919b24f28073e90",
+  "archiveBytes": 3303680,
+  "archiveSha256": "5c4e2a29b5c08746bcf2eef4fb89ec0ba7082e5d0ea9c86d03f66764684f5b6d",
+  "upstreamPyprojectSha256": "4ee48db6243be2a2eedff52843f5573c4d82179a7d47483d595889cdfc564b0d",
+  "license": "Apache-2.0",
+  "licenseSha256": "4f10acc209addacfad28293315c74c4cd648f771ee1263a748f1781d1e0265e4",
+  "status": "source acquired and inspected without execution; isolated runtime dependency and model proof pending"
+}

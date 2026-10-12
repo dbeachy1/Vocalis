@@ -1,0 +1,201 @@
+@import './css/minimax-tts.css';
+@import './css/openai-tts.css';
+
+.voice_preview {
+    margin: 0.25rem 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.voice_preview .voice_name {
+    text-align: left;
+    flex: 1;
+}
+
+.voice_preview .voice_lang {
+    width: 4rem;
+    text-align: left;
+}
+
+.voice_preview .fa-play {
+    cursor: pointer;
+}
+
+.tts-button {
+    margin: 0;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    transition: var(--animation-duration-2x);
+    opacity: 0.7;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.tts-button:hover {
+    opacity: 1;
+}
+
+.tts_block {
+    display: flex;
+    align-items: baseline;
+    column-gap: 5px;
+    flex-wrap: wrap;
+}
+
+.tts_custom_voices {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+}
+
+.novel_tts_hints {
+    font-size: calc(0.9 * var(--mainFontSize));
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+
+.at-settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.at-settings-option {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.at-endpoint-option {
+    flex: 1;
+    margin: 0 10px;
+    margin-right: 25px;
+    width: 38%;
+}
+
+.at-website-row {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.at-website-option {
+    flex: 1;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.at-settings-separator {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 18px;
+    font-weight: bold;
+    border-top: 1px solid #e1e1e1; /* Grey line */
+    border-bottom: 1px solid #e1e1e1; /* Grey line */
+    text-align: center;
+}
+
+.at-status-message {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.at-model-endpoint-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.at-model-option, .endpoint-option {
+    flex: 1;
+    margin: 0 10px;
+    margin-left: 10px;
+}
+
+.at-endpoint-option {
+    width: 38%;
+}
+
+#at-status_info {
+    color: lightgreen;
+}
+
+/* Narration player bar — docked just above the message input. Shown while a clip is
+   narrating; gives pause/resume, a click-and-drag seek bar, and a time readout. The
+   inner .audio-player-* rules are replicated here (scoped) so the bar renders even where
+   file-form.css isn't loaded. */
+#tts_player_bar {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin: 0 auto 4px auto;
+    padding: 5px 10px;
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    font-size: calc(0.9 * var(--mainFontSize));
+    white-space: normal;
+}
+
+#tts_player_bar .tts-player-speaker {
+    max-width: 22ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+    color: var(--SmartThemeQuoteColor);
+}
+
+#tts_player_bar .tts-player-speaker:empty {
+    display: none;
+}
+
+#tts_player_bar .audio-player-play-pause,
+#tts_player_bar .audio-player-volume,
+#tts_player_bar .tts-player-stop {
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+#tts_player_bar .audio-player-play-pause:hover,
+#tts_player_bar .audio-player-volume:hover,
+#tts_player_bar .tts-player-stop:hover {
+    opacity: 1;
+}
+
+#tts_player_bar .audio-player-time {
+    display: flex;
+    gap: 2px;
+    white-space: nowrap;
+    color: var(--SmartThemeQuoteColor);
+}
+
+#tts_player_bar .audio-player-progress {
+    flex: 1;
+    min-width: 60px;
+    height: 6px;
+    background-color: var(--black30a);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+#tts_player_bar .audio-player-progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: var(--SmartThemeEmColor);
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}

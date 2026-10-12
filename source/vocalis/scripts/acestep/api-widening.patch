@@ -1,0 +1,143 @@
+--- a/acestep/api/http/release_task_models.py
++++ b/acestep/api/http/release_task_models.py
+@@ -124,6 +124,52 @@
+     lm_repetition_penalty: float = 1.0
+     lm_negative_prompt: str = "NO USER INPUT"
+ 
++    # --- BEGIN Vocalis API-widening overlay (M0) ---
++    # Tier C of the design doc: these all exist on GenerationParams /
++    # GenerationConfig and are applied on every job, but the stock request
++    # model cannot reach them, so they sit at dataclass defaults nobody chose.
++    # Defaults below mirror the pipeline dataclasses exactly.
++
++    # Retake — variance-preserving noise mixing (upstream #1155).
++    retake_seed: Optional[Union[int, str]] = None
++    retake_variance: float = 0.0
++
++    # Flow-edit / morph overlay (upstream #1156); layers on the cover dispatch.
++    flow_edit_morph: bool = False
++    flow_edit_source_caption: str = ""
++    flow_edit_source_lyrics: str = ""
++    flow_edit_n_min: float = 0.0
++    flow_edit_n_max: float = 1.0
++    flow_edit_n_avg: int = 1
++
++    # Sampler.
++    sampler_mode: Literal["euler", "heun"] = "euler"
++    velocity_norm_threshold: float = 0.0
++    velocity_ema_factor: float = 0.0
++
++    # DCW — differential correction in the wavelet domain.
++    dcw_enabled: bool = True
++    dcw_mode: Literal["low", "high", "double", "pix"] = "double"
++    dcw_scaler: float = 0.05
++    dcw_high_scaler: float = 0.02
++    dcw_wavelet: str = "haar"
++
++    # Output post-processing.
++    enable_normalization: bool = True
++    normalization_db: float = -1.0
++    fade_in_duration: float = 0.0
++    fade_out_duration: float = 0.0
++    latent_shift: float = 0.0
++    latent_rescale: float = 1.0
++
++    # GenerationConfig-side settings with no request field upstream.
++    # mp3_bitrate/mp3_sample_rate mean every API client asking for mp3 is
++    # otherwise stuck at 128k/48000.
++    lm_batch_chunk_size: int = 8
++    mp3_bitrate: str = "128k"
++    mp3_sample_rate: int = 48000
++    # --- END Vocalis API-widening overlay (M0) ---
++
+     class Config:
+         """Legacy pydantic config preserving prior population semantics."""
+ 
+--- a/acestep/api/http/release_task_request_builder.py
++++ b/acestep/api/http/release_task_request_builder.py
+@@ -99,6 +99,37 @@
+         allow_lm_batch=parser.bool("allow_lm_batch", True),
+         track_name=parser.str("track_name"),
+         track_classes=track_classes,
++        # --- BEGIN Vocalis API-widening overlay (M0) ---
++        # `timesteps` is already parsed by build_generation_setup() via
++        # parse_timesteps(req.timesteps) — it was simply never populated here,
++        # so the field was declared-but-dead.
++        timesteps=parser.str("timesteps") or None,
++        retake_seed=parser.get("retake_seed"),
++        retake_variance=parser.float("retake_variance", 0.0),
++        flow_edit_morph=parser.bool("flow_edit_morph"),
++        flow_edit_source_caption=parser.str("flow_edit_source_caption"),
++        flow_edit_source_lyrics=parser.str("flow_edit_source_lyrics"),
++        flow_edit_n_min=parser.float("flow_edit_n_min", 0.0),
++        flow_edit_n_max=parser.float("flow_edit_n_max", 1.0),
++        flow_edit_n_avg=parser.int("flow_edit_n_avg", 1),
++        sampler_mode=parser.str("sampler_mode", "euler"),
++        velocity_norm_threshold=parser.float("velocity_norm_threshold", 0.0),
++        velocity_ema_factor=parser.float("velocity_ema_factor", 0.0),
++        dcw_enabled=parser.bool("dcw_enabled", True),
++        dcw_mode=parser.str("dcw_mode", "double"),
++        dcw_scaler=parser.float("dcw_scaler", 0.05),
++        dcw_high_scaler=parser.float("dcw_high_scaler", 0.02),
++        dcw_wavelet=parser.str("dcw_wavelet", "haar"),
++        enable_normalization=parser.bool("enable_normalization", True),
++        normalization_db=parser.float("normalization_db", -1.0),
++        fade_in_duration=parser.float("fade_in_duration", 0.0),
++        fade_out_duration=parser.float("fade_out_duration", 0.0),
++        latent_shift=parser.float("latent_shift", 0.0),
++        latent_rescale=parser.float("latent_rescale", 1.0),
++        lm_batch_chunk_size=parser.int("lm_batch_chunk_size", 8),
++        mp3_bitrate=parser.str("mp3_bitrate", "128k"),
++        mp3_sample_rate=parser.int("mp3_sample_rate", 48000),
++        # --- END Vocalis API-widening overlay (M0) ---
+     )
+     payload.update(overrides)
+     return request_model_cls(**payload)
+--- a/acestep/api/job_generation_setup.py
++++ b/acestep/api/job_generation_setup.py
+@@ -197,7 +197,32 @@
+         use_cot_metas=not sample_mode,
+         use_cot_caption=use_cot_caption,
+         use_cot_language=use_cot_language,
+-        use_constrained_decoding=True,
++        # --- BEGIN Vocalis API-widening overlay (M0) ---
++        # Was hardcoded True, which made the request field declared-but-dead.
++        use_constrained_decoding=req.constrained_decoding,
++        retake_seed=req.retake_seed,
++        retake_variance=req.retake_variance,
++        flow_edit_morph=req.flow_edit_morph,
++        flow_edit_source_caption=req.flow_edit_source_caption,
++        flow_edit_source_lyrics=req.flow_edit_source_lyrics,
++        flow_edit_n_min=req.flow_edit_n_min,
++        flow_edit_n_max=req.flow_edit_n_max,
++        flow_edit_n_avg=req.flow_edit_n_avg,
++        sampler_mode=req.sampler_mode,
++        velocity_norm_threshold=req.velocity_norm_threshold,
++        velocity_ema_factor=req.velocity_ema_factor,
++        dcw_enabled=req.dcw_enabled,
++        dcw_mode=req.dcw_mode,
++        dcw_scaler=req.dcw_scaler,
++        dcw_high_scaler=req.dcw_high_scaler,
++        dcw_wavelet=req.dcw_wavelet,
++        enable_normalization=req.enable_normalization,
++        normalization_db=req.normalization_db,
++        fade_in_duration=req.fade_in_duration,
++        fade_out_duration=req.fade_out_duration,
++        latent_shift=req.latent_shift,
++        latent_rescale=req.latent_rescale,
++        # --- END Vocalis API-widening overlay (M0) ---
+     )
+ 
+     batch_size = req.batch_size if req.batch_size is not None else 2
+@@ -208,6 +233,11 @@
+         seeds=_resolve_generation_seeds(req),
+         audio_format=req.audio_format,
+         constrained_decoding_debug=req.constrained_decoding_debug,
++        # --- BEGIN Vocalis API-widening overlay (M0) ---
++        lm_batch_chunk_size=req.lm_batch_chunk_size,
++        mp3_bitrate=req.mp3_bitrate,
++        mp3_sample_rate=req.mp3_sample_rate,
++        # --- END Vocalis API-widening overlay (M0) ---
+     )
+ 
+     return GenerationSetup(params=params, config=config)

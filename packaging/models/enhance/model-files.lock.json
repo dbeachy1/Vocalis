@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "model": {
+    "repository": "ResembleAI/resemble-enhance",
+    "revision": "f35e879924e339228db2e9752185a21ef8ffeb3e",
+    "revisionUrl": "https://huggingface.co/ResembleAI/resemble-enhance/tree/f35e879924e339228db2e9752185a21ef8ffeb3e",
+    "license": "MIT",
+    "licenseEvidence": {
+      "cardPath": "README.md",
+      "cardBytes": 1106,
+      "cardGitBlobSha1": "4e5b342eaa10651e16e464dabac6187a1ace560c",
+      "cardSha256Observed": "added08a8f3ede774e8da7a6547c0a6b45eb742dc03669f62b1084cf72f75cf1",
+      "declaration": "license: mit",
+      "standaloneModelLicenseFile": false,
+      "includedLicenseTextPath": "packaging/models/enhance/LICENSE",
+      "includedLicenseTextSource": "Resemble AI source repository LICENSE at pinned source commit",
+      "includedLicenseTextSha256": "f4f7ca80af15e1d06a99e92e268b4294b116c71e1ca10d7bcc02c36ff22b94b7"
+    },
+    "metadataEvidence": {
+      "url": "https://huggingface.co/api/models/ResembleAI/resemble-enhance/tree/f35e879924e339228db2e9752185a21ef8ffeb3e?recursive=true&expand=true",
+      "sha256": "eea207334c8f3b457d929c2c7bba3386b468b44abfd90084bf748974ea4191e6"
+    }
+  },
+  "source": {
+    "repository": "resemble-ai/resemble-enhance",
+    "revision": "8e978149bfe8abab3eb77d965d579a111afdb0ff",
+    "revisionDateUtc": "2024-12-03T02:28:47Z",
+    "license": "MIT",
+    "archiveUrl": "https://codeload.github.com/resemble-ai/resemble-enhance/tar.gz/8e978149bfe8abab3eb77d965d579a111afdb0ff",
+    "archivePath": "packaging/enhance/source/resemble-enhance-8e978149bfe8abab3eb77d965d579a111afdb0ff.tar.gz",
+    "archiveBytes": 39140,
+    "archiveSha256": "8dfd0f7ce54dc82fae4c349de9d216555928f17800bbfc7aad851d857e5491e8",
+    "licensePath": "packaging/enhance/LICENSE",
+    "requirementsPath": "packaging/enhance/upstream-requirements.txt",
+    "requirementsSha256": "a75d4a6ffd5ba61d489dc83cca269bc1828802091984673e7a76553cc6f5e70d",
+    "sourceVersionExpression": "0.0.2-dev241203022847 (setup.py derives this from git commit timestamp)",
+    "sourceArchiveBuildConstraint": "codeload archive lacks .git while setup.py calls git log; build behavior is unverified and requires a recorded deterministic source-build treatment."
+  },
+  "selection": {
+    "runtimeRoot": "/models/vocalis/enhance/f35e879924e339228db2e9752185a21ef8ffeb3e/enhancer_stage2",
+    "fileCount": 3,
+    "runtimeBytes": 713176956,
+    "totalBytesWithCardAndLicense": 713179130,
+    "acquisitionCapBytes": 714000000,
+    "files": [
+      {
+        "path": "enhancer_stage2/hparams.yaml",
+        "bytes": 717,
+        "publisherGitBlobSha1": "0946d9553860e839892e9fe1a3433b364952a93c",
+        "sha256Observed": "80c3f15bc5a5b2cacf2c698699a0f6599d62911c0d53e1d6dee895c0d7cbaeac",
+        "url": "https://huggingface.co/ResembleAI/resemble-enhance/resolve/f35e879924e339228db2e9752185a21ef8ffeb3e/enhancer_stage2/hparams.yaml"
+      },
+      {
+        "path": "enhancer_stage2/ds/G/latest",
+        "bytes": 7,
+        "publisherGitBlobSha1": "331d858ce9b12fa6720414196a9dd6e0b6a0faaa",
+        "sha256Observed": "37a8eec1ce19687d132fe29051dca629d164e2c4958ba141d5f4133a33f0688f",
+        "url": "https://huggingface.co/ResembleAI/resemble-enhance/resolve/f35e879924e339228db2e9752185a21ef8ffeb3e/enhancer_stage2/ds/G/latest"
+      },
+      {
+        "path": "enhancer_stage2/ds/G/default/mp_rank_00_model_states.pt",
+        "bytes": 713176232,
+        "publisherLfsSha256": "f9d035f318de3e6d919bc70cf7ad7d32b4fe92ec5cbe0b30029a27f5db07d9d6",
+        "publisherGitBlobSha1": "a73468ffd3b1959b6734c4a2501485398230051d",
+        "sha256Observed": "f9d035f318de3e6d919bc70cf7ad7d32b4fe92ec5cbe0b30029a27f5db07d9d6",
+        "url": "https://huggingface.co/ResembleAI/resemble-enhance/resolve/f35e879924e339228db2e9752185a21ef8ffeb3e/enhancer_stage2/ds/G/default/mp_rank_00_model_states.pt"
+      }
+    ],
+    "acquisition": {
+      "method": "bounded HTTPS transfer from the pinned Hugging Face resolve URL; no code/model execution",
+      "checkpointObservedSha256": "f9d035f318de3e6d919bc70cf7ad7d32b4fe92ec5cbe0b30029a27f5db07d9d6",
+      "checkpointMatchesPublisherLfsSha256": true,
+      "totalWithCardAndLicenseBytes": 713179130,
+      "capBytes": 714000000
+    }
+  },
+  "loadContract": {
+    "entry": "resemble_enhance.enhancer.inference.load_enhancer(run_dir, device)",
+    "requiredFiles": [
+      "hparams.yaml",
+      "ds/G/latest",
+      "ds/G/default/mp_rank_00_model_states.pt"
+    ],
+    "publisherLoaderBehavior": "download(run_dir) downloads any missing required file to run_dir; the application must preflight exact local files and fail unready before calling this function to prevent network fallback.",
+    "hparamsModelDependencies": "The pinned hparams leave enhancer_stage1_run_dir and denoiser_run_dir at their defaults (null); no additional checkpoint directories are required by this model state.",
+    "localFilesOnly": false,
+    "applicationPreflight": "pending coordination"
+  },
+  "dependencyCandidate": {
+    "sourceRequirementsAreRanges": true,
+    "candidateRuntimeSource": "upstream-requirements.txt, with a runtime-specific omission of deepspeed under evaluation because the existing wrapper stubs the import-only training dependency",
+    "candidateLockFiles": [
+      "packaging/enhance/requirements.cpu.lock",
+      "packaging/enhance/requirements.cuda.lock",
+      "packaging/enhance/requirements.rocm.lock"
+    ],
+    "compatibility": "not established by metadata resolution"
+  }
+}

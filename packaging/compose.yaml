@@ -1,0 +1,96 @@
+name: vocalis-${INSTANCE_ID:?Run setup.sh to create instance.env}
+
+services:
+  vocalis:
+    image: ${VOCALIS_IMAGE:?Set a pinned Vocalis image reference in instance.env}
+    hostname: vocalis-${INSTANCE_ID:?}
+    user: "${VOCALIS_UID:?}:${VOCALIS_GID:?}"
+    init: true
+    restart: unless-stopped
+    # Design section 11, item 8 (October 10, 2026): native Linux Docker does not provide host.docker.internal, Docker
+    # Desktop does and accepts the mapping. A program on the host is reachable from here when it listens on an address
+    # other than loopback; 127.0.0.1 inside the container is the container itself.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      VOCALIS_REQUIRE_VAULT: "1"
+      # Item 4: the container paths of the two Vocalis stores come from instance.env (VOCALIS_DATA_PATH and
+      # VOCALIS_CACHE_PATH) and default to the fixed paths older instance.env files rely on. An instance that adopted a
+      # standalone install's folders records those folders' own canonical paths here, so every absolute path either side
+      # writes into a record is the same string on both and resolves on both.
+      VOCALIS_DATA_DIR: ${VOCALIS_DATA_PATH:-/data/vocalis}
+      VOCALIS_CACHE_DIR: ${VOCALIS_CACHE_PATH:-/cache/vocalis}
+      VOCALIS_LOG_DIR: /logs
+      VOCALIS_SCRATCH_DIR: /work/vocalis/scratch
+      VOCALIS_BULK_DIR: /work/vocalis/bulk
+      VOCALIS_SESSION_COOKIE_NAME: vocalis-${INSTANCE_ID}-session
+    ports:
+      - target: 7870
+        published: "${VOCALIS_PORT:?}"
+        host_ip: "${HOST_BIND:?}"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: "${INSTANCE_ROOT:?}/data/vocalis"
+        target: ${VOCALIS_DATA_PATH:-/data/vocalis}
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${INSTANCE_ROOT}/cache/vocalis"
+        target: ${VOCALIS_CACHE_PATH:-/cache/vocalis}
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${INSTANCE_ROOT}/models/vocalis"
+        target: /models/vocalis
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${INSTANCE_ROOT}/work/vocalis"
+        target: /work/vocalis
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${INSTANCE_ROOT}/logs/vocalis"
+        target: /logs
+        bind:
+          create_host_path: false
+
+  taproom:
+    image: ${TAPROOM_IMAGE:?Set a pinned Taproom image reference in instance.env}
+    hostname: taproom-${INSTANCE_ID:?}
+    user: "${TAPROOM_UID:?}:${TAPROOM_GID:?}"
+    init: true
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      VOCALIS_BROWSER_URL: "${VOCALIS_PUBLIC_URL:?}"
+      # Item 12: the MCP client's server list lives beside config.yaml in the install folder (it holds connection
+      # secrets in plain text, as on a standalone install), not beside the plugin code, which is read-only in the image.
+      TAPROOM_MCP_CONFIG: /etc/taproom/mcp-servers.json
+    ports:
+      - target: 8000
+        published: "${TAPROOM_PORT:?}"
+        host_ip: "${HOST_BIND:?}"
+        protocol: tcp
+    volumes:
+      # Item 3 (October 10, 2026): Taproom's configuration folder and its data folder get separate container paths.
+      # Mounting data/taproom at /data/taproom with the data folder nested inside it would resolve a link at
+      # data/taproom/data inside the container (Docker follows links in a mount target there); with these two binds the
+      # data folder is a bind source, which Docker resolves on the host. /data/taproom itself is an image directory.
+      - type: bind
+        source: "${INSTANCE_ROOT}/data/taproom"
+        target: /etc/taproom
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${INSTANCE_ROOT}/data/taproom/data"
+        target: /data/taproom/data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${INSTANCE_ROOT}/logs/taproom"
+        target: /logs
+        bind:
+          create_host_path: false

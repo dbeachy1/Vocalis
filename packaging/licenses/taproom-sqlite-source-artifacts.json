@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "scope": "The SQLite database artifacts in the Taproom image (better-sqlite3-multiple-ciphers with SQLite3 Multiple Ciphers, and sqlite-vec), with where to get their source.",
+  "artifacts": [
+    {
+      "package": "better-sqlite3-multiple-ciphers",
+      "version": "12.11.1",
+      "url": "https://registry.npmjs.org/better-sqlite3-multiple-ciphers/-/better-sqlite3-multiple-ciphers-12.11.1.tgz",
+      "bytes": 3316219,
+      "sha256": "01388c78f46ce63c6aec021f67b364cc67bd637edba64f7add0c0230ce5f777a",
+      "integritySha512Verified": true,
+      "sha512Integrity": "sha512-pG72+3VkUipnmYx4LwQqoOXNG2CJ1HlmDrlvqgr7xQHgsE+cz5rAZEiaJHnUKTHaGfGifggA/C0Sv9qZlUrfow=="
+    },
+    {
+      "package": "sqlite-vec",
+      "version": "0.1.9",
+      "url": "https://registry.npmjs.org/sqlite-vec/-/sqlite-vec-0.1.9.tgz",
+      "bytes": 1257,
+      "sha256": "99ae8b2159aa2d25a0186b7b07d8ef21478370af2f9755d905f8055f8b67307b",
+      "integritySha512Verified": true,
+      "sha512Integrity": "sha512-L7XJWRIBNvR9O5+vh1FQ+IGkh/3D2AzVksW5gdtk28m78Hy8skFD0pqReKH1Yp0/BUKRGcffgKvyO/EON5JXpA=="
+    },
+    {
+      "package": "sqlite-vec-linux-x64",
+      "version": "0.1.9",
+      "url": "https://registry.npmjs.org/sqlite-vec-linux-x64/-/sqlite-vec-linux-x64-0.1.9.tgz",
+      "bytes": 61837,
+      "sha256": "d75c33662b3ce690d122a5f4285a3acf2f6ba288c46331a7b1fad593b6da2908",
+      "integritySha512Verified": true,
+      "sha512Integrity": "sha512-w3tCH8xK2finW8fQJ/m8uqKodXUZ9KAuAar2UIhz4BHILfpE0WM/MTGCRfa7RjYbrYim5Luk3guvMOGI7T7JQA=="
+    }
+  ],
+  "databaseSource": {
+    "npmGitHead": "484265a83fdbe20cb80d36e32e82b8d554668fca",
+    "addonGrant": "MIT",
+    "embeddedCipher": "SQLite3MultipleCiphers 2.3.5; SQLCipher-compatible cipher implementation, not a separately linked SQLCipher library",
+    "cipherSourceCommit": "e74443388638a1557e2c506a631df7cf01251980",
+    "cipherGrant": "MIT, with separately preserved embedded third-party grants",
+    "sqliteVersion": "3.53.2",
+    "generationRecipe": "package/deps/update-sqlite3mc.sh",
+    "actualBuild": "packaging/taproom/Dockerfile: npm rebuild better-sqlite3-multiple-ciphers --offline with source-build enabled; node-gyp compiles included amalgamation and C++ wrapper",
+    "sourceIdentity": "Five source/build files hashed in the owned running image match the integrity-verified npm archive; existing inventory also matches addon C++ source, LICENSE and sqlite3ext.h.",
+    "observedInstalledFilesSha256": {
+      "deps/sqlite3/sqlite3.c": "670d8d053176b53a68073b168f8e68fb72db67bdf964a0eb130338e9391198b9",
+      "deps/sqlite3/sqlite3.h": "8270c30673c9dccb08f0516ae63b64f898a09bc92b76d850cd912b0c1461dbe5",
+      "binding.gyp": "6f3a90fb142095768b7aa934a092aa3b8029dc2cd5de3e8a1f09bc46f036a3e1",
+      "deps/sqlite3.gyp": "ea12e2f9b93a03468611c4ccdcf2e497e316b6d7fc18745dff3a9e68e0e924a0",
+      "deps/defines.gypi": "9139d3ce20fb5cd848e95da2fd20d4c4fd3d8d33b512d2781d70cb2a3de7c5bb"
+    },
+    "cipherSourceUrl": "https://github.com/utelle/SQLite3MultipleCiphers/tree/e74443388638a1557e2c506a631df7cf01251980",
+    "addonSourceNote": "The npm tarball above contains the addon's C++ source and the SQLite3 Multiple Ciphers amalgamation (deps/sqlite3) that is compiled in the image build."
+  },
+  "vectorSource": {
+    "grant": "MIT OR Apache-2.0; upstream notices preserve both alternatives",
+    "upstreamTag": "v0.1.9",
+    "upstreamCommit": "e9f598abfa0c06b328d8fe5da9c3760cce74be10",
+    "binarySha256": "5923730861b86c707cca5602b5f91092f9e52a46706dbc6e269fd4bb9c4498e8",
+    "binaryIdentity": "Installed vec0.so is byte-identical to the integrity-verified sqlite-vec-linux-x64 npm tarball member; no claim of a reproduced source build.",
+    "upstreamSourceUrl": "https://github.com/asg017/sqlite-vec/tree/e9f598abfa0c06b328d8fe5da9c3760cce74be10"
+  },
+  "noticeFiles": [
+    {
+      "path": "packaging/licenses/sqlite/better-sqlite3-multiple-ciphers-MIT.txt",
+      "bytes": 1123,
+      "sha256": "20a3fe2207b571d048cf004f2f29dde7b7b2c9def83e8464109da4c292c10f50"
+    },
+    {
+      "path": "packaging/licenses/sqlite/sqlite-vec-Apache-2.0.txt",
+      "bytes": 10931,
+      "sha256": "a38070a94d4afd9cd710e3ce67bd1de78097cfe1784c1f0109ac95d3c196bfdc"
+    },
+    {
+      "path": "packaging/licenses/sqlite/sqlite-vec-MIT.txt",
+      "bytes": 1068,
+      "sha256": "6ce72bbe12d975bd5286e5ab0a064c069693300c47bccbc57bec18485f1621ea"
+    },
+    {
+      "path": "packaging/licenses/sqlite/sqlite3mc-embedded-notices.txt",
+      "bytes": 40628,
+      "sha256": "e3c83ceca3a81915ac95b4ee4fc04c14c8ae42da2ef3b0c401da5fcad0d81a1b"
+    },
+    {
+      "path": "packaging/licenses/sqlite/SQLite3MultipleCiphers-MIT.txt",
+      "bytes": 1074,
+      "sha256": "39205ec18e0f25f56c62d3bda9768e7509b63a74ba58beb7442903dfc81c247a"
+    }
+  ]
+}

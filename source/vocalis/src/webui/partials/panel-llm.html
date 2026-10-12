@@ -1,0 +1,21 @@
+  <section data-panel="llm" style="display:none">
+    <!-- LLM ▸ llama.cpp | KoboldCpp | API. Markup only — see js/llm/*.js. llama.cpp is the default tab. -->
+    <div class="panel" id="llmIntro">
+      <div class="small muted" id="llmHelp">
+        <b>llama.cpp</b> and <b>KoboldCpp</b> run a model on your own hardware: load one here to use it from
+        SillyTavern or any other client, and Vocalis can also use it to edit your worldbooks and cards in place.
+        <b>API</b> connects to a hosted provider (OpenRouter, Featherless). It is used only by the worldbook
+        editor; nothing is loaded anywhere.
+      </div>
+      <label for="llmEngine" style="margin-top:12px">Worldbook editor uses</label><!-- label OUTSIDE the row, so the row centres the readout on the SELECT, not on label+select -->
+      <div class="row" style="align-items:center"><div style="flex:0 0 auto;min-width:220px"><select id="llmEngine"></select></div><div style="flex:1;min-width:240px"><span id="llmEngineModel">—</span></div></div>
+    </div>
+    <div class="tabs" id="llmTabs">
+      <button data-llmtab="llama" class="active">llama.cpp</button>
+      <button data-llmtab="kobold">KoboldCpp</button>
+      <button data-llmtab="api">API</button>
+    </div>
+{% include 'partials/panel-llama.html' %}
+{% include 'partials/panel-kobold.html' %}
+{% include 'partials/panel-llm-api.html' %}
+  </section>

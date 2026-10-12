@@ -1,0 +1,36 @@
+{
+  "name": "chatterbox-tts",
+  "upstreamVersion": "0.1.7",
+  "downstreamVersion": "0.1.7+vocalis.1",
+  "upstream": {
+    "url": "https://files.pythonhosted.org/packages/c4/b1/8f1203e868111a45b566a79a4f56cd7843c420dfda709b81cebee55afa10/chatterbox_tts-0.1.7.tar.gz",
+    "bytes": 84802,
+    "sha256": "ed8afae83819b40a25927c2ef3bcc67f928bdfcf434c1376c972e6039252a187",
+    "license": "MIT",
+    "licensePath": "LICENSE",
+    "licenseSha256": "4248e910a928849fe5815a0f9236e17fa07768d95b9193212752c464b93d6caa"
+  },
+  "patch": {
+    "path": "chatterbox-downstream.patch",
+    "sha256": "4f884e65e0230751ca7094e0338a4a6bb8add84804cd9871a7633380c1077c37",
+    "changedPaths": ["pyproject.toml"],
+    "changes": [
+      "Set downstream package version to 0.1.7+vocalis.1.",
+      "Remove the unused pykakasi==2.3.0 requirement."
+    ]
+  },
+  "wheel": {
+    "path": "chatterbox_tts-0.1.7+vocalis.1-py3-none-any.whl",
+    "bytes": 108650,
+    "sha256": "96a0bbf3003918bc5b073a75aad702bcf024ee0becd5925ff8276a534e8c579c",
+    "requiresDistExcludes": ["pykakasi"]
+  },
+  "build": {
+    "backend": "setuptools.build_meta",
+    "setuptools": "78.1.0",
+    "sourceDateEpoch": 1774514627,
+    "command": "python -m pip wheel --no-index --no-deps --no-build-isolation --no-cache-dir --wheel-dir=wheelhouse <patched-source-directory>",
+    "reproducibleBuilds": 2,
+    "reproducedWheelSha256": "96a0bbf3003918bc5b073a75aad702bcf024ee0becd5925ff8276a534e8c579c"
+  }
+}

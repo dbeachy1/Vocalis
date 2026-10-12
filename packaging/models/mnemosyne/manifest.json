@@ -1,0 +1,83 @@
+{
+  "schema_version": 2,
+  "_history": "Superseded October 10, 2026. Schema 1 recorded Xenova/all-mpnet-base-v2 at e086c5e0b3a57b0ce46dd6d9c0662948860b35f3 (a pinned revision, Apache-2.0 base card, weights acquired for evidence only). Doug returned the Docker default to the model every existing store uses (Implementation Design section 8, 'Superseded October 10, 2026'; section 11, item 11).",
+  "repository": "Xenova/multi-qa-mpnet-base-cos-v1",
+  "revision": null,
+  "revision_policy": "Unpinned on purpose: the Taproom config sets extensions.models.embedding and no embeddingRevision, as on every existing install. The model cache keys a non-main revision under <model>/<revision>/ and an unpinned install under main, so a pin would download the model again into the user's _cache instead of reusing the copy existing stores already hold, and would fail offline.",
+  "observed_head_revision": "342c63cb07c8b4f462b14318f1cdbc626d84faeb",
+  "observed_head_utc": "2026-10-10",
+  "observed_head_last_modified": "2025-07-22T00:07:01.000Z",
+  "model_card_url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1",
+  "base_model": {
+    "repository": "sentence-transformers/multi-qa-mpnet-base-cos-v1",
+    "model_card_url": "https://huggingface.co/sentence-transformers/multi-qa-mpnet-base-cos-v1",
+    "observed_head_revision": "d51b22a1dfa8184e9258074e56e2875e50612dca",
+    "observed_head_utc": "2026-10-10",
+    "observed_head_last_modified": "2025-08-19T10:19:32.000Z",
+    "model_card_sha256": "6e1014700cb903b18265b7f85db5cf45a4d3e71bc2a9b05989b6648abdcf3c1c",
+    "revision_note": "The revision the Xenova conversion was made from is not recorded by either repository; the head above is the one observed, not a proven lineage point."
+  },
+  "conversion": {
+    "description": "ONNX conversion of the sentence-transformers base for Transformers.js. The conversion card says only 'with ONNX weights to be compatible with Transformers.js'.",
+    "readme_url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/blob/342c63cb07c8b4f462b14318f1cdbc626d84faeb/README.md",
+    "readme_sha256": "76238b3f74e215d1c477c58abd719790644d03a4e793216fb162f32adfe90fec"
+  },
+  "license": {
+    "identifier": null,
+    "status": "not stated",
+    "evidence": "Neither the Xenova conversion card (front matter: base_model, library_name, pipeline_tag) nor the sentence-transformers base card (front matter: language, library_name, tags, pipeline_tag; no license text) declares a license, and the Hugging Face metadata of both repositories carries no license field. No license text is included in this package because none was found; none is invented.",
+    "open_question": "Redistribution of the weights is not settled, as for DeepFilterNet3 (see packaging/models/dfn3/NOTICE.md). No image, archive or source offer carries these weights: Taproom downloads them from the publisher into <dataRoot>/_cache at the user's installation on first use, as every standalone install already does."
+  },
+  "acquisition": {
+    "weights_acquired": false,
+    "weights_shipped": false,
+    "loaded_or_executed": false,
+    "metadata_observed_utc": "2026-10-10",
+    "metadata_sources": [
+      "https://huggingface.co/api/models/Xenova/multi-qa-mpnet-base-cos-v1",
+      "https://huggingface.co/api/models/Xenova/multi-qa-mpnet-base-cos-v1/tree/main",
+      "https://huggingface.co/api/models/Xenova/multi-qa-mpnet-base-cos-v1/tree/main/onnx",
+      "https://huggingface.co/api/models/sentence-transformers/multi-qa-mpnet-base-cos-v1"
+    ],
+    "hash_note": "The five small files' SHA-256 values were computed from copies fetched read-only at the observed head revision. The ONNX graph's SHA-256 is the Git LFS object id Hugging Face reports for it; the file itself was not downloaded for this record."
+  },
+  "files_note": "The six files of the repository's quantized feature-extraction set. The Transformers.js quantized path requires the config and tokenizer JSON files and onnx/model_quantized.onnx (Packaging-G1-Inputs.md, static trace of sillytavern-transformers 2.14.6); vocab.txt and special_tokens_map.json are the vocabulary and special-token files that complete the set. Taproom downloads what it needs at the user's installation; nothing here is shipped.",
+  "files": [
+    {
+      "path": "config.json",
+      "bytes": 600,
+      "sha256": "8dd83b1248fbb509fe509267d389ac0b9a1bd3ca6485c5b6c61d075be6fd6a43",
+      "url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/resolve/342c63cb07c8b4f462b14318f1cdbc626d84faeb/config.json"
+    },
+    {
+      "path": "tokenizer.json",
+      "bytes": 710944,
+      "sha256": "b464564756de4c4ec0bf1354e23430e6681a363b2667770d6a453bb35ec92755",
+      "url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/resolve/342c63cb07c8b4f462b14318f1cdbc626d84faeb/tokenizer.json"
+    },
+    {
+      "path": "tokenizer_config.json",
+      "bytes": 357,
+      "sha256": "3ea32220c2e21af4f0be95e2a43bdc8ac693f8c35c2255127ef680689b469461",
+      "url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/resolve/342c63cb07c8b4f462b14318f1cdbc626d84faeb/tokenizer_config.json"
+    },
+    {
+      "path": "special_tokens_map.json",
+      "bytes": 280,
+      "sha256": "15a9b70f6a5defe4feac823a82e6412e5d5bfd8eab09d8dbcf5ac241f14a7756",
+      "url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/resolve/342c63cb07c8b4f462b14318f1cdbc626d84faeb/special_tokens_map.json"
+    },
+    {
+      "path": "vocab.txt",
+      "bytes": 231536,
+      "sha256": "dbd90cb94e2247bd4d4ccaecbf616d2290e66691d7d5e5bb81f063c2d0649ada",
+      "url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/resolve/342c63cb07c8b4f462b14318f1cdbc626d84faeb/vocab.txt"
+    },
+    {
+      "path": "onnx/model_quantized.onnx",
+      "bytes": 110086122,
+      "sha256": "7819f55cc0915f0565772259931370f95ae41621960db7391a4781b919b64906",
+      "url": "https://huggingface.co/Xenova/multi-qa-mpnet-base-cos-v1/resolve/342c63cb07c8b4f462b14318f1cdbc626d84faeb/onnx/model_quantized.onnx"
+    }
+  ]
+}

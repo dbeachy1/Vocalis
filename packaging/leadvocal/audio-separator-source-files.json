@@ -1,0 +1,504 @@
+{
+  "files": [
+    {
+      "path": "audio_separator/__init__.py",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "audio_separator/ensemble_presets.json",
+      "size": 4413,
+      "sha256": "e0b011cb01384f02a278bc93b02ae7860f4a515e2b5b1a15b1a43e47aae8d513"
+    },
+    {
+      "path": "audio_separator/model-data.json",
+      "size": 922,
+      "sha256": "f332c1d657767ed7eea454c8ff2752522b2611c7be43d90a87d0d1fe3e105d58"
+    },
+    {
+      "path": "audio_separator/models-scores.json",
+      "size": 1286638,
+      "sha256": "aa33a06cb8a583ee053a73bf47065690817fde6cd2c83c57b6f9f543da0dcc2a"
+    },
+    {
+      "path": "audio_separator/models.json",
+      "size": 15283,
+      "sha256": "32dff6c1a57daa03083d0bf2227cacab5aa561db9565ca8db73e0b6f6197d592"
+    },
+    {
+      "path": "audio_separator/remote/README.md",
+      "size": 13358,
+      "sha256": "5ed8eda26b103dc2fd3c88d9ad6ecc154f612cab94b09e161e2327cab58aae77"
+    },
+    {
+      "path": "audio_separator/remote/__init__.py",
+      "size": 87,
+      "sha256": "ba12eb7eb5e68f715571b63b1069096925a9478f93e0b4fb31884ade1e5bf562"
+    },
+    {
+      "path": "audio_separator/remote/api_client.py",
+      "size": 23221,
+      "sha256": "388b25cc0e8b8dff6e1395dff781829c77c2d2c0a6826faed4824326a6fbd553"
+    },
+    {
+      "path": "audio_separator/remote/cli.py",
+      "size": 20866,
+      "sha256": "459f25e988800c2bd45e234eed427dbb7474bc6499e32a4be614aebc3faf0316"
+    },
+    {
+      "path": "audio_separator/remote/deploy_cloudrun.py",
+      "size": 27779,
+      "sha256": "7468e99605d19ef1d87ab962c406626479a48eabb787782882229dd884903f9e"
+    },
+    {
+      "path": "audio_separator/remote/deploy_modal.py",
+      "size": 35203,
+      "sha256": "77a801ad35eed809e90c71a48d4821ba5e098900f654e1ff7e73263993744a6c"
+    },
+    {
+      "path": "audio_separator/remote/job_store.py",
+      "size": 2554,
+      "sha256": "e34a139416bdadc31c143dadbe109e291f7127320ae6d7be1823412d443568b1"
+    },
+    {
+      "path": "audio_separator/remote/output_store.py",
+      "size": 2223,
+      "sha256": "13357c770ce30587250f122d58c2b1301b35a9d5a21ae4ae0405d79fb3372a11"
+    },
+    {
+      "path": "audio_separator/remote/requirements.txt",
+      "size": 6,
+      "sha256": "6ea94233119b2eba6169c57bef7db98e5a769125ce52728d9ff62acaa6a980ee"
+    },
+    {
+      "path": "audio_separator/separator/__init__.py",
+      "size": 33,
+      "sha256": "0ec653e9bb61854c760e22e766b1f3f7672633889817fbdba455f3362d013962"
+    },
+    {
+      "path": "audio_separator/separator/architectures/__init__.py",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "audio_separator/separator/architectures/demucs_separator.py",
+      "size": 8745,
+      "sha256": "5c2db7406fbb10473466db37019f5e50a8631dee22e0b26f02e15f916a08a5a5"
+    },
+    {
+      "path": "audio_separator/separator/architectures/mdx_separator.py",
+      "size": 24072,
+      "sha256": "5a78302b76bc0e788563b033af50ecb6afd8567251f268f2aafb369c3060c353"
+    },
+    {
+      "path": "audio_separator/separator/architectures/mdxc_separator.py",
+      "size": 28240,
+      "sha256": "ad107e6753904640a25a206356410960189b65adffdca41fbfc0fed374cfc5b5"
+    },
+    {
+      "path": "audio_separator/separator/architectures/vr_separator.py",
+      "size": 20947,
+      "sha256": "c400abb7aff083146d189f870e107dd7d33d4344c3e5cbef015e8fdac03f7cd6"
+    },
+    {
+      "path": "audio_separator/separator/audio_chunking.py",
+      "size": 5216,
+      "sha256": "6ab2dbcdc9cbbf151dd2948f26b72bd1e3abaec19cf1c6130b2926def8754d87"
+    },
+    {
+      "path": "audio_separator/separator/common_separator.py",
+      "size": 26116,
+      "sha256": "531c48740ca235365fedad9a9df9d2e65d92bb65b9ca4dd243fdef587afccb6d"
+    },
+    {
+      "path": "audio_separator/separator/ensembler.py",
+      "size": 7221,
+      "sha256": "86793a52c8a19cd1cd534d8898e8ce0fa4f1a52c3d7b29a668cc92d3b4136663"
+    },
+    {
+      "path": "audio_separator/separator/roformer/README.md",
+      "size": 4689,
+      "sha256": "0fda9e4a8b30e321bd264a675ce2fe345db7a6afd9caa242cd32d6fc0fedbc09"
+    },
+    {
+      "path": "audio_separator/separator/roformer/__init__.py",
+      "size": 550,
+      "sha256": "c3ef7aa14bdc7f65b52b764af4ca4e1e1be35345992676fd98f400b7665b807a"
+    },
+    {
+      "path": "audio_separator/separator/roformer/bs_roformer_config.py",
+      "size": 5527,
+      "sha256": "58cf917ebd91ea4fdcb5dff65182f522ca5964a65ce0847f09b22c6bb3b450de"
+    },
+    {
+      "path": "audio_separator/separator/roformer/bs_roformer_validator.py",
+      "size": 9098,
+      "sha256": "384df8a95b4b8bf0b3b29610824fe13fa77d27d0b8943cde8aba3dc36c103256"
+    },
+    {
+      "path": "audio_separator/separator/roformer/configuration_normalizer.py",
+      "size": 12148,
+      "sha256": "9f7fd0a12c7630fa0cdfaa66b2b2122eec21672e9191e8fa1595a2a5a3e084c9"
+    },
+    {
+      "path": "audio_separator/separator/roformer/mel_band_roformer_config.py",
+      "size": 6914,
+      "sha256": "bd875075c5310cc5f9e99bf3d27ed3f445bd77cacc3cf4e886b13f367e09d2a5"
+    },
+    {
+      "path": "audio_separator/separator/roformer/mel_band_roformer_validator.py",
+      "size": 11955,
+      "sha256": "6154eaaac532b4c0ec78a386eeda73fcee5a4780724b50c0762a95dcc9c4591d"
+    },
+    {
+      "path": "audio_separator/separator/roformer/model_configuration.py",
+      "size": 5876,
+      "sha256": "c63197aeddc111d06276f27d84563e7c43346091588f1c282f7b5827aa032e10"
+    },
+    {
+      "path": "audio_separator/separator/roformer/model_loading_result.py",
+      "size": 7288,
+      "sha256": "fe4719bc4cd810f4f9e65088b7e816474d80eb1ccd7b34c4f7ec9a27247b8c87"
+    },
+    {
+      "path": "audio_separator/separator/roformer/parameter_validation_error.py",
+      "size": 6857,
+      "sha256": "c0abcb81e693fa1435186ecc330660dd14d3b3ede8d198d52f05a4242165f783"
+    },
+    {
+      "path": "audio_separator/separator/roformer/parameter_validator.py",
+      "size": 16355,
+      "sha256": "e7d92145e9f7cdec5f732873df8a5945e8bf1809e1bff012a115335692a4fb09"
+    },
+    {
+      "path": "audio_separator/separator/roformer/roformer_loader.py",
+      "size": 14636,
+      "sha256": "2afdb619effbeee38cab5491101c30ae4d1ea8b8fef43af58fa2326ec110618d"
+    },
+    {
+      "path": "audio_separator/separator/separator.py",
+      "size": 70457,
+      "sha256": "5d5bd812a8b405234ec975defe51473711b3d188348a8ee26d83ae0f3666724d"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/__init__.py",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/__init__.py",
+      "size": 196,
+      "sha256": "8f1ef20e7938e5d2e7f27a63c54cc117db13ec40711ee4575b66fb232bbdd652"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/__main__.py",
+      "size": 8165,
+      "sha256": "08118c584928c36c5895f69daaeac2294d71e8853c1f4e3ccac8d26d5e6ee2f5"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/apply.py",
+      "size": 10890,
+      "sha256": "2b3f0870a24857256067be4cdf7b266d9835b669f700183f59856edf42aac3b6"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/demucs.py",
+      "size": 16906,
+      "sha256": "8adde4f66888644785c33109bb715760021dec80f8b65d85770a8a3aef704ae0"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/filtering.py",
+      "size": 19727,
+      "sha256": "a252d965d8c441c4a2a7b21809d8717b63f82b0c5a13a5cefc6ccbcd50f9f2e8"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/hdemucs.py",
+      "size": 29751,
+      "sha256": "2366c3c67c94d60c8fbb3825087ff4dedbc010e1251442859cf930b92b4c615c"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/htdemucs.py",
+      "size": 25947,
+      "sha256": "a927d1c528a76abb627d3931496103633c6e000536ff89a91e297160e503b7ca"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/model.py",
+      "size": 7168,
+      "sha256": "88c2f8ff090300cf2623d8f4570a9d2a0e8839658df677a9cd883b6aa086d610"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/model_v2.py",
+      "size": 7270,
+      "sha256": "810eb2e5297c5dc531258cec8b0910a771e69d6b99c8af02e1bd930ddb1f08ef"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/pretrained.py",
+      "size": 5554,
+      "sha256": "7f8d57b95786067f1f39bb5f92f85ea4d0ba507c21a8e433674087822f4ed02a"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/repo.py",
+      "size": 4671,
+      "sha256": "b5027b4ee1c96da6d71f91d3e2556a0170bd51812126e220c4c69f2bfa6ad8d2"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/spec.py",
+      "size": 1298,
+      "sha256": "4386d28ec126554399de4698fda30c6ca7cd447166804856918af217adc97a9b"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/states.py",
+      "size": 3963,
+      "sha256": "44dc35143f5e64d33ea3ca29caeac19819d72fd4c5b89148a0d32a29862f2f81"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/tasnet.py",
+      "size": 14833,
+      "sha256": "e81787e6c0751415264694a7d4652b771a49e05ce6a5b7fe5ee48d52912af8e2"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/tasnet_v2.py",
+      "size": 14970,
+      "sha256": "fcdfc16ba67a9ad0a290a093db59344c610fbe34cd8b95f44fdd06362d0c7382"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/transformer.py",
+      "size": 25350,
+      "sha256": "150755a1f7351fdf45e162aa3ffdaf352a68901c558dd18ade7291f38265bec3"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/demucs/utils.py",
+      "size": 16401,
+      "sha256": "a991ed8cbd659e01a88bdde76136a3ee238dc21b832c915e29f252fabaf6feb8"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/mdxnet.py",
+      "size": 4199,
+      "sha256": "7c05a766bcfbbef99b95650092870f777d9fcfe68e96ffa643e4904482119c70"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/mixer.ckpt",
+      "size": 1208,
+      "sha256": "ea781bd52c6a523b825fa6cdbb6189f52e318edd8b17e6fe404f76f7af8caa9c"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/modules.py",
+      "size": 2005,
+      "sha256": "f4f687a4b0add71897317d75e2d753590b7b7f5d10a9d444046500532f98f2de"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/playsound.py",
+      "size": 8804,
+      "sha256": "1013ca294ce5b833b1033e7209016434644d88935236c0c92cc0e1e15092b9bf"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/pyrb.py",
+      "size": 2135,
+      "sha256": "6356df3e6316765f8f2b37cebf84c92814593c626fd437960b25ae49ae57e301"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/results.py",
+      "size": 1583,
+      "sha256": "966b603bbbb55d5e8aba34f5a124ce8e4b3339c5c55af4c9fea1ad60f3053b54"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/roformer/attend.py",
+      "size": 4554,
+      "sha256": "cc49679da424644948002eef09455330eb37c4f40509044f4be079951b8a7799"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/roformer/bs_roformer.py",
+      "size": 19094,
+      "sha256": "6eaf72911ec169025c20f3adc07ac670ba3133c1014abd90165bb380e48360be"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/roformer/mel_band_roformer.py",
+      "size": 18745,
+      "sha256": "d616b08df2f3c59af3c5090fa4a5feba53a879591324567f4e2b98f167290062"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/spec_utils.py",
+      "size": 46460,
+      "sha256": "dd5f5d18b5a164ca31357a8cb1107d71c31a26315f358b2ad9fbe9d848dd74f4"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/stft.py",
+      "size": 6332,
+      "sha256": "932a9d51ef11521f4cef278bfd9ef82f2998715c042251dfa636ee6d03abb162"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/tfc_tdf_v3.py",
+      "size": 8107,
+      "sha256": "9e443e02211e383f9813dcfe3cafde8b2ae14ccf4c310ca35a8b18a6b3c32063"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/__init__.py",
+      "size": 11,
+      "sha256": "0eaf816f0333d6e459e5e9350ea60a1fe88d3e64ac4565525ec9c4d1ff6f2e3b"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/layers.py",
+      "size": 16717,
+      "sha256": "df736ae4d0ab5da159dd6522acb64647647fb1991c195b04e39f7db4a2d431ba"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/layers_new.py",
+      "size": 6463,
+      "sha256": "32c016e44db692d713d25641b01246f4fa70ce4307a3eb546448bdca4f7ea617"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/model_param_init.py",
+      "size": 2666,
+      "sha256": "09afec80d9684e4da30c97d1f62fa5d34d13e719a9a1fa670307da4d99a5f687"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr16000_hl512.json",
+      "size": 292,
+      "sha256": "1fde1c89e2ec54e61761ffdba0c687f5a2418a8698e517ad3236efd368441898"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr32000_hl512.json",
+      "size": 294,
+      "sha256": "5b6a908307939020c3f812c30989ebc5b25fdca22c4d26e0f6342e42fa1587dd"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr33075_hl384.json",
+      "size": 292,
+      "sha256": "7f3973f353ff0e6ba63b1f90ff1cdf20da6d098c9a300f670a0baf8f9e067283"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr44100_hl1024.json",
+      "size": 293,
+      "sha256": "e62861bfbb3f37e6e09df79a3a7be612b8b33f0135c4017a86ef69976c7c9f72"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr44100_hl256.json",
+      "size": 287,
+      "sha256": "7faee01fcb6a188ae886a170f74f4be06ee501b4fcaa717cd1cd103df74d2dc2"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr44100_hl512.json",
+      "size": 292,
+      "sha256": "b48cb661955d374d28530b6c39dfe8ccd2003c09d47e561ea2fa9ef83d575a59"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr44100_hl512_cut.json",
+      "size": 290,
+      "sha256": "4e51e68aca2e041ebc7e7a5813032ac4a1a3b9578c5f74665fab9f80648f837f"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/1band_sr44100_hl512_nf1024.json",
+      "size": 306,
+      "sha256": "934e266c15a4a751e70869207d12b199b5e3f4180e38c84ea8b7a7391dcd236e"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/2band_32000.json",
+      "size": 483,
+      "sha256": "ab5bc2b4f315b062aea0e720b84bb141cb402a693ee8712e01c7aa12535f2e92"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/2band_44100_lofi.json",
+      "size": 485,
+      "sha256": "6381f2abacee047b121538ec3a0672351c4fcceb8849d945cbed53af29ab467b"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/2band_48000.json",
+      "size": 511,
+      "sha256": "91dad088b092364d76eafeb2042c8296b1e7709e172a2272511d16329d00fe94"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/3band_44100.json",
+      "size": 737,
+      "sha256": "964021ace04dc029ea9e3c308995646252a57d8fd63f564b756e08fbaa3d7d8d"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/3band_44100_mid.json",
+      "size": 757,
+      "sha256": "5110fa731ed7a6a3a4e7c502d6a9a66ee605d14fd14fa7e3aeb502ec68749b76"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/3band_44100_msb2.json",
+      "size": 757,
+      "sha256": "938e29b60ba6ac15dc96774998a7c0bf9e55dfe737f239e36d1a04c8ba808e29"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_44100.json",
+      "size": 960,
+      "sha256": "8c80e4f154e91cdefa13e2f2a5410d2f63499607746a2d525e654447d150dfac"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_44100_mid.json",
+      "size": 980,
+      "sha256": "aa99251533282902fe4b3785b7a09e0876eaa18ba198e24f8d3e1b21c0d73dff"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_44100_msb.json",
+      "size": 980,
+      "sha256": "4ef2646185e653cc5caf771b35aa4e3d0fc443d47de3812898d40ee92d9b2087"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_44100_msb2.json",
+      "size": 980,
+      "sha256": "4ef2646185e653cc5caf771b35aa4e3d0fc443d47de3812898d40ee92d9b2087"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_44100_reverse.json",
+      "size": 977,
+      "sha256": "61f672ba7bfc2b387c8e17240072bf0f371e48fc5481886a532f6523c29bd4e2"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_44100_sw.json",
+      "size": 978,
+      "sha256": "564cb8db659cbe63037fbbd0545b27caef1b210961f30fba71e6dc4c0925a0e1"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_v2.json",
+      "size": 947,
+      "sha256": "2bb315e6a8fb9ff12a546f4361e095388e0e702dbb1ff364e809c6e915e0a94f"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_v2_sn.json",
+      "size": 983,
+      "sha256": "179b43fd633c5081ef6f7878051d6aaf5781e5a7d0dab93a17bff501ce53e3fb"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_v3.json",
+      "size": 944,
+      "sha256": "c0104bb7aab6a48b418b9a1e45c8970003d3a2459b2538c5f360a154e1c20484"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_v3_sn.json",
+      "size": 979,
+      "sha256": "eb83d19906b123d5ff8911d63c9f026fdbfec3bd0007d35f2f2d5659f0f19a4b"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/4band_v4_ms_fullband.json",
+      "size": 1495,
+      "sha256": "91e8982a5355ed62d061424a91501f09fca00687b7cea494115b7e4ec9caaed5"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/modelparams/ensemble.json",
+      "size": 761,
+      "sha256": "69ff01f6fc0fcf449cbad78aaf5f634404c2ade9d7c1a5306c4d1512c3e11380"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/nets.py",
+      "size": 9100,
+      "sha256": "78da4e54cd1999be46cababff0f1bd3de0b82ab2b31f79546eccd5e968665566"
+    },
+    {
+      "path": "audio_separator/separator/uvr_lib_v5/vr_network/nets_new.py",
+      "size": 7317,
+      "sha256": "31f896cb6b7397a773b8f3196e385632730a81375d66521d0cf8e7add14a6b1d"
+    },
+    {
+      "path": "audio_separator/utils/__init__.py",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "audio_separator/utils/cli.py",
+      "size": 20861,
+      "sha256": "adae77e5617741d35e86bc28a868d077f10c2e9bfe65d092775859cbb7cdf7c4"
+    }
+  ]
+}

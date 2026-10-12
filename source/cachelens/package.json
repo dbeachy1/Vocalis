@@ -1,0 +1,16 @@
+{
+    "name": "taproom-cache-lens",
+    "version": "1.3.5",
+  "license": "AGPL-3.0-only",
+    "private": true,
+    "description": "SillyTavern extension showing how much of each turn's prompt a KV cache could reuse",
+    "type": "module",
+    "scripts": {
+        "test": "node --test \"test/*.test.js\"",
+        "typecheck": "tsc -p tsconfig.json"
+    },
+    "devDependencies": {
+        "@types/node": "^26.4.0",
+        "typescript": "^7.0.2"
+    }
+}

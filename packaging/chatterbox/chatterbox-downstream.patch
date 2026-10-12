@@ -1,0 +1,18 @@
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,6 +1,6 @@
+ [project]
+ name = "chatterbox-tts"
+-version = "0.1.7"
++version = "0.1.7+vocalis.1"
+ description = "Chatterbox: Open Source TTS and Voice Conversion by Resemble AI"
+ readme = "README.md"
+ requires-python = ">=3.10"
+@@ -25,7 +25,6 @@
+     "conformer==0.3.2",
+     "safetensors==0.5.3",
+     "spacy-pkuseg",
+-    "pykakasi==2.3.0",
+     "gradio==6.8.0",
+     "pyloudnorm",
+     "omegaconf"

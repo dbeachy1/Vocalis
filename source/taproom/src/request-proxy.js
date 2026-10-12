@@ -1,0 +1,65 @@
+import process from 'node:process';
+import http from 'node:http';
+import https from 'node:https';
+import { ProxyAgent } from 'proxy-agent';
+import { isValidUrl, color } from './util.js';
+import { log, LogClass } from './logger.js';
+
+const LOG_HEADER = '[Request Proxy]';
+
+/**
+ * Initialize request proxy.
+ * @param {ProxySettings} settings Proxy settings.
+ * @typedef {object} ProxySettings
+ * @property {boolean} enabled Whether proxy is enabled.
+ * @property {string} url Proxy URL.
+ * @property {string[]} bypass List of URLs to bypass proxy.
+ * @property {boolean} enableKeepAlive Enable HTTP/HTTPS keep-alive.
+ * @property {boolean} privateRequestFilterEnabled Whether the private request filter is enabled.
+ */
+export default function initRequestProxy({ enabled, url, bypass, enableKeepAlive, privateRequestFilterEnabled }) {
+    try {
+        // No proxy is enabled, so return
+        if (!enabled) {
+            return;
+        }
+
+        if (privateRequestFilterEnabled) {
+            log.warn(LogClass.NORMAL, color.yellow(LOG_HEADER), 'Warning: Request proxy is enabled while private request filter is also enabled. Only URLs that BYPASS the request proxy will be checked.');
+            log.warn(LogClass.NORMAL, color.yellow(LOG_HEADER), 'To ensure all requests are properly filtered, disable the request proxy.');
+        }
+
+        if (!url) {
+            log.error(LogClass.NORMAL, color.red(LOG_HEADER), 'No proxy URL provided');
+            return;
+        }
+
+        if (!isValidUrl(url)) {
+            log.error(LogClass.NORMAL, color.red(LOG_HEADER), 'Invalid proxy URL provided');
+            return;
+        }
+
+        // ProxyAgent uses proxy-from-env under the hood
+        // Reference: https://github.com/Rob--W/proxy-from-env
+        process.env.all_proxy = url;
+
+        if (Array.isArray(bypass) && bypass.length > 0) {
+            process.env.no_proxy = bypass.join(',');
+        }
+
+        const httpAgent = http.globalAgent;
+        const httpsAgent = https.globalAgent;
+
+        const proxyAgent = new ProxyAgent({ httpAgent, httpsAgent, keepAlive: enableKeepAlive });
+
+        http.globalAgent = proxyAgent;
+        https.globalAgent = proxyAgent;
+
+        log.info(LogClass.NORMAL);
+        log.info(LogClass.SENSITIVE, color.green(LOG_HEADER), 'Proxy URL is used:', color.blue(url));
+        log.info(LogClass.NORMAL);
+    } catch (error) {
+        log.error(LogClass.NORMAL, color.red(LOG_HEADER), 'Failed to initialize request proxy');
+        log.error(LogClass.SENSITIVE, color.red(LOG_HEADER), 'Failed to initialize request proxy:', error);
+    }
+}

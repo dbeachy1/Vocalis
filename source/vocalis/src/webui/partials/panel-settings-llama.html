@@ -1,0 +1,29 @@
+<!-- Keep llama.cpp settings in their own partial; behavior is in `js/sys/llama.js`. Its API key is optional, unlike KoboldCpp's required admin password; the server URL gates connectivity. -->
+    <div class="panel">
+      <h2>llama.cpp</h2>
+      <div class="small muted" style="margin:-4px 0 8px"><b>Only needed if you run <code>llama-server</code> and want to see or manage its models from Vocalis.</b> Leave this blank otherwise — nothing else in Vocalis uses it, and the <b>LLM ▸ llama.cpp</b> tab is the only thing affected.</div>
+      <div class="small muted" style="margin:0 0 8px"><b>The URL is all that is required.</b> An API key is only needed if <code>llama-server</code> was started with <code>--api-key</code>; leave it blank if it was not, and the tab still works. (<code>VOCALIS_LLAMA_URL</code> / <code>VOCALIS_LLAMA_API_KEY</code> override these.)</div>
+      <div class="row">
+        <div style="flex:1;min-width:220px"><label>URL</label><input type="text" id="llaUrl" placeholder="http://127.0.0.1:8080" autocomplete="off" spellcheck="false"></div>
+        <!-- Mask the API key with CSS in a text input to avoid browser password-manager autofill. Disable spellcheck, turn autocomplete off, and keep credential terms out of the field name/id. -->
+        <div style="flex:1;min-width:220px">
+          <label>API key <span class="muted">(optional)</span></label>
+          <input type="text" id="llaToken" class="masked" autocomplete="off" spellcheck="false"
+                 autocapitalize="off" autocorrect="off" placeholder="not set — usually fine">
+        </div>
+        <div style="flex:0;align-self:flex-end"><button class="primary" id="llaSave">Save</button></div>
+        <div style="flex:0;align-self:flex-end"><button class="sm" id="llaClear" title="Remove the stored API key. Leave it cleared unless llama-server was started with --api-key.">Clear</button></div>
+      </div>
+      <!-- Docker package only (release audit 2026-10-11, item 8): 127.0.0.1 inside the container is the container itself. -->
+      <div class="small muted docker-only" id="llaUrlDockerNote" style="margin-top:6px"><code>llama-server</code> must listen on more than loopback (start it with <code>--host 0.0.0.0</code>, or the machine's LAN address), and <code>127.0.0.1</code> here would be this container itself, so use <code>host.docker.internal</code> for a <code>llama-server</code> on this machine.</div>
+      <div class="row" style="margin-top:6px;align-items:center">
+        <div style="flex:0 0 auto"><label style="display:inline;margin:0;color:var(--fg)" id="llaShowWrap"><input type="checkbox" id="llaShow"> Show key</label></div>
+        <div style="flex:1" class="small muted" id="llaPwState">—</div>
+      </div>
+      <div class="small" id="llaTestResult" style="margin-top:8px;display:none"></div>
+      <!-- This is a warning, not a refusal; GPU sharing remains the user's choice. The global device setting governs all engines, so do not add an engine-specific duplicate. -->
+      <div class="small muted" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)">Same warning as the KoboldCpp section above, for this engine, and the same switch: <b>Warn me if I enable a device…</b> under <b>Devices</b> above turns it off for both engines and for the reverse direction. Only applies when <code>llama-server</code> is on <b>this</b> machine — a model loading on another box is not sharing these cards.</div>
+      <!-- Router mode is a llama-server launch flag, not a Vocalis setting. Fixed-model servers
+           omit model-management routes, so this panel remains read-only in that mode. -->
+      <div class="small muted" style="margin-top:10px;padding-top:8px;border-top:1px solid var(--line)">Loading and unloading models from here needs <code>llama-server</code> started in <b>router mode</b> — that is, with <b>no</b> <code>-m</code>, pointed at a <code>--models-dir</code> or a <code>--models-preset</code> file. Started with a fixed model it still works here, read-only: you see which model, its context and its cache behavior, but there is nothing to load. On a two-card box also pass <code>--models-max 1</code>, or the router will hold several models at once and load one whenever anything asks for it.</div>
+    </div>

@@ -1,0 +1,8 @@
+services:
+  vocalis:
+    devices:
+      - /dev/kfd:/dev/kfd
+      - /dev/dri:/dev/dri
+    group_add:
+      - "${GPU_GID:?GPU_GID must match the host render access group}"
+    shm_size: 4gb

@@ -1,0 +1,25 @@
+# Metadata-only ROCm candidate: full declared upstream dependency set; no source install or execution.
+-c constraints.upstream.txt
+torch[device-gfx1201]==2.10.0+rocm7.14.1
+torchaudio==2.10.0+rocm7.14.1
+torchcodec
+transformers>=4.36.2
+einops
+gradio>=6,<7
+inflect
+addict
+wetext
+modelscope>=1.22.0
+datasets>=3,<4
+huggingface-hub
+pydantic
+tqdm
+simplejson
+sortedcontainers
+soundfile
+librosa
+matplotlib
+funasr
+spaces
+argbind
+safetensors

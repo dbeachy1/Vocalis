@@ -1,0 +1,211 @@
+/* TAPROOM: themeable colors for things you can click (0.4 buttons, 0.5 collapsible headers) */
+
+/*
+ * Upstream's theme system exposes ten colors and none of them is a button. Buttons are painted
+ * `--SmartThemeBlurTintColor` on `--SmartThemeBorderColor` -- the UI background on the UI border -- so a
+ * button is the same color as the panel it sits on and reads as a line of text. No theme can fix that,
+ * because there is no variable to set. This file adds four, and a default that makes buttons look like
+ * buttons.
+ *
+ * 0.5 extends the SAME FOUR VARIABLES to collapsible section headers, which had the identical problem in
+ * a worse form -- see the second half of this file. No fifth variable, and no new pickers: a header that
+ * opens a section is a control, it should look like the other controls, and the user who drags the button
+ * fill towards green should not then have to find a second picker to keep the UI coherent.
+ *
+ * ⚠️ A SEPARATE FILE ON PURPOSE (0.4 brief §5.1). We merge from upstream regularly and a file upstream
+ * does not have can never conflict. Override from here; do not edit `style.css` to do this.
+ *
+ * 🔴 EVERY RULE BELOW OVERRIDES ONE THAT ALREADY EXISTS. `.menu_button` already sets background, border,
+ * color AND `filter`, so this is not additive styling -- each declaration here is winning an argument with
+ * `style.css`, and it wins only because this file is linked after it. Load order is load-bearing.
+ */
+
+:root {
+    --SmartThemeButtonBgColor: rgba(90, 120, 170, 0.35);
+    --SmartThemeButtonBorderColor: rgba(140, 175, 225, 0.60);
+    --SmartThemeButtonTextColor: var(--SmartThemeBodyColor);
+    --SmartThemeButtonHoverBgColor: rgba(110, 150, 210, 0.60);
+}
+
+/*
+ * The literal fallbacks are the compatibility guarantee (brief §4.3): a theme JSON with no button keys
+ * never writes an empty string into these, but if one ever did, the button still renders.
+ */
+.menu_button {
+    background-color: var(--SmartThemeButtonBgColor, rgba(90, 120, 170, 0.35));
+    border: 1px solid var(--SmartThemeButtonBorderColor, rgba(140, 175, 225, 0.60));
+    color: var(--SmartThemeButtonTextColor, var(--SmartThemeBodyColor));
+
+    /*
+     * 🔴 NOT OPTIONAL. `.menu_button` ships `filter: grayscale(0.5)`, which desaturates whatever fill it
+     * is given -- drop this line and every color a user picks comes out grey. This is the same trap
+     * `css/login.css` documents for its green button, and it is the reason a button color feature can
+     * look implemented and do nothing.
+     */
+    filter: none;
+}
+
+/*
+ * Hover was a hardcoded `var(--white30a)` in `style.css`, i.e. "add some white" rather than a color
+ * anyone could choose. The `:not()` guards are copied from the rule being replaced so a disabled button
+ * still does not light up under the cursor.
+ */
+.menu_button:not(.disabled):not([disabled]):hover,
+.menu_button:not(.disabled):not([disabled]).active {
+    background-color: var(--SmartThemeButtonHoverBgColor, rgba(110, 150, 210, 0.60));
+}
+
+/*
+ * Pressed is DERIVED from the resting fill rather than being a fifth variable (brief §4.1). Four
+ * variables is a surface small enough to land upstream; every extra one is another thing a theme author
+ * must set to get a coherent button, and another thing that can be set wrong.
+ */
+.menu_button:not(.disabled):not([disabled]):active {
+    filter: brightness(0.85);
+}
+
+/*
+ * 🔴 THE DESTRUCTIVE VARIANT KEEPS ITS OWN COLORS AND TAKES NO FILL.
+ *
+ * `.menu_button_danger_outline` is red-on-transparent on purpose -- it is how a delete button announces
+ * itself. Its `color` and `border-color` already outrank the base rule above (two classes to one), but
+ * `background-color` does not: without this rule a Delete button would pick up the blue fill and read as
+ * an ordinary action. An outline variant has no fill by definition, so say so.
+ */
+.menu_button.menu_button_danger_outline {
+    background-color: transparent;
+}
+
+/*
+ * Quick Reply buttons consume the same four variables rather than getting their own (0.4 audit, brief
+ * open question 1): they already carry a per-button user color system (`qr--color`, `qr--borderColor`),
+ * and a third layer between "the theme" and "this one button" is a thing nobody could reason about.
+ *
+ * ⚠️ The selectors are duplicated from the extension's own stylesheet, id and all, because that is what
+ * it takes to win. A bare `.qr--button` here would be outranked by `#qr--bar > .qr--buttons .qr--button`
+ * and would silently do nothing -- the failure mode where the feature looks shipped and only QR is wrong.
+ * The per-button overrides still win over this, which is the intended order.
+ */
+#qr--bar > .qr--buttons .qr--button,
+#qr--popout > .qr--body > .qr--buttons .qr--button {
+    background-color: var(--SmartThemeButtonBgColor, rgba(90, 120, 170, 0.35));
+    border: 1px solid var(--SmartThemeButtonBorderColor, rgba(140, 175, 225, 0.60));
+    color: var(--SmartThemeButtonTextColor, var(--SmartThemeBodyColor));
+}
+
+/* Was a hardcoded `#4d4d4d` -- a grey no theme could reach, on a button no theme could color. */
+#qr--bar > .qr--buttons .qr--button:hover,
+#qr--popout > .qr--body > .qr--buttons .qr--button:hover {
+    background-color: var(--SmartThemeButtonHoverBgColor, rgba(110, 150, 210, 0.60));
+}
+
+/*
+ * ⚠️ DELIBERATELY NOT STYLED, so the next reader does not think they were missed:
+ *
+ *   `.right_menu_button`  -- the left-panel nav items. They have no background at all and are styled
+ *                            entirely with `filter: brightness()`. They are navigation, not controls,
+ *                            and giving them a button fill would turn the panel into a wall of chips.
+ *   `.menu_button_icon`   -- layout only (flex, gap). Always used together with `.menu_button`, which
+ *                            it inherits from. Verified across every use in `index.html`.
+ *   `.menu_button.toggleable` / `.togglable`
+ *                         -- their toggled/untoggled states are `--active`, `--fullred` and a
+ *                            `brightness(80%)`, all at higher specificity than anything here, so they
+ *                            keep working and now dim a themed fill instead of a grey one.
+ *   `.popup-button-ok`, login's submit button
+ *                         -- crimson and green respectively, set in `popup.css` and `login.css` at two
+ *                            classes each. They outrank the base rule and are meant to.
+ *
+ * No `:focus-visible` rules here either: `dynamic-styles.js` generates focus styles from hover rules via
+ * a MutationObserver, and this file is a linked stylesheet, so it is observed like any other. Define
+ * hover correctly and focus follows. Hand-writing them would produce a second, competing definition.
+ */
+
+
+/* ==========================================================================================
+ * COLLAPSIBLE SECTION HEADERS -- "Click to expand" (Taproom 0.5)
+ * ==========================================================================================
+ *
+ * Same complaint as buttons, one step worse. A `.inline-drawer-header` is the entire click target for a
+ * collapsible section, and upstream gives it `padding: 5px 0; cursor: pointer` and NOTHING ELSE -- no
+ * fill, no border, no color of its own. It is bold body text with a chevron beside it, sitting on the
+ * panel background, and the only thing that says it can be clicked is the cursor changing once you are
+ * already over it. There is nothing to find with your eyes.
+ *
+ * The dressed-up variant is not better, it is differently bad: `.standoutHeader` and the extension
+ * settings headers get `linear-gradient(348deg, white30a, grey30a, black70a, SmartThemeQuoteColor)`, which
+ * is a near-black bar. It is more visible than nothing, and it still does not say "control" -- it says
+ * "heading". That gradient is what the "Click to expand" bar under Global World Info activation settings
+ * renders as today, and it is the specific thing that prompted this.
+ *
+ * 🔴 THE RULE THIS ESTABLISHES, AND THE REASON THE SELECTORS ARE FUSSY: blue means you can click it.
+ * That is only worth anything if the converse holds, so a header that is NOT a click target must NOT be
+ * blue. Hence `.inline-drawer-toggle.inline-drawer-header` and never a bare `.inline-drawer-header`:
+ *
+ *   - `.standoutHeader` on an `<h4>` or a `.title_restorable` (index.html has ~10) is a static section
+ *     title. It keeps the gradient. It is a heading and it should look like one.
+ *   - `#user-settings-block h4` shares the gradient rule and is likewise not clickable. Untouched.
+ *   - A World Info entry's row is `.inline-drawer-header` WITHOUT the toggle class, and `world-info.css`
+ *     sets `cursor: initial` on it precisely because the row is not the click target -- the chevron
+ *     inside it is. Painting that row would be a lie about a row containing a textarea, a drag handle
+ *     and a kill switch. The chevron inside it still gets colored, by the `.inline-drawer-icon` rule
+ *     below, which is the correct half.
+ */
+.inline-drawer-toggle.inline-drawer-header,
+#extensions_settings .inline-drawer-toggle.inline-drawer-header,
+#extensions_settings2 .inline-drawer-toggle.inline-drawer-header {
+    /*
+     * 🔴 `background-image`, NOT just `background-color`. The gradient above is a background IMAGE, and an
+     * image paints over the color underneath it -- set only the color and the bar stays black while every
+     * measurement says the color took. This is the drawer-header version of the `filter: grayscale`
+     * trap at the top of this file: the feature looks plumbed and shows nothing.
+     */
+    background-image: none;
+    background-color: var(--SmartThemeButtonBgColor, rgba(90, 120, 170, 0.35));
+    border: 1px solid var(--SmartThemeButtonBorderColor, rgba(140, 175, 225, 0.60));
+    color: var(--SmartThemeButtonTextColor, var(--SmartThemeBodyColor));
+
+    /* Matches `.standoutHeader`, so the bars that already had a shape do not change shape, only color. */
+    border-radius: 10px;
+}
+
+/*
+ * Upstream's padding is `5px 0` -- fine for bare text, but with a fill the label now starts at the very
+ * edge of a rounded bar. `:not(.padding0)` honours the deliberate opt-out on headers that lay themselves
+ * out internally.
+ *
+ * ⚠️ It changes nothing for the one such header in `index.html`. Creator's Notes carries `padding0` AND
+ * `standoutHeader`, and upstream's `.standoutHeader.inline-drawer-header { padding: 5px }` is two classes
+ * to `padding0`'s one -- so that header already renders at 5px and always has. The guard is here for the
+ * shape `padding0` alone describes, which extensions can and do build.
+ */
+.inline-drawer-toggle.inline-drawer-header:not(.padding0) {
+    padding: 5px;
+}
+
+/*
+ * ⚠️ `filter: none` is doing real work here. `style.css` gives these headers `filter: brightness(150%)` on
+ * hover -- the same "just add some white" move the buttons had -- and left in place it stacks on top of
+ * the hover fill and blows it out. The color IS the hover state now.
+ */
+.inline-drawer-toggle.inline-drawer-header:hover,
+#extensions_settings .inline-drawer-toggle.inline-drawer-header:hover,
+#extensions_settings2 .inline-drawer-toggle.inline-drawer-header:hover {
+    background-color: var(--SmartThemeButtonHoverBgColor, rgba(110, 150, 210, 0.60));
+    filter: none;
+}
+
+/*
+ * The chevron, in the border color rather than the text color -- it is the affordance, not the label, and
+ * it is the ONLY click target on a World Info entry row (see above), where there is no header fill to
+ * carry the signal.
+ *
+ * `filter: none` again: upstream ships `filter: brightness(75%)`, i.e. the one glyph in the UI whose whole
+ * job is to say "this opens" is deliberately dimmed below the text beside it.
+ *
+ * `.custom-drawer-icon` shares that upstream rule and is left alone -- it is the top nav bar's icons,
+ * which are navigation and already legible.
+ */
+.inline-drawer-icon {
+    color: var(--SmartThemeButtonBorderColor, rgba(140, 175, 225, 0.60));
+    filter: none;
+}

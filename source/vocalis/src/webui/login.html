@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzJhMmQzMyIvPjxwYXRoIGQ9Ik0xOCAxOCBMMzIgNDYgTDQ2IDE4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjdhMTgiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==">
+<title>Vocalis — Sign in</title>
+<script>/* apply saved theme before first paint (same key as the main UI) */
+try{var _t=localStorage.getItem('vocalis-theme');if(_t)document.documentElement.setAttribute('data-theme',_t);}catch(e){}</script>
+<style>
+  /* --ok mirrors index.html's, both themes — the edition tag must be the same green on both pages. */
+  :root{--bg:#0e1116;--panel:#171b22;--panel2:#1e232c;--line:#2a303b;--fg:#e6e9ef;--mut:#8b93a2;
+        --acc:#4ea1ff;--err:#f85149;--accfg:#08111f;--ok:#3fb950;}
+  :root[data-theme="light"]{--bg:#f4f6f9;--panel:#ffffff;--panel2:#eef1f5;--line:#d6dce5;--fg:#1b2230;
+        --mut:#5c6675;--acc:#2f6fed;--err:#d23c3c;--accfg:#ffffff;--ok:#1a9e4b;}
+  *{box-sizing:border-box;}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:var(--bg);color:var(--fg);font:14px/1.45 ui-sans-serif,system-ui,Segoe UI,Roboto,Arial;}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:26px 28px;width:320px;
+        box-shadow:0 12px 44px rgba(0,0,0,.35);}
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand img{width:42px;height:42px;}
+  .brand h1{font-size:20px;margin:0;font-weight:600;letter-spacing:.3px;}
+  /* The bottom margin belongs to the WRAPPER, not to .ver, so the gap down to "Username" is the
+     same whether or not the edition line is between them. */
+  .verwrap{margin:3px 0 16px;}
+  .ver{color:var(--mut);font-size:12px;}
+  /* Same tag, same reasoning, as index.html's .edition — see the long note there. It matters more
+     here than anywhere: on an encrypted install the password being typed into this form is also
+     the vault key, and this is the one line that says so before it is typed. */
+  .edition{color:var(--ok);font-size:12px;font-weight:600;letter-spacing:.3px;margin-top:2px;}
+  label{display:block;color:var(--mut);font-size:12px;margin:12px 0 4px;}
+  input{width:100%;background:var(--panel2);color:var(--fg);border:1px solid var(--line);
+        border-radius:8px;padding:9px 11px;font:inherit;}
+  input:focus{outline:none;border-color:var(--acc);}
+  button{width:100%;margin-top:20px;background:var(--acc);color:var(--accfg);border:0;border-radius:8px;
+         padding:10px;font:inherit;font-weight:600;cursor:pointer;}
+  button:disabled{opacity:.6;cursor:default;}
+  .err{color:var(--err);font-size:12.5px;margin-top:12px;min-height:16px;}
+  .hint{color:var(--mut);font-size:11.5px;margin-top:8px;display:none;}
+  .hint code{background:var(--panel2);padding:1px 5px;border-radius:5px;}
+  .linkrow{margin-top:14px;text-align:center;}
+  .linkrow a{color:var(--acc);font-size:12.5px;text-decoration:none;}
+  .linkrow a:hover{text-decoration:underline;}
+  /* The recovery key is long and hand-transcribed off paper — monospace so the groups line up
+     and an O/0 mix-up is visible before it is submitted. */
+  #rk{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.5px;}
+  .recnote{color:var(--mut);font-size:11.5px;margin-top:14px;}
+</style>
+</head>
+<body>
+  <form class="card" id="loginForm">
+    <div class="brand">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0Ij48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHJ4PSIxNCIgZmlsbD0iIzJhMmQzMyIvPjxwYXRoIGQ9Ik0xOCAxOCBMMzIgNDYgTDQ2IDE4IiBmaWxsPSJub25lIiBzdHJva2U9IiNmZjdhMTgiIHN0cm9rZS13aWR0aD0iMTAiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjwvc3ZnPg==" alt="Vocalis">
+      <h1>Vocalis</h1>
+    </div>
+    <!-- The edition placeholder below is substituted with the whole element or with the empty
+         string — the server decides, because this page has no /health call to ask. See
+         login_page(). Both branches must substitute; a literal placeholder left on the page
+         would be visible, and only on the install nobody tests on. -->
+    <div class="verwrap"><div class="ver">v{{VERSION}} — Studio</div>{{EDITION}}</div>
+    <div id="loginFields">
+      <label for="u">Username</label>
+      <input id="u" name="username" autocomplete="username" autofocus>
+      <label for="p">Password</label>
+      <input id="p" name="password" type="password" autocomplete="current-password">
+      <button type="submit" id="btn">Log in</button>
+    </div>
+    <!-- Keep recovery controls present but inert until opened. Render the opener only when the encrypted instance has a recovery wrap key. Avoid template placeholders here because the server substitutes braces throughout this file. -->
+    <div id="recPanel" style="display:none">
+      <div class="recnote">Enter the recovery key you saved when encryption was set up. It unlocks your data <i>and</i> sets a new password, in one step.</div>
+      <label for="rk">Recovery key</label>
+      <input id="rk" placeholder="XXXXX-XXXXX-XXXXX-…" autocomplete="off" spellcheck="false">
+      <label for="np">New password</label>
+      <input id="np" type="password" autocomplete="new-password">
+      <label for="np2">Confirm new password</label>
+      <input id="np2" type="password" autocomplete="new-password">
+      <button type="submit" id="recBtn">Unlock and set password</button>
+    </div>
+    <div class="err" id="err"></div>
+    <div class="hint" id="hint">Locked out? Run <code>./scripts/set-admin-credentials.sh</code> on the Vocalis server to reset it.</div>
+    <div class="linkrow">{{RECOVERY}}<a href="#" id="backToLogin" style="display:none">Back to sign in</a></div>
+  </form>
+<script>
+const $=id=>document.getElementById(id);
+
+// Recovery mode uses the recovery key to unlock the vault and set a new password.
+let recoveryMode=false;
+const ENCRYPTED_HERE=!!$('forgotLink');
+// The standard credential-reset script changes only the login hash; it cannot unlock an encrypted vault.
+if(ENCRYPTED_HERE)$('hint').innerHTML='Locked out? Use <b>Forgot your password?</b> below — your recovery key is the way back in. <code>set-admin-credentials.sh</code> cannot help here: it would change the login without re-wrapping your vault key.';
+function setMode(rec){
+  recoveryMode=rec;
+  $('loginFields').style.display=rec?'none':'';
+  $('recPanel').style.display=rec?'':'none';
+  if($('forgotLink'))$('forgotLink').style.display=rec?'none':'';
+  $('backToLogin').style.display=rec?'':'none';
+  $('err').textContent='';$('hint').style.display='none';
+  (rec?$('rk'):$('u')).focus();
+}
+if($('forgotLink'))$('forgotLink').addEventListener('click',e=>{e.preventDefault();setMode(true);});
+$('backToLogin').addEventListener('click',e=>{e.preventDefault();setMode(false);});
+
+async function doRecover(){
+  const btn=$('recBtn'),err=$('err');err.textContent='';
+  const key=$('rk').value.trim(),np=$('np').value,np2=$('np2').value;
+  if(!key){err.textContent='Enter your recovery key.';return;}
+  if(!np){err.textContent='Choose a new password.';return;}
+  if(np!==np2){err.textContent='The new passwords do not match.';return;}
+  btn.disabled=true;btn.textContent='Unlocking…';
+  try{
+    const headers={'Content-Type':'application/json'};
+    const csrf=document.querySelector('meta[name="csrf-token"]')?.content;
+    if(csrf)headers['X-CSRF-Token']=csrf;
+    const r=await fetch('/vault/recover',{method:'POST',headers,
+      body:JSON.stringify({recovery_key:key,new_password:np})});
+    const d=await r.json().catch(()=>({}));
+    if(r.ok){
+      // Same SUK banking as the login path — /vault/recover logs you in, so a restart from here
+      // must re-unlock as silently as one from a normal sign-in.
+      if(d.suk)sessionStorage.setItem('vocalis-suk',d.suk); else sessionStorage.removeItem('vocalis-suk');
+      location.href='/';return;
+    }
+    err.textContent=(d.error==='recovery_rejected')
+      ? 'That recovery key did not work. Check for transcription slips — the key is Base32, so it has no 0, 1 or 8.'
+      : (d.message||d.error||'Recovery failed.');
+  }catch(ex){err.textContent='Network error — is the server up?';}
+  btn.disabled=false;btn.textContent='Unlock and set password';
+}
+
+$('loginForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  // ONE form, two modes — so Enter submits whichever panel is open rather than firing a login
+  // with empty credentials while the recovery fields are on screen.
+  if(recoveryMode)return doRecover();
+  const btn=$('btn'),err=$('err');err.textContent='';btn.disabled=true;btn.textContent='Signing in…';
+  try{
+    const r=await fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username:$('u').value,password:$('p').value})});
+    if(r.ok){
+      // Store the session unlock key in sessionStorage so this tab can re-unlock after a server
+      // restart. Do not persist it in localStorage; its lifetime must remain scoped to the tab.
+      const d=await r.json().catch(()=>({}));
+      if(d.suk)sessionStorage.setItem('vocalis-suk',d.suk); else sessionStorage.removeItem('vocalis-suk');
+      location.href='/';return;
+    }
+    const d=await r.json().catch(()=>({}));
+    err.textContent=d.error||'Sign in failed.';document.getElementById('hint').style.display='block';
+  }catch(ex){err.textContent='Network error — is the server up?';}
+  btn.disabled=false;btn.textContent='Log in';
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+    "display_name": "Vocalis TTS (streaming)",
+    "loading_order": 100,
+    "requires": [],
+    "optional": [],
+    "dependencies": [],
+    "js": "index.js",
+    "css": "style.css",
+    "author": "Doug Beachy",
+    "version": "1.0.0",
+    "homePage": "https://github.com/dbeachy1/Vocalis",
+    "auto_update": false
+}

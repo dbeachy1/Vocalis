@@ -1,0 +1,572 @@
+{
+  "schemaVersion": 1,
+  "status": "frozen-for-private-evaluation-acquisition",
+  "source": {
+    "repository": "ACE-Step/Ace-Step1.5",
+    "revision": "571cee88618ae5ef3d3fcdf79c46068ce4e2d727",
+    "revisionMetadataEndpoint": "https://huggingface.co/api/models/ACE-Step/Ace-Step1.5/revision/571cee88618ae5ef3d3fcdf79c46068ce4e2d727?blobs=true",
+    "repositoryLicenseField": "mit",
+    "licenseDeclarationFile": "README.md",
+    "licenseDeclarationBytes": 24,
+    "note": "The pinned repository has no standalone LICENSE file; its 24-byte README contains the license: mit metadata field. Preserve that exact grant declaration and do not invent a separate copyright line.",
+    "additionalSources": [
+      {
+        "repository": "ACE-Step/acestep-v15-xl-sft",
+        "revision": "d06de46b4622f781cf07f4a013a67d591ca52819",
+        "revisionMetadataEndpoint": "https://huggingface.co/api/models/ACE-Step/acestep-v15-xl-sft/revision/d06de46b4622f781cf07f4a013a67d591ca52819?blobs=true",
+        "repositoryLicenseField": "mit",
+        "licenseDeclarationFile": "README.md",
+        "licenseDeclarationBytes": 4113,
+        "note": "October 11, 2026 (Doug: setup downloads the larger music model so Extract, Replace and Complete work). The model card's front matter declares license: mit; the repository has no standalone LICENSE file. Its config.json has is_turbo false, so the engine offers it every task type including extract, lego and complete. SUPERSEDED the same day: the engine's list is only an is_turbo check; the publisher's model card lists xl-sft as \"Standard\" and the engine's own model table marks Extract, Lego and Complete as unsupported for it. Those three tasks are for acestep-v15-xl-base (see its entry below)."
+      },
+      {
+        "repository": "ACE-Step/acestep-v15-xl-base",
+        "revision": "220c1166efbdd9583eafcb12eb160594bbfcb241",
+        "revisionMetadataEndpoint": "https://huggingface.co/api/models/ACE-Step/acestep-v15-xl-base/revision/220c1166efbdd9583eafcb12eb160594bbfcb241?blobs=true",
+        "repositoryLicenseField": "mit",
+        "licenseDeclarationFile": "README.md",
+        "licenseDeclarationBytes": 4749,
+        "note": "October 11, 2026 (Doug: make every feature of the music page work). The model card's front matter declares license: mit; the repository has no standalone LICENSE file. The card calls this the foundation model that supports all tasks (text-to-music, cover, repaint, extract, lego, complete) and names \"All (extract, lego, complete)\" for it alone among the XL models; acestep-v15-xl-sft is listed as \"Standard\". Its config.json is byte-identical to the one in acestep-v15-xl-sft, so nothing in the file distinguishes the two and the page decides by model name (see acegen.PUBLISHED_TASKS)."
+      }
+    ]
+  },
+  "selection": {
+    "directories": [
+      "acestep-v15-turbo/",
+      "acestep-5Hz-lm-1.7B/",
+      "Qwen3-Embedding-0.6B/",
+      "vae/",
+      "acestep-v15-xl-sft/",
+      "acestep-v15-xl-base/"
+    ],
+    "rootFiles": [
+      "README.md",
+      "config.json"
+    ],
+    "excludedFiles": [
+      {
+        "path": ".gitattributes",
+        "bytes": 1740,
+        "gitBlobSha1": "a8d4cbb214bda0ce6b6e4453c02ca1a826b9f08a",
+        "reason": "Git/LFS transport attributes are not a model/runtime input."
+      },
+      {
+        "path": ".gitattributes",
+        "bytes": 1519,
+        "gitBlobSha1": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+        "reason": "Git/LFS transport attributes are not a model/runtime input."
+      },
+      {
+        "path": ".gitattributes",
+        "bytes": 1519,
+        "gitBlobSha1": "a6344aac8c09253b3b630fb776ae94478aa0275b",
+        "reason": "Git/LFS transport attributes are not a model/runtime input (acestep-v15-xl-base; the same file as in acestep-v15-xl-sft)."
+      }
+    ],
+    "fileCount": 49,
+    "totalBytes": 49998870765,
+    "files": [
+      {
+        "path": "Qwen3-Embedding-0.6B/added_tokens.json",
+        "bytes": 707,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "b54f9135e44c1e81047e8d05cb027af8bc039eed"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/added_tokens.json"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/chat_template.jinja",
+        "bytes": 4116,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "699ff8df401fe4788525e9c1f9b86a99eadd6230"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/chat_template.jinja"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/config.json",
+        "bytes": 1359,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "21bd712c76114dc22587c6eeb84ab64186c9d245"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/config.json"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/merges.txt",
+        "bytes": 1671853,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "31349551d90c7606f325fe0f11bbb8bd5fa0d7c7"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/merges.txt"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/model.safetensors",
+        "bytes": 1191586416,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "0437e45c94563b09e13cb7a64478fc406947a93cb34a7e05870fc8dcd48e23fd"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/model.safetensors"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/special_tokens_map.json",
+        "bytes": 613,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "ac23c0aaa2434523c494330aeb79c58395378103"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/special_tokens_map.json"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/tokenizer.json",
+        "bytes": 11423705,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "def76fb086971c7867b829c23a26261e38d9d74e02139253b38aeb9df8b4b50a"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/tokenizer.json"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/tokenizer_config.json",
+        "bytes": 5404,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "ddaf69808214a44fdd26d3785b66c1367c78277a"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/tokenizer_config.json"
+      },
+      {
+        "path": "Qwen3-Embedding-0.6B/vocab.json",
+        "bytes": 2776833,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "4783fe10ac3adce15ac8f358ef5462739852c569"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/Qwen3-Embedding-0.6B/vocab.json"
+      },
+      {
+        "path": "README.md",
+        "bytes": 24,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "7be5fc7f47d5db027d120b8024982df93db95b74"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/README.md"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/added_tokens.json",
+        "bytes": 2217787,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "584075018edeacd6dcc031b3e2cbbf90836eba41"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/added_tokens.json"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/chat_template.jinja",
+        "bytes": 4168,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "01be9b307daa2d425f7c168c9fb145a286e0afb4"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/chat_template.jinja"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/config.json",
+        "bytes": 1385,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "1325891e0f2cb06ea22906f9c89047d09d0dac1f"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/config.json"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/merges.txt",
+        "bytes": 1671853,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "31349551d90c7606f325fe0f11bbb8bd5fa0d7c7"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/merges.txt"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/model.safetensors",
+        "bytes": 3708521528,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "f161689da73e5ecefa28ff780d51c2d92a00f056d021d7933c779ed5c6cd7db8"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/model.safetensors"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/special_tokens_map.json",
+        "bytes": 1824199,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "aa26266349a0f38be608e07138c9047356309551"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/special_tokens_map.json"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/tokenizer.json",
+        "bytes": 24321939,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "35af56c3f5cb3ea2cc578aa28a8937770981d504f183ac5c8c38baf4bbd4af4d"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/tokenizer.json"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/tokenizer_config.json",
+        "bytes": 14072925,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "6cd70cdd89425971794f5235562edcc608b0629a6c4686ae51a8b8c8b8ba5e95"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/tokenizer_config.json"
+      },
+      {
+        "path": "acestep-5Hz-lm-1.7B/vocab.json",
+        "bytes": 2776833,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "4783fe10ac3adce15ac8f358ef5462739852c569"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-5Hz-lm-1.7B/vocab.json"
+      },
+      {
+        "path": "acestep-v15-turbo/config.json",
+        "bytes": 1968,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "6a0b5c09a654614302947fd1d7041f7ed0764d8c"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-v15-turbo/config.json"
+      },
+      {
+        "path": "acestep-v15-turbo/configuration_acestep_v15.py",
+        "bytes": 13130,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "965a1b73afb1c89d0959c7d80691e487fdfde505"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-v15-turbo/configuration_acestep_v15.py"
+      },
+      {
+        "path": "acestep-v15-turbo/model.safetensors",
+        "bytes": 4787825604,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "3f6e0797fad420a39bd33979eb6e840e30989e34a3794e843d23b60ec6e422d7"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-v15-turbo/model.safetensors"
+      },
+      {
+        "path": "acestep-v15-turbo/modeling_acestep_v15_turbo.py",
+        "bytes": 96036,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "fa1162a5a01cc45c7959f3c531e2a8272ca05104"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-v15-turbo/modeling_acestep_v15_turbo.py"
+      },
+      {
+        "path": "acestep-v15-turbo/silence_latent.pt",
+        "bytes": 3841215,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "a778e9dd942f5e8b2c09c55370782d318834432b03dabbcdf70e6ed49ad6358b"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/acestep-v15-turbo/silence_latent.pt"
+      },
+      {
+        "path": "acestep-v15-xl-base/README.md",
+        "bytes": 4749,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "ff8490b9591dfd34a546ad61aff0ac4205270d24"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/README.md"
+      },
+      {
+        "path": "acestep-v15-xl-base/apg_guidance.py",
+        "bytes": 8340,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "3f114a281bd6f978d6a6495a987f758fb19d47a2"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/apg_guidance.py"
+      },
+      {
+        "path": "acestep-v15-xl-base/config.json",
+        "bytes": 2525,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "bfab8d221eae38793fbcfa06679d105d31d645bf"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/config.json"
+      },
+      {
+        "path": "acestep-v15-xl-base/configuration_acestep_v15.py",
+        "bytes": 13225,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "e54e1c82f004851d356a0589c8ea94227ed61274"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/configuration_acestep_v15.py"
+      },
+      {
+        "path": "acestep-v15-xl-base/model-00001-of-00004.safetensors",
+        "bytes": 4986971456,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "da654de2a66ace691fb06fedca81f14d20451eecd534c04a69d2f0207303ef23"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/model-00001-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-base/model-00002-of-00004.safetensors",
+        "bytes": 4986942776,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "ade70e18afcf9e3b656cda04e15b52d1a480f4d6a0e40141f3e614a4103a279a"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/model-00002-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-base/model-00003-of-00004.safetensors",
+        "bytes": 4986942808,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "e44b5ec5fa00bb5a0da423355772bfb3688d1330d70ba65cfd5611eebb20f9d5"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/model-00003-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-base/model-00004-of-00004.safetensors",
+        "bytes": 4988483464,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "3994ec426e1fb1cc92488b3fffa8bbbf86e8daa83ab23a4dc11eeb0ad12db52b"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/model-00004-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-base/model.safetensors.index.json",
+        "bytes": 71471,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "d383f21e424f222cf9af0677ca983d71ffac34b5"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/model.safetensors.index.json"
+      },
+      {
+        "path": "acestep-v15-xl-base/modeling_acestep_v15_xl_base.py",
+        "bytes": 105981,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "f6e93358c71d9feefae880c705c484b7eef1990b"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/modeling_acestep_v15_xl_base.py"
+      },
+      {
+        "path": "acestep-v15-xl-base/silence_latent.pt",
+        "bytes": 3841215,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "a778e9dd942f5e8b2c09c55370782d318834432b03dabbcdf70e6ed49ad6358b"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-base/resolve/220c1166efbdd9583eafcb12eb160594bbfcb241/silence_latent.pt"
+      },
+      {
+        "path": "acestep-v15-xl-sft/README.md",
+        "bytes": 4113,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "7d121a0faf0c050dc973f5844d05fed3c78ba72b"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/README.md"
+      },
+      {
+        "path": "acestep-v15-xl-sft/apg_guidance.py",
+        "bytes": 8340,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "3f114a281bd6f978d6a6495a987f758fb19d47a2"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/apg_guidance.py"
+      },
+      {
+        "path": "acestep-v15-xl-sft/config.json",
+        "bytes": 2525,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "bfab8d221eae38793fbcfa06679d105d31d645bf"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/config.json"
+      },
+      {
+        "path": "acestep-v15-xl-sft/configuration_acestep_v15.py",
+        "bytes": 13225,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "e54e1c82f004851d356a0589c8ea94227ed61274"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/configuration_acestep_v15.py"
+      },
+      {
+        "path": "acestep-v15-xl-sft/model-00001-of-00004.safetensors",
+        "bytes": 4986971456,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "1d304b8a34859cd92c349c71ae6c27d50564844c7f7611d2d32913f67508e5a4"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/model-00001-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-sft/model-00002-of-00004.safetensors",
+        "bytes": 4986942776,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "94e33648f514fdd00f473f2d2680af959204b58b15f7ab37246ac16d066aac87"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/model-00002-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-sft/model-00003-of-00004.safetensors",
+        "bytes": 4986942808,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "befe558365f53bc6c44f3f7e521cb2dd026927a817c36aa05ad94fcd80a533a9"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/model-00003-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-sft/model-00004-of-00004.safetensors",
+        "bytes": 4988483464,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "dfbc77aa26e54d0127892d6e7f3c0868bfc4623aa067867f6595c3b2fb7d31a4"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/model-00004-of-00004.safetensors"
+      },
+      {
+        "path": "acestep-v15-xl-sft/model.safetensors.index.json",
+        "bytes": 71471,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "d383f21e424f222cf9af0677ca983d71ffac34b5"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/model.safetensors.index.json"
+      },
+      {
+        "path": "acestep-v15-xl-sft/modeling_acestep_v15_xl_base.py",
+        "bytes": 105981,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "f6e93358c71d9feefae880c705c484b7eef1990b"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/modeling_acestep_v15_xl_base.py"
+      },
+      {
+        "path": "acestep-v15-xl-sft/silence_latent.pt",
+        "bytes": 3841215,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "a778e9dd942f5e8b2c09c55370782d318834432b03dabbcdf70e6ed49ad6358b"
+        },
+        "url": "https://huggingface.co/ACE-Step/acestep-v15-xl-sft/resolve/d06de46b4622f781cf07f4a013a67d591ca52819/silence_latent.pt"
+      },
+      {
+        "path": "config.json",
+        "bytes": 1968,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "6a0b5c09a654614302947fd1d7041f7ed0764d8c"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/config.json"
+      },
+      {
+        "path": "vae/config.json",
+        "bytes": 425,
+        "expectedHash": {
+          "algorithm": "git-blob-sha1",
+          "value": "f49eb7b261dde15ed29c0fa1e790251dcecbd280"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/vae/config.json"
+      },
+      {
+        "path": "vae/diffusion_pytorch_model.safetensors",
+        "bytes": 337431388,
+        "expectedHash": {
+          "algorithm": "sha256",
+          "value": "da17edb604c40deaf09e9b24974e590d1ca83a374070e5d0884cfa4bed9a99b0"
+        },
+        "url": "https://huggingface.co/ACE-Step/Ace-Step1.5/resolve/571cee88618ae5ef3d3fcdf79c46068ce4e2d727/vae/diffusion_pytorch_model.safetensors"
+      }
+    ],
+    "additionalRepositoryDirectories": {
+      "acestep-v15-xl-sft/": "ACE-Step/acestep-v15-xl-sft at the revision under source.additionalSources; every file of that repository except .gitattributes",
+      "acestep-v15-xl-base/": "ACE-Step/acestep-v15-xl-base at the revision under source.additionalSources; every file of that repository except .gitattributes"
+    }
+  },
+  "noticeScope": {
+    "modelRepository": "MIT, explicitly declared by the pinned model card; full standardized MIT text must be included only with a sourced copyright notice, not an invented one.",
+    "modelSideCode": [
+      {
+        "path": "acestep-v15-turbo/configuration_acestep_v15.py",
+        "license": "Apache-2.0",
+        "copyrightHeader": "Qwen team, Alibaba Group, and Hugging Face Inc."
+      },
+      {
+        "path": "acestep-v15-turbo/modeling_acestep_v15_turbo.py",
+        "license": "Apache-2.0",
+        "copyrightHeader": "ACESTEO Team"
+      },
+      {
+        "path": "acestep-v15-xl-sft/configuration_acestep_v15.py",
+        "license": "Apache-2.0",
+        "copyrightHeader": "Qwen team, Alibaba Group, and Hugging Face Inc."
+      },
+      {
+        "path": "acestep-v15-xl-sft/modeling_acestep_v15_xl_base.py",
+        "license": "Apache-2.0",
+        "copyrightHeader": "ACESTEO Team"
+      },
+      {
+        "path": "acestep-v15-xl-base/configuration_acestep_v15.py",
+        "license": "Apache-2.0",
+        "copyrightHeader": "Qwen team, Alibaba Group, and Hugging Face Inc."
+      },
+      {
+        "path": "acestep-v15-xl-base/modeling_acestep_v15_xl_base.py",
+        "license": "Apache-2.0",
+        "copyrightHeader": "ACESTEO Team"
+      }
+    ],
+    "qwenLineage": {
+      "license": "Apache-2.0",
+      "repositories": [
+        "https://huggingface.co/Qwen/Qwen3-Embedding-0.6B",
+        "https://huggingface.co/Qwen/Qwen3-1.7B"
+      ],
+      "limit": "Preserve applicable Apache notices; no byte identity with those repositories is asserted."
+    }
+  },
+  "verification": {
+    "metadataResponseSha": "571cee88618ae5ef3d3fcdf79c46068ce4e2d727",
+    "pinnedRevisionConfirmed": true,
+    "lfsHashes": "Hugging Face revision metadata reports LFS SHA-256 and exact size.",
+    "regularFileHashes": "Hugging Face revision metadata reports Git blob SHA-1 and exact size; acquisition must verify the Git blob hash and additionally calculate SHA-256.",
+    "heavyTransferStarted": false,
+    "runtimeExecution": false,
+    "releaseReady": false,
+    "additionalSourcesVerification": {
+      "acestep-v15-xl-sft": "Hugging Face revision metadata for the pinned revision lists each file with its exact size and LFS SHA-256 or Git blob SHA-1. Every file except the four shards was downloaded and matched (Git blob SHA-1 recomputed for the regular files; SHA-256 of silence_latent.pt equals the LFS value). The four 4.99 GB safetensors shards were not downloaded when this entry was added: each answered a ranged HTTPS request with 206 and a Content-Range total equal to the locked size.",
+      "acestep-v15-xl-base": "Hugging Face revision metadata for the pinned revision lists each file with its exact size and LFS SHA-256 or Git blob SHA-1. Every file except the four shards was downloaded and matched (Git blob SHA-1 recomputed for the regular files; SHA-256 of silence_latent.pt equals the LFS value). The four 4.99 GB safetensors shards were not downloaded when this entry was added: each answered a ranged HTTPS request with 206 and a Content-Range total equal to the locked size."
+    }
+  }
+}

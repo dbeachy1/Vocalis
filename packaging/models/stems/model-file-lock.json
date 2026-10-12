@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "model": "HTDemucs (htdemucs, model 955717e8)",
+  "files": [
+    {
+      "path": "hub/checkpoints/955717e8-8726e21a.th",
+      "url": "https://dl.fbaipublicfiles.com/demucs/hybrid_transformer/955717e8-8726e21a.th",
+      "bytes": 84141911,
+      "sha256": "8726e21a993978c7ba086d3872e7608d7d5bfca646ca4aca459ffda844faa8b4"
+    }
+  ],
+  "provenance": {
+    "sourceRepository": "https://github.com/facebookresearch/demucs",
+    "maintainedSourceRepository": "https://github.com/adefossez/demucs",
+    "addressDerivedFrom": "Demucs 4.0.1 (PyPI demucs-4.0.1.tar.gz): demucs/pretrained.py ROOT_URL 'https://dl.fbaipublicfiles.com/demucs/' plus the 'root: hybrid_transformer/' section of demucs/remote/files.txt, whose first entry is 955717e8-8726e21a.th, the only file demucs/remote/htdemucs.yaml names. This is the address Demucs itself downloads from.",
+    "pathNote": "The destination is VOCALIS_STEMS_MODEL_ROOT, which the application also hands to the Demucs child as TORCH_HOME. torch.hub looks for <TORCH_HOME>/hub/checkpoints/<file name> and downloads only when that file is absent, so the file is placed exactly there. The file name carries the first 8 hex digits of its own SHA-256 (8726e21a), which torch.hub checks on load.",
+    "disposition": "The author's published statements say the pretrained weights are not covered by the code's MIT license and are provided for research or scientific purposes; the current official model card declares no license. Setup downloads the file from the publisher at the user's install, the same footing as every other model in this package. The exact weight redistribution scope is not settled.",
+    "redistributionResolved": false,
+    "decision": "Doug, October 11, 2026: the earlier hold is lifted on the same footing as every other model; setup downloads from the publisher, size- and hash-checked; no weights are shipped in any image, archive or repository; the application never downloads a model while it runs.",
+    "hashesComputedFrom": "one download of the file from the address above on October 11, 2026, over HTTPS; the byte count is the length received"
+  }
+}

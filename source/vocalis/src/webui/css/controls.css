@@ -1,0 +1,154 @@
+  main{max-width:var(--shell);margin:0 auto;padding:16px;}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:14px;}
+  label{display:block;color:var(--mut);font-size:0.857143rem;margin:8px 0 3px;}
+  /* Use a class for inline label/control rows. `display:''` restores the class rule after
+   JavaScript hides a control; preserve the base label margin for row alignment. */
+  label.inlab{display:inline-flex;align-items:center;gap:5px;cursor:pointer;}
+  input[type=text],input[type=number],select,textarea{width:100%;background:var(--panel2);color:var(--fg);
+    border:1px solid var(--line);border-radius:7px;padding:7px 9px;font:inherit;}
+  textarea{min-height:120px;resize:vertical;font-family:inherit;}
+  input[type=number]{width:auto;min-width:70px;}
+  /* Library filter. The swap list grows one row per (song × voice × settings) tried, so it
+     gets busy fast — scanning it has to beat scrolling it. Sized to the row of small
+     buttons it sits beside, not to the full-width form inputs above. */
+  input.filter{width:auto;min-width:160px;background:var(--panel2);color:var(--fg);
+    border:1px solid var(--line);border-radius:7px;padding:4px 9px;font:inherit;font-size:0.857143rem;}
+  input.filter:focus{border-color:var(--acc);outline:none;}
+  /* Keep button labels on one line; handle overflow in the containing layout. */
+  button{background:var(--panel2);color:var(--fg);border:1px solid var(--line);border-radius:7px;
+    padding:8px 14px;font:inherit;cursor:pointer;white-space:nowrap;
+    /* ⚠️ `box-shadow` AND `filter` ONLY — deliberately NOT `border-color`. A border color on a
+       button is a STATE (`.on`, `.acemode.on`, `.fav.on`, `.pill.on`), and a spec that toggles
+       that state and reads `getComputedStyle` immediately would sample a color part-way through
+       the fade — a real assertion failing on a correct app, arriving as a flake. The hover ring
+       is not a state, nothing asserts it, and it is the thing that has to feel alive. */
+    transition:box-shadow .12s ease,filter .12s ease;}
+  button:hover{border-color:var(--acc);}
+  button.primary{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:600;}
+  /* The generic `button:hover{border-color:var(--acc)}` is a NO-OP on .primary — its border is
+     already --acc — so the app's most important buttons were the only ones with no hover feedback
+     at all. Brightness instead, matching ::file-selector-button:hover below. */
+  button.primary:hover{filter:brightness(1.12);}
+  /* Reserve the green action style for committing steps such as Deploy and Convert;
+   rehearsal actions such as Audition use the primary style. */
+  button.go{background:var(--ok);color:var(--accfg);border-color:var(--ok);font-weight:600;}
+  /* background is set explicitly (not just inherited from base `button`) so that when a
+     colored button turns into a Cancel by APPENDING danger — the Audition button is
+     class="primary" and runAudition sets `primary danger` while it runs — danger wins the
+     background too (it is later in source order than .primary/.go) instead of leaving red
+     text on a blue fill. Plain danger buttons are unaffected (panel2 == the base). */
+  button.danger{background:var(--panel2);border-color:var(--err);color:var(--err);}
+  /* Pair undo with delete; amber signals recovery rather than success or failure. */
+  button.recover{background:var(--panel2);border-color:var(--warn);color:var(--warn);}
+  /* Per-training log toggle. It sits next to a red Stop and used to be a plain gray
+     .sm — invisible, and it's the ONLY way to see which training the Live log above is
+     following. Amber outline when closed, filled amber when it's the one you're reading. */
+  button.logbtn{border-color:var(--warn);color:var(--warn);font-weight:600;}
+  button.logbtn.on{background:var(--warn);color:var(--bg);border-color:var(--warn);}
+  /* Violet = the DRY VOCAL, everywhere it appears — one color, one meaning, so the
+     purple ▶ on a library row and the purple ⬇ in the player are obviously the same
+     thing. Shares its swatch with the ComfyUI restart button (the only other --vio). */
+  button.vio,button.vram{border-color:var(--vio);color:var(--vio);}
+  button.vio:hover:not(:disabled),
+  button.vram:hover:not(:disabled){background:var(--vio);color:#fff;}      /* fills purple on hover */
+  button.vram{font-weight:600;}                                            /* Free-all-VRAM: obvious, not alarming */
+  a.abtn.vio{color:var(--vio);}
+  a.abtn.vio:hover{border-color:var(--vio);}
+  /* ★ favorite. Gold when set, plain when not — so the gold on screen is a COUNT of what
+     you starred, not a row of buttons all shouting the same color at you. Same swatch and
+     same ☆/★ glyphs the Playground clip list has used since 3.1. */
+  button.fav.on{color:var(--warn);border-color:var(--warn);}
+  button.fav:hover:not(:disabled){border-color:var(--warn);color:var(--warn);}
+  /* Enhance-in-place, on a library row. Green because it is the same green as the
+     full-band pill it produces — the button and the badge are the same idea. */
+  button.enh{border-color:var(--ok);color:var(--ok);font-weight:600;}
+  button.enh:hover:not(:disabled){background:var(--ok);color:#fff;}
+  button.ok{background:var(--ok);color:#fff;border-color:var(--ok);font-weight:600;}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid currentColor;border-top-color:transparent;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-1px;margin-right:5px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  input[type=file]::file-selector-button{background:var(--ok);color:#fff;border:0;border-radius:999px;padding:6px 14px;font:inherit;font-weight:600;cursor:pointer;margin-right:8px;}
+  input[type=file]::file-selector-button:hover{filter:brightness(1.08);}
+  /* Bulk clears #blkFiles after every pick (so re-picking the SAME file re-fires 'change', and so
+     the staged list stays the single truth) — which means the browser's own "No file chosen" text
+     is permanently wrong there. It lives in the input's shadow DOM and can't be relabeled, so:
+     make it invisible and print our own count in #blkChosen beside it. The ::file-selector-button
+     sets its own color above, so it survives this. */
+  #blkFiles{color:transparent;}
+  #blkChosen{margin-left:-4px;font-weight:600;}
+  /* label styled AS the green Choose File oval — used where the native input's
+     "No file chosen" slot would leave dead space (Playground: name shown separately). */
+  label.filebtn{display:inline-block;background:var(--ok);color:#fff;border-radius:999px;padding:6px 14px;font-weight:600;cursor:pointer;line-height:1.2;}
+  label.filebtn:hover{filter:brightness(1.08);}
+  /* m25: the swap picker's two upload ovals belong side by side ON the toolbar row. Their shared
+     span is the one shrinkable child of the toolbar's flex line, so without this the second label
+     wrapped underneath the first whenever the filter box wanted room. */
+  #vsSongUploadWrap{display:flex;align-items:center;flex-shrink:0;}
+  /* select.sm too, not just buttons: a bare <select class="sm"> fell through to the full-size
+     select rule (14px, 7px padding) and towered over the 12px buttons beside it in the header
+     row. Matches input.filter's small-control sizing; the extra right padding leaves room for
+     the browser's own dropdown arrow, which a button doesn't have. */
+  button.sm{padding:4px 9px;font-size:0.857143rem;}
+  select.sm{padding:4px 24px 4px 9px;font-size:0.857143rem;}
+  /* Voice-row actions use the shared small-button sizing and success color. */
+  button.xs{padding:2px 7px;font-size:0.785714rem;line-height:1.4;}
+  /* anchor styled as a small button (library download) — a bare link is too easy to miss */
+  a.abtn{display:inline-block;padding:4px 10px;border:1px solid var(--line);border-radius:7px;background:var(--panel2);
+    color:var(--dl);text-decoration:none;font-size:1rem;font-weight:700;line-height:1.2;}
+  a.abtn:hover{border-color:var(--dl);text-decoration:none;}
+  /* cyan pill download button (playground player) — mirrors the green Choose File oval */
+  a.dlbtn{display:inline-block;background:var(--dl);color:#fff;border-radius:999px;padding:6px 16px;
+    font-weight:600;text-decoration:none;margin-left:16px;vertical-align:middle;}
+  a.dlbtn:hover{filter:brightness(1.1);text-decoration:none;}
+  button:disabled{opacity:.45;cursor:not-allowed;}
+  /* Use an external box-shadow ring so hover feedback does not change layout or override
+   button state borders. A neutral theme token keeps contrast across fills. Disabled
+   buttons do not receive the ring because they are not interactive. */
+  button:hover:not(:disabled),
+  a.abtn:hover,
+  a.dlbtn:hover,
+  label.filebtn:hover{box-shadow:0 0 0 2px var(--btnring);}
+  input[type=file]::file-selector-button:hover{box-shadow:0 0 0 2px var(--btnring);}
+  /* The pills have no `transition` of their own — they are not `button`, so the base rule above
+     does not reach them. Without this the ring appears instantly and reads as a repaint rather
+     than as the control responding. */
+  a.abtn,a.dlbtn,label.filebtn,input[type=file]::file-selector-button{
+    transition:box-shadow .12s ease,filter .12s ease;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;} .row>div{flex:1 1 150px;}
+  /* Center the radio, de-reverb, and threshold controls in one flex row so their alignment
+   follows the shared layout rather than the height of an adjacent input. */
+  .moderow{display:flex;align-items:center;flex-wrap:wrap;gap:4px 14px;margin-top:4px;}
+  /* Keep the label on one line and let its explanation flow across the available width. */
+  label.tickline{display:block;margin-top:12px;color:var(--fg);cursor:pointer;line-height:1.5;}
+  label.tickline > input{vertical-align:middle;margin:0 7px 0 0;}
+  label.tickline > b{white-space:nowrap;}
+  /* The de-reverb pair returns to flex when shown by voiceswap.js. */
+  .modeopts{display:flex;align-items:center;gap:14px;}
+  /* Pin the main tabs below the measured header, then pin panel sub-tabs below the main
+   row. Measured offsets handle wrapping and dynamic header height. Keep Bulk's internal
+   `.tabs` control in normal panel flow rather than matching these navigation rules. */
+  /* Help notes open on demand and use a left-border aside treatment rather than another control style. */
+  .helpbox{margin:0 0 12px;padding:8px 12px;border-left:3px solid var(--acc);
+           background:var(--panel2);border-radius:0 6px 6px 0;line-height:1.5;}
+  .helpbox ol{line-height:1.6;}
+  /* Allow the tab row to wrap on narrow windows; `stickytabs.js` measures its rendered
+   height to position the panel sub-tab row. */
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:2px 0 14px;}
+  #tabs{position:var(--tabs-pos,static);top:calc(var(--hdr-h,0px) - 1px);z-index:4;background:var(--bg);}
+  section[data-panel]>.tabs{position:var(--subtabs-pos,static);
+        top:calc(var(--hdr-h,0px) + var(--tabs-h,0px) - 1px);z-index:3;background:var(--bg);}
+  .tabs button{border-radius:7px 7px 0 0;}
+  .tabs button:disabled{opacity:.45;cursor:not-allowed;}
+  .tabs button.active{background:var(--acc);border-color:var(--acc);color:#fff;font-weight:600;}
+  /* LLM ▸ API model search results. Each row is a click target in a bounded scroll list; model
+     ids use monospace to distinguish exact identifiers. */
+  .apiresults{margin-top:6px;max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:7px;}
+  .apiresults .apirow{display:flex;gap:12px;align-items:baseline;padding:6px 10px;cursor:pointer;border-top:1px solid var(--line);}
+  .apiresults .apirow:first-child{border-top:0;}
+  .apiresults .apirow:hover,.apiresults .apirow:focus{background:var(--panel2);outline:none;}
+  .apiresults .apirow .id{font-family:ui-monospace,Consolas,monospace;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .apiresults .apirow .facts{margin-left:auto;flex:0 0 auto;color:var(--mut);white-space:nowrap;}
+  /* The status colours, scoped: there is no page-wide `.ok`, and the wide `.warn` rules are each
+     scoped to their own panel too. */
+  #llmIntro .warn,[data-llmpanel="api"] .warn{color:var(--warn);}
+  [data-llmpanel="api"] .ok{color:var(--ok);}
+  [data-llmpanel="api"] .mono{font-family:ui-monospace,Consolas,monospace;}
