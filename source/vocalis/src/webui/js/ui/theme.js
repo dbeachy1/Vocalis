@@ -96,6 +96,8 @@ export function uiFontApply(px, { persist = false } = {}) {
   // change, and it is what lets the parameter stay honestly `string|number`.
   const v = Math.max(UI_FONT_MIN, Math.min(UI_FONT_MAX, parseInt(String(px), 10) || UI_FONT_DEFAULT));
   document.documentElement.style.setProperty('--fs', v + 'px');
+  // Logs that follow their tail re-wrap without changing size; this tells them (ui/log.js).
+  window.dispatchEvent(new Event('vocalis:fontsize'));
   const sl = /** @type {HTMLInputElement} */ ($('uiFont')),
     out = $('uiFontOut');
   if (sl) sl.value = String(v); // an input's .value is a string; the runtime was coercing this

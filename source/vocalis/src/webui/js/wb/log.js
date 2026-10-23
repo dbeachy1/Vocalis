@@ -3,6 +3,8 @@
 import { $, esc, wbEl } from '../util/dom.js'; // 7.3-m13: `$` was reached off the shim
 import { jget } from '../util/http.js';
 import { wbState } from './state.js';
+import { WB_KIND } from './kind.js';
+import { followWhenShown } from '../ui/log.js';
 
 // ── §6.4.3 the model log ─────────────────────────────────────────────────
 //
@@ -13,6 +15,8 @@ import { wbState } from './state.js';
 // not the reason the window was empty — nothing was RECORDED until a reply landed, which the
 // server side now fixes — but a diagnostic should not lag behind itself.
 const WB_LOG_POLL_MS = 1000;
+// Each editor tab has its own model log, and a pass keeps logging while you are on another tab.
+for (const kind of Object.keys(WB_KIND)) followWhenShown(/** @type {VEl} */ (wbEl(kind, 'wbLogBody')));
 
 /**
  * One row from `/wbedit/pass/<id>/<passId>/log` or the saved per-revision

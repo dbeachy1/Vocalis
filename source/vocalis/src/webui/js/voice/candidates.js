@@ -66,6 +66,7 @@ import { $, esc } from '../util/dom.js';
 import { jget, jpost } from '../util/http.js';
 import { fmtSize, fmtDate } from '../util/fmt.js';
 import { modal, promptForName } from '../ui/modal.js';
+import { followWhenShown } from '../ui/log.js';
 import { loadVoices } from '../sys/devices.js';
 import { vc } from './design.js';
 // 🔴 BOTH WERE FREE NAMES. `vcSyncModel` is called on `vcPoll`'s two terminal arms (:79 the reaped
@@ -75,6 +76,8 @@ import { vc } from './design.js';
 // writing `#vcStatus`, so the candidates never appeared, and a successful save raised a second
 // modal reading "Save failed — loadVoiceList is not defined". The poll and save paths must both resolve these imports.
 import { vcSyncModelFire, voiceListLoad } from '../voices/vcstate.js'; // 7.5.6 — the leaf
+// Each poll shows the job log at its tail; coming back to the tab does the same unless you scrolled up.
+followWhenShown(/** @type {VEl} */ ($('vcLog')));
 // "1 voice" / "2 voices" — digits, because these are counts the user is waiting on.
 /** @param {number} n @param {string} noun */
 export function vcN(n, noun) {

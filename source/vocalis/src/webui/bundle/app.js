@@ -2733,6 +2733,7 @@
   // src/webui/js/ui/log.js
   var log_exports = {};
   __export(log_exports, {
+    followWhenShown: () => followWhenShown,
     logInto: () => logInto
   });
   function logInto(box, html, cls, scroll) {
@@ -2743,6 +2744,17 @@
     d.innerHTML = html;
     box.appendChild(d);
     if (scroll) box.scrollTop = box.scrollHeight;
+  }
+  function followWhenShown(pane2, follows) {
+    let atTail = true;
+    pane2.addEventListener("scroll", () => {
+      if (pane2.clientHeight) atTail = pane2.scrollHeight - pane2.scrollTop - pane2.clientHeight < 40;
+    });
+    const snap = () => {
+      if (pane2.clientHeight && (follows ? follows() : atTail)) pane2.scrollTop = pane2.scrollHeight;
+    };
+    new ResizeObserver(snap).observe(pane2);
+    window.addEventListener("vocalis:fontsize", snap);
   }
   $("copyLog").onclick = () => navigator.clipboard.writeText(
     /** @type {VEl} */
@@ -2761,8 +2773,9 @@
       if (checkbox.checked) pane2.scrollTop = pane2.scrollHeight;
     });
     pane2.addEventListener("scroll", () => {
-      if (pane2.scrollTop + pane2.clientHeight < pane2.scrollHeight - 30) checkbox.checked = false;
+      if (pane2.clientHeight && pane2.scrollTop + pane2.clientHeight < pane2.scrollHeight - 30) checkbox.checked = false;
     });
+    followWhenShown(pane2, () => checkbox.checked);
   }
   bindAutoScroll("autoscroll", "log");
   bindAutoScroll("blkAutoscroll", "blkLog");
@@ -2964,6 +2977,12 @@
     const w = blkW();
     blkRenderStaged();
     $("blkLog").innerHTML = w.log || '<span class="muted ph">Pick some files and press ' + (enh2 ? "Enhance" : "Clean up") + " to begin.</span>";
+    if (
+      /** @type {HTMLInputElement} */
+      $("blkAutoscroll").checked
+    )
+      $("blkLog").scrollTop = /** @type {VEl} */
+      $("blkLog").scrollHeight;
     blkStart = w.start || 0;
     if (w.view === "done" && w.manifest) blkRenderDone(w.manifest);
     else if (w.view === "running") blkShow("running");
@@ -4496,6 +4515,10 @@
     $("stLogPause").classList.toggle("on", stLogPaused);
     $("stLogPause").textContent = stLogPaused ? "▶ Resume" : "⏸ Pause";
   };
+  followWhenShown(
+    /** @type {VEl} */
+    $("stLogView")
+  );
   $("stLogClear").onclick = () => {
     $("stLogView").innerHTML = "";
   };
@@ -7040,6 +7063,10 @@
       true
     );
   }
+  followWhenShown(
+    /** @type {VEl} */
+    $("ssLog")
+  );
   function ssMode() {
     return (
       /** @type {{value?: string}} */
@@ -13933,6 +13960,10 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
       true
     );
   }
+  followWhenShown(
+    /** @type {VEl} */
+    $("pgLog")
+  );
   var pgEnhTag = (name) => `<b>${esc(name)}</b> · `;
   var pgStripCtx = null;
   var pgStripTimer = null;
@@ -15516,6 +15547,7 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
   function uiFontApply(px, { persist = false } = {}) {
     const v = Math.max(UI_FONT_MIN, Math.min(UI_FONT_MAX, parseInt(String(px), 10) || UI_FONT_DEFAULT));
     document.documentElement.style.setProperty("--fs", v + "px");
+    window.dispatchEvent(new Event("vocalis:fontsize"));
     const sl = (
       /** @type {HTMLInputElement} */
       $("uiFont")
@@ -16028,6 +16060,10 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
     vcUndelete: () => vcUndelete,
     vcWirePlayback: () => vcWirePlayback
   });
+  followWhenShown(
+    /** @type {VEl} */
+    $("vcLog")
+  );
   function vcN(n, noun) {
     return n + " " + noun + (n === 1 ? "" : "s");
   }
@@ -19408,6 +19444,10 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
     wbLogStop: () => wbLogStop
   });
   var WB_LOG_POLL_MS = 1e3;
+  for (const kind of Object.keys(WB_KIND)) followWhenShown(
+    /** @type {VEl} */
+    wbEl(kind, "wbLogBody")
+  );
   function wbLogStart(kind) {
     const st = wbState(kind);
     wbEl(kind, "wbLog").style.display = "";

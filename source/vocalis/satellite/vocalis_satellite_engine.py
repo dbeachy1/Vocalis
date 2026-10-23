@@ -516,7 +516,7 @@ class Engine:
                         raise SatelliteError(f"voice {voice_hash} not loaded")
                     rep.model.conds = conds
                 t0 = time.time()
-                total = 0
+                total, done = 0, 0
                 self._last_batch_sr = rep.sr
                 # The T3 loop reads `cancel`; the s3gen loop reads this thread-local through the
                 # patched `tqdm` wrapper. Set both cancellation paths for batched rendering.
@@ -528,6 +528,7 @@ class Engine:
                             cancel=ev.is_set,
                             more_available=more_available, held_out=held_out):
                         total += len(wav)
+                        done += 1
                         yield idx, wav
                 except batchmod.BatchCanceled:
                     raise GenerationCanceled()
@@ -537,9 +538,18 @@ class Engine:
             dt = time.time() - t0
             audio_s = total / rep.sr
             rate = f" ({audio_s / dt:.2f}x realtime)" if dt > 0 else ""
+            # Chunks held for the next top-up come back in the reply's trailer and are rendered
+            # with that submission. Say so: on 2026-10-23 this line read "rendered … batch of 3
+            # -> 0.0s in 0.0s" for a request whose three chunks were all held, which looks like
+            # three chunks thrown away.
+            held = len(held_out) if held_out else 0
+            kept = f", {held} held for the next top-up" if held else ""
             # Log request metadata only; do not include prompt text or voice names.
-            logger.info(f"rendered {request_id} on {rep.device}: batch of {len(texts)} -> "
-                        f"{audio_s:.1f}s in {dt:.1f}s{rate}")
+            if done:
+                logger.info(f"rendered {request_id} on {rep.device}: {done} of {len(texts)} "
+                            f"chunk(s) -> {audio_s:.1f}s in {dt:.1f}s{rate}{kept}")
+            else:
+                logger.info(f"held {request_id} on {rep.device}: nothing rendered yet{kept}")
         finally:
             self._release(request_id)
 

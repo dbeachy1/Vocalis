@@ -9,7 +9,7 @@ import { folderRows, folderPage, folderBar, folderGap, folderTag, folderWire, fo
 import { modal } from '../ui/modal.js';
 import { switchTab } from '../ui/tabswitch.js';
 import { favBtn, favFirst, favToggle } from '../ui/fav.js';
-import { logInto } from '../ui/log.js';
+import { followWhenShown, logInto } from '../ui/log.js';
 import { hideAudio } from '../ui/audition.js';
 import { trayAudio } from '../ui/trayslot.js';
 import { STEM_MODE, stemBadges, stemPills, stemWidgetHTML } from './stemwidget.js';
@@ -150,6 +150,7 @@ const SS_MODE_DOING = {
 function ssLogLine(html, cls) {
   logInto(/** @type {VEl} */ ($('ssLog')), html, cls, true);
 }
+followWhenShown(/** @type {VEl} */ ($('ssLog')));
 function ssMode() {
   // 🔴 `lead` IS THE DEFAULT SINCE 8.6.1. The fallback here has to
   // agree with the `checked` radio in index.html, or the two disagree exactly when a radio is

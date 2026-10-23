@@ -788,4 +788,4 @@ def test_the_route_answers_sealed_and_health_advertises_it(monkeypatch):
     r = server.app.test_client().post("/satellite/gpustats", data=b"{}")
     assert r.status_code != 200, "unsealed is refused, like every verb"
 
-    assert server.SATELLITE_VERSION == "2.1.1"
+    assert server.SATELLITE_VERSION == "2.1.2"

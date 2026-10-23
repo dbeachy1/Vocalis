@@ -5,7 +5,7 @@ PRODUCT_NAME = "Vocalis"
 # Bump this on every deploy; the value is shown in the startup banner, /health, and login page.
 # Keep release values monotonic, including milestone builds.
 
-VERSION = "12.2.1"
+VERSION = "12.2.2"
 
 
 class VocalisError(RuntimeError):

@@ -342,6 +342,9 @@ function blkApplyMode() {
   blkRenderStaged();
   /** @type {VEl} */ ($('blkLog')).innerHTML =
     w.log || '<span class="muted ph">Pick some files and press ' + (enh ? 'Enhance' : 'Clean up') + ' to begin.</span>';
+  // The other mode's log is a different length; with auto-scroll on, show its last line.
+  if (/** @type {HTMLInputElement} */ ($('blkAutoscroll')).checked)
+    /** @type {VEl} */ ($('blkLog')).scrollTop = /** @type {VEl} */ ($('blkLog')).scrollHeight;
   blkStart = w.start || 0;
   if (w.view === 'done' && w.manifest) blkRenderDone(w.manifest);
   else if (w.view === 'running') blkShow('running');

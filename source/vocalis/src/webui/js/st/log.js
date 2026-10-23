@@ -37,6 +37,7 @@
 
 import { $ } from '../util/dom.js';
 import { jget } from '../util/http.js';
+import { followWhenShown } from '../ui/log.js';
 // ── the live log tail ────────────────────────────────────────────────────
 // Poll /logs/tail with a byte cursor: the server returns only what's new since
 // the cursor, so each poll is cheap. We follow the bottom unless the user has
@@ -116,6 +117,7 @@ function stLogAppend(text) {
   /** @type {VEl} */ ($('stLogPause')).classList.toggle('on', stLogPaused);
   /** @type {VEl} */ ($('stLogPause')).textContent = stLogPaused ? '▶ Resume' : '⏸ Pause';
 };
+followWhenShown(/** @type {VEl} */ ($('stLogView')));
 /** @type {VEl} */ ($('stLogClear')).onclick = () => {
   /** @type {VEl} */ ($('stLogView')).innerHTML = '';
 }; // view only; the file is untouched

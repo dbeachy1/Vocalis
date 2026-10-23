@@ -30,7 +30,7 @@ import { renderStrip } from '../sys/hwstrip.js';
 import { ETA_UNKNOWN, badgeLine, bandPill, enh, enhBtn, enhEta, pgUpdateEnh, sizeTip } from '../sys/enhance.js';
 import { AUDITION_TEXT, bookUpdateAudition, hideAudio, pgTakeMatch, pgUpdateAudition, pgUpdateTake } from '../ui/audition.js';
 import { PG_F, curParams, saveVoiceSettings } from '../voice/params.js';
-import { logInto } from '../ui/log.js';
+import { followWhenShown, logInto } from '../ui/log.js';
 import { spLoadAll } from '../media/speech.js';
 import { switchStudioPanel } from '../media/studio-tabs.js';
 
@@ -42,6 +42,7 @@ import { switchStudioPanel } from '../media/studio-tabs.js';
 export function pgLogLine(html, cls) {
   logInto(/** @type {VEl} */ ($('pgLog')), html, cls, true);
 }
+followWhenShown(/** @type {VEl} */ ($('pgLog')));
 // Which clip a line belongs to. Two enhancements can run at once (one card each), and they
 // narrate into the same Playground log — untagged, the two interleave into nonsense.
 /** @param {string} name */
