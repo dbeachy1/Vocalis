@@ -84,6 +84,12 @@ class SatelliteUnreachable(SatelliteError):
     """Expected transport failure when a satellite is unavailable. Callers may fall back to local workers and must not treat this condition as an application error."""
 
 
+class SatelliteTimedOut(SatelliteUnreachable):
+    """The satellite answered the connection but did not finish in time: running, but busy or
+    crawling, not switched off. A pool that drops it waits before taking it back (2026-10-22),
+    because one that answers health at once would otherwise rejoin in seconds and crawl again."""
+
+
 class SatelliteCanceled(SatelliteError):
     """Raised when a remote batch was canceled rather than failed. The pool drops undelivered chunks on cancellation but retries them after ordinary failures."""
 
@@ -257,10 +263,19 @@ class SatelliteClient:
                 f"satellite. ({exc})") from exc
         except requests.exceptions.ReadTimeout as exc:
             # A read timeout means the address answered but the operation did not finish in time. Keep the cached dial address: clearing it here makes a busy satellite trigger repeated DNS lookups, especially on the fast GPU-stat poll.
-            raise SatelliteUnreachable(
+            raise SatelliteTimedOut(
                 f"satellite {self.name!r} did not answer {path} within {timeout:.3g}s — it may "
                 f"be busy. ({type(exc).__name__})") from exc
         except requests.exceptions.RequestException as exc:
+            # Not streamed, so `requests.post` reads the whole body itself, and a read timeout
+            # AFTER the headers comes out as a ConnectionError wrapping urllib3's ReadTimeoutError,
+            # not as ReadTimeout. It is the same "answered, then too slow" as the branch above:
+            # timed out, and the dial cache kept (2026-10-22).
+            from urllib3.exceptions import ReadTimeoutError
+            if any(isinstance(a, ReadTimeoutError) for a in exc.args):
+                raise SatelliteTimedOut(
+                    f"satellite {self.name!r} stopped sending {path} part-way, nothing for "
+                    f"{timeout:.3g}s — it may be busy. ({type(exc).__name__})") from exc
             # The address it answered on may have moved (DHCP, a reboot). Drop the cached IPv4
             # so the next attempt resolves again, and name what was actually dialed — printing
             # `self.url` alone showed the operator the name that WOULD have worked.
@@ -300,7 +315,7 @@ class SatelliteClient:
             # See the identical branch in `_post` — the address answered, only the read half
             # expired, so this must not be treated as "the address moved" and must not clear
             # the dial cache the render path shares.
-            raise SatelliteUnreachable(
+            raise SatelliteTimedOut(
                 f"satellite {self.name!r} did not answer {path} within {timeout:.3g}s — it may "
                 f"be busy. ({type(exc).__name__})") from exc
         except requests.exceptions.RequestException as exc:
@@ -330,6 +345,22 @@ class SatelliteClient:
                         for payload in reader.feed(raw):
                             yield payload
                 reader.finish()
+            except requests.exceptions.RequestException as exc:
+                # 🔴 A FAILURE PART-WAY THROUGH THE REPLY IS STILL THE SATELLITE (2026-10-22). Only
+                # the request itself was wrapped above, so a satellite that stopped or crawled after
+                # its first frame raised a raw `requests` error here: the pool took it for a bad
+                # chunk, kept the worker and retried on it, instead of moving the work to the local
+                # cards and taking the satellite back when it recovers. `iter_content` reports a
+                # read timeout as a ConnectionError wrapping urllib3's ReadTimeoutError.
+                from urllib3.exceptions import ReadTimeoutError
+                if isinstance(exc, requests.exceptions.ReadTimeout) or any(
+                        isinstance(a, ReadTimeoutError) for a in exc.args):
+                    raise SatelliteTimedOut(
+                        f"satellite {self.name!r} stopped sending {path} part-way, nothing for "
+                        f"{timeout:.3g}s — it may be busy. ({type(exc).__name__})") from exc
+                raise SatelliteUnreachable(
+                    f"satellite {self.name!r} dropped the connection part-way through {path} — "
+                    f"it may have been stopped. ({type(exc).__name__})") from exc
             finally:
                 r.close()
 

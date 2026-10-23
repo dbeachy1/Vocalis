@@ -1167,7 +1167,8 @@ def test_the_health_payload_says_it_can_batch(satellite_app):
     # 2.0.4 corrects the divisor log line (it printed NVML's raw 10501 as a clock in MHz) — log
     # text only, pinned for the same reason.
     # 2.1.0 learns higher batch memory costs and fixes telemetry resource ownership.
-    assert d["satellite_version"] == "2.1.0"
+    # 2.1.1 keeps a gigabyte between the batch reserve (3 GB) and the VRAM watchdog (2 GB).
+    assert d["satellite_version"] == "2.1.1"
     assert "gpustats" in (d.get("verbs") or [])
     assert d["vram_cap_gb"] == 0.0, "uncapped until the client sends a limit"
     assert isinstance(d.get("vram_reserved_gb"), dict)

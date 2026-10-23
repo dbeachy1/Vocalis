@@ -162,3 +162,35 @@ def test_a_deliberate_exit_names_its_caller_before_it_exits(monkeypatch):
     evidence.close()
     os._exit(0)
     assert exits == [3, 0]
+
+
+def test_a_deliberate_exit_records_the_thread_that_was_stuck(monkeypatch):
+    """pytest-timeout's exit comes from its timer thread; the hung test is on another one. Every
+    other thread's stack, with its name, has to be in the file too, or it names only the timer."""
+    import io
+    import os
+    import threading
+    exits = []
+    monkeypatch.setattr(os, "_exit", exits.append)
+    evidence = io.StringIO()
+    release, parked = threading.Event(), threading.Event()
+
+    def parked_on_a_child_process():
+        parked.set()
+        release.wait()
+
+    t = threading.Thread(target=parked_on_a_child_process, name="the-stuck-test", daemon=True)
+    t.start()
+    parked.wait()
+    try:
+        conftest._record_deliberate_exits(evidence)
+        os._exit(1)
+    finally:
+        release.set()
+        t.join()
+
+    said = evidence.getvalue()
+    assert exits == [1]
+    assert "Thread the-stuck-test" in said, said
+    assert "parked_on_a_child_process" in said, "the stuck thread's own frames must be there"
+    assert "test_a_deliberate_exit_records_the_thread_that_was_stuck" in said, "and the caller's"

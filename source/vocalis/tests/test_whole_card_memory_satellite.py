@@ -211,10 +211,10 @@ def test_a_standalone_folder_never_asks_nvml_on_a_build_that_is_not_cuda(monkeyp
 
 def test_the_sizer_and_the_watchdog_see_the_whole_card_number(monkeypatch):
     """`spend_budget_gb` (and so `batch_cap`) read `free_gb`: with the driver saying 6 GB free,
-    the budget is 6 less the 2 GB reserve, however much PyTorch claims."""
+    the budget is 6 less the 3 GB reserve, however much PyTorch claims."""
     _torch(monkeypatch, free_gb=20.0)
     batch.set_whole_card_reader(lambda d: (6.0, 24.0), "test reader")
-    assert batch.spend_budget_gb("cuda:0") == pytest.approx(4.0)
+    assert batch.spend_budget_gb("cuda:0") == pytest.approx(6.0 - batch.RESERVE_GB) == 3.0
 
 
 # ── the settled source: server.py decides once, at start ─────────────────────
@@ -359,9 +359,9 @@ def test_the_allocator_cap_uses_the_whole_card_free_and_pytorchs_total(monkeypat
     t = _torch(monkeypatch, free_gb=20.0, total_gb=24.0, reserved_gb=3.0)
     batch.set_whole_card_reader(lambda d: (6.0, 99.0), "test reader")   # its total is NOT used
     frac = batch.bound_process_memory("cuda:0")
-    # allowed = 3 held + (6 free - 2 headroom) = 7 GB, over PyTorch's 24 GB total.
-    assert frac == pytest.approx(7.0 / 24.0)
-    assert t.fractions == [(pytest.approx(7.0 / 24.0), 0)]
+    # allowed = 3 held + (6 free - 3 headroom) = 6 GB, over PyTorch's 24 GB total.
+    assert frac == pytest.approx(6.0 / 24.0)
+    assert t.fractions == [(pytest.approx(6.0 / 24.0), 0)]
 
 
 @pytest.mark.parametrize("readings", [(5.0, 1.0), (1.0, 5.0)], ids=["cache-emptied-between",
@@ -377,8 +377,8 @@ def test_the_cap_uses_the_larger_of_the_reserved_figures_taken_around_the_free_r
     t.cuda.memory_reserved = lambda i=0: int(next(seq) * GB)
     batch.set_whole_card_reader(lambda d: (6.0, 24.0), "test reader")
     frac = batch.bound_process_memory("cuda:0")
-    # allowed = 5 held (the larger reading) + (6 free - 2 headroom) = 9 GB over 24.
-    assert frac == pytest.approx(9.0 / 24.0)
+    # allowed = 5 held (the larger reading) + (6 free - 3 headroom) = 8 GB over 24.
+    assert frac == pytest.approx(8.0 / 24.0)
     assert next(seq, None) is None, "reserved was read exactly twice"
 
 
@@ -389,7 +389,8 @@ def test_the_allocator_cap_falls_back_to_pytorchs_free_when_the_reader_fails(mon
         raise OSError("nothing here")
 
     batch.set_whole_card_reader(boom, "test reader")
-    assert batch.bound_process_memory("cuda:0") == pytest.approx(10.0 / 24.0)
+    # 4 held + (8 free from PyTorch - 3 headroom) = 9 GB over 24.
+    assert batch.bound_process_memory("cuda:0") == pytest.approx(9.0 / 24.0)
     assert t.fractions[-1][1] == 0
 
 
@@ -526,13 +527,14 @@ def test_the_cap_follows_the_whole_card_free_as_another_program_comes_and_goes(
     after that program left, until Unload and Load."""
     server, engine, master, t = capacity_app
     t.total_gb, t.free_gb = 24.0, 20.0
-    free = {"gb": 3.0}                                  # another program holds the rest
+    free = {"gb": 4.0}                                  # another program holds the rest
     batch.set_whole_card_reader(lambda d: (free["gb"], 24.0), "test reader")
     _capacity(server, master)
     free["gb"] = 19.0                                   # it exits
     _capacity(server, master)
     applied = [f * 24.0 for f, _i in t.fractions]
-    assert applied == [pytest.approx(1.0 + 1.0), pytest.approx(1.0 + 17.0)], applied
+    # 1 GB held + whatever is free beyond the 3 GB headroom.
+    assert applied == [pytest.approx(1.0 + 1.0), pytest.approx(1.0 + 16.0)], applied
 
 
 def test_the_capped_at_line_is_logged_only_when_the_cap_moves_by_a_tenth_of_a_gigabyte(
@@ -552,7 +554,7 @@ def test_the_capped_at_line_is_logged_only_when_the_cap_moves_by_a_tenth_of_a_gi
     assert len(t.fractions) == 2, "it is still applied every time; only the log is quiet"
     free["gb"] = 10.2                                   # +0.2 GB since the last line
     batch.bound_process_memory("cuda:0", on_change_only=True)
-    assert len(capped()) == 2 and "(was 9.0 GB)" in capped()[1], capped()
+    assert len(capped()) == 2 and "(was 8.0 GB)" in capped()[1], capped()   # 1 held + 10 - 3
     # The load path (not on_change_only) always says so.
     batch.bound_process_memory("cuda:0")
     assert len(capped()) == 3

@@ -18467,6 +18467,10 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
   function wbDraftsSettled(kind) {
     return wbDraftQueue[kind] || Promise.resolve();
   }
+  function wbNoteDraftTotal(kind, st, n) {
+    st.draftTotal = n;
+    wbSaveShow(kind);
+  }
   async function wbSaveDraft(kind, ta) {
     const st = wbState(kind);
     if (!st.doc || !st.rev || !st.fields) return;
@@ -18496,6 +18500,7 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
         wbSyncRowPending(kind, docId, +res.pending || 0);
         if (wbStale(kind, seq)) return;
         wbDraftRecord(st, key, text);
+        wbNoteDraftTotal(kind, st, +res.pending || 0);
       } catch (e) {
         wbSay(kind, "could not stash the pending edit — it is still in the box, and Save still works", true);
       }
@@ -18560,6 +18565,7 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
         wbSyncRowPending(kind, docId, +res.pending || 0);
         if (wbStale(kind, seq)) return;
         wbDraftRecord(st, key, text);
+        wbNoteDraftTotal(kind, st, +res.pending || 0);
       } catch (e) {
         wbSay(kind, "could not stash the pending edit — it is still in the box, and Save still works", true);
       }
@@ -19795,6 +19801,7 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
             wbDocKind(kind) === "persona" ? '<span class="muted">Nothing here yet. Press ⟳ Import from SillyTavern with a SillyTavern tab open, ⬆ Import file… for a .json persona or a .md write-up, or ✚ New Persona to write one here.</span>' : '<span class="muted">Nothing imported yet. Use ⬆ Import to bring in a ' + (wbDocKind(kind) === "card" ? "character card (.png or .json)" : "worldbook") + " exported from SillyTavern.</span>"
           )
         );
+        wbShowDismissed(kind);
         return;
       }
       const wbDupName = {};
@@ -20189,18 +20196,14 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
     wrap.addEventListener("pointerup", release);
     wrap.addEventListener("pointercancel", release);
   }
+  var wbBinRead = {};
   async function wbShowDismissed(kind) {
     const box = (
       /** @type {VEl} */
       wbEl(kind, "wbLib")
     );
     if (!box) return;
-    let refs = [];
-    try {
-      refs = (await jget("/wbedit/dismissed")).refs || [];
-    } catch (e) {
-      return;
-    }
+    const read = wbBinRead[kind] = (wbBinRead[kind] || 0) + 1;
     let bar = (
       /** @type {HTMLDivElement} */
       /** @type {unknown} */
@@ -20213,6 +20216,16 @@ The last ${act} freed ${bits.join(" + ")}.` : "";
       bar.style.cssText = "margin-top:8px;padding-top:8px;border-top:1px solid var(--line)";
       box.parentNode.insertBefore(bar, box.nextSibling);
     }
+    let refs = [];
+    try {
+      refs = (await jget("/wbedit/dismissed")).refs || [];
+    } catch (e) {
+      if (read !== wbBinRead[kind]) return;
+      bar.style.display = "";
+      bar.innerHTML = `<span class="wbbad">Could not read the deleted list: ${esc(errText(e))}</span>`;
+      return;
+    }
+    if (read !== wbBinRead[kind]) return;
     if (!refs.length) {
       bar.style.display = "none";
       return;

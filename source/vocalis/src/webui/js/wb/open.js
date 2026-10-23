@@ -9,7 +9,7 @@ import { UIS } from '../util/uistate.js'; // 7.3-m13
 // imports FROM this file. js/st/tabstate.js imports nothing and exists for exactly that reason.
 import { stTabNow } from '../st/tabstate.js';
 import { wbFolded } from './edit.js'; // 7.3-m13: was a shim read
-import { jdel, jget, jpost } from '../util/http.js';
+import { errText, jdel, jget, jpost } from '../util/http.js';
 // `wbSetEdits` is called by the save path and must remain in this import list. A long list can
 // look complete while omitting one required binding.
 import {
@@ -304,6 +304,10 @@ export async function wbLoadLib(kind) {
               (wbDocKind(kind) === 'card' ? 'character card (.png or .json)' : 'worldbook') +
               ' exported from SillyTavern.</span>',
       );
+      // 🔴 THE BIN STILL SHOWS WHEN THE LIBRARY IS EMPTY (2026-10-22). It was only ever painted
+      // after a non-empty roster, so deleting the ONLY document left no bin at all on a fresh
+      // load, or last load's list without the one just deleted, and it could not be undeleted.
+      wbShowDismissed(kind);
       return;
     }
     // Two documents can share a name and image, leaving identical roster rows beside destructive
@@ -931,17 +935,16 @@ function wbPicBind(kind) {
 // 🔴 THE STATE HAS TO BE VISIBLE OR IT READS AS A BUG. He deletes a character, presses
 // ⟳ Import from SillyTavern, and nothing comes back — without this line there is no way to tell
 // "Vocalis is honoring my delete" from "the import is broken". The restore is one click.
+// Which bin read is the newest, per kind. Reads run un-awaited, so an older one can finish last; only
+// the newest paints, or a slow failed read would write "Could not read" over a good list.
+/** @type {Record<string, number>} */
+const wbBinRead = {};
+
 /** @param {string} kind */
 async function wbShowDismissed(kind) {
   const box = /** @type {VEl} */ (wbEl(kind, 'wbLib'));
   if (!box) return;
-  /** @type {string[]} */
-  let refs = [];
-  try {
-    refs = (await jget('/wbedit/dismissed')).refs || [];
-  } catch (e) {
-    return;
-  }
+  const read = (wbBinRead[kind] = (wbBinRead[kind] || 0) + 1);
   let bar = /** @type {HTMLDivElement} */ (/** @type {unknown} */ (wbEl(kind, 'wbDismissed'))); // see pg/playground.js for why the cast is doubled
   if (!bar) {
     bar = document.createElement('div');
@@ -950,6 +953,24 @@ async function wbShowDismissed(kind) {
     bar.style.cssText = 'margin-top:8px;padding-top:8px;border-top:1px solid var(--line)';
     /** @type {ParentNode} */ (box.parentNode).insertBefore(bar, box.nextSibling);
   }
+  /** @type {string[]} */
+  let refs = [];
+  try {
+    refs = (await jget('/wbedit/dismissed')).refs || [];
+  } catch (e) {
+    if (read !== wbBinRead[kind]) return; // a newer read owns the bin
+    // 🔴 UNREADABLE IS NOT EMPTY. This returned in silence, so a bin that could not be read looked
+    // exactly like a bin with nothing in it, and the rows to Undelete were simply not there.
+    // 2026-10-22, full run at 12.2.0: the browser spec waited 20 s for a binned row that never
+    // painted, with no page error and no message, so nothing said why. Said IN the bin, where the
+    // missing rows would be, not on the pane's message line: this runs un-awaited after a roster
+    // load, so a line written there would overwrite whatever the caller said next ("saved as
+    // revision 3").
+    bar.style.display = '';
+    bar.innerHTML = `<span class="wbbad">Could not read the deleted list: ${esc(errText(e))}</span>`;
+    return;
+  }
+  if (read !== wbBinRead[kind]) return; // a newer read owns the bin
   if (!refs.length) {
     bar.style.display = 'none';
     return;

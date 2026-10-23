@@ -2694,7 +2694,10 @@ ok(
     !!url && url.includes(`/wbedit/documents/${docId}/export?revision=0`),
     `Export asks for the revision on screen, not the latest (${url})`,
   );
-  await cdp.send('Network.disable');
+  // 🔴 NETWORK STAYS ON. A `Network.disable` here switched off the events `reportNetworkFailures`
+  // counts for the remaining ~4,700 lines, so a failed request after this block was never named.
+  // 2026-10-22, full run at 12.2.0: the recycle-bin row never painted and the run ended red with no
+  // failed-request line, although an earlier deliberate 401 should have printed one too.
 }
 
 // ── ⬇ Export… asks WHERE to put it (11.1.8) ──────────────────────────────────
@@ -6170,6 +6173,91 @@ ok(
   );
   // 🔴 The editor and library row must clear the pending marker together after the revert.
   ok(reverted.rowNow === false, `and the Library row drops its marker in the same breath, with no refresh (${reverted.rowNow})`);
+
+  // 🔴 A FIELD PUT BACK AFTER A REOPEN MUST LEAVE REVERT GRAYED (found in a live run, 2026-10-12).
+  // `st.draftTotal` ("drafts the server holds for this document") was set only when a document is
+  // opened and zeroed by Revert. Open a document that already holds a draft, put the field back to
+  // its stored text and leave it: the server cleared the draft and the roster row dropped its mark,
+  // but the page kept 1, so Revert stayed lit with the "typed against an earlier revision" tooltip
+  // and offered to throw away an edit that no longer existed. Re-running wbOpen is the page's own
+  // reload-then-open path: it reads the drafts answer afresh and seeds draftTotal from it.
+  // Nothing here waits on a duration: wbDraftsSettled resolves when every draft write has been
+  // answered, and NEXT_FRAME lets the repaint that follows it land.
+  const putBack = await evaluate(
+    cdp,
+    `(async () => {
+        const docId = window.__foldDoc;
+        const btn = () => document.getElementById('wbRevertTop_books');
+        const firstBox = () => document.querySelector('#wbFields_books .wbtext');
+        const serverTotal = async () => {
+            const d = await (await fetch('/wbedit/documents/' + docId)).json();
+            return (await (await fetch('/wbedit/documents/' + docId + '/draft/' + d.latest)).json()).total;
+        };
+        const original = firstBox().value;
+        // 1. A draft is saved the way a user saves one: type, then leave the box.
+        firstBox().value = 'typed, then the page is reloaded';
+        firstBox().dispatchEvent(new Event('input', {bubbles: true}));
+        firstBox().dispatchEvent(new Event('blur', {bubbles: true}));
+        await wbDraftsSettled('books');
+        const savedOnServer = await serverTotal();
+        // 2. Reload and open again: the page learns of the draft from the drafts answer alone.
+        await wbOpen('books', docId);
+        await ${NEXT_FRAME};
+        const afterOpen = {total: wbState('books').draftTotal, disabled: btn().disabled,
+                           text: firstBox().value};
+        // 3. Put the field back to what the revision stores and leave it.
+        firstBox().value = original;
+        firstBox().dispatchEvent(new Event('input', {bubbles: true}));
+        firstBox().dispatchEvent(new Event('blur', {bubbles: true}));
+        await wbDraftsSettled('books');
+        await ${NEXT_FRAME};
+        const row = document.querySelector('#wbLib_books .wbrow[data-id="' + docId + '"]');
+        return {savedOnServer, afterOpen, serverNow: await serverTotal(),
+                pageTotal: wbState('books').draftTotal, disabled: btn().disabled, title: btn().title,
+                rowMarked: row ? !!row.querySelector('.wbpend') : null};
+    })()`,
+  );
+  ok(
+    putBack.savedOnServer === 1 && putBack.afterOpen.total === 1 && putBack.afterOpen.disabled === false,
+    `reopening a document that holds a draft lights Revert, as it always did (${JSON.stringify(putBack)})`,
+  );
+  ok(
+    putBack.serverNow === 0 && putBack.rowMarked === false && putBack.pageTotal === 0,
+    `a field put back to its stored text after a reopen leaves the page's own pending count at 0, like the server's (server=${putBack.serverNow} page=${putBack.pageTotal} row=${putBack.rowMarked})`,
+  );
+  ok(
+    putBack.disabled === true && /^Nothing to revert/.test(putBack.title) && !/earlier revision/.test(putBack.title),
+    `and Revert is grayed out again with the nothing-to-revert tooltip, not the earlier-revision one (disabled=${putBack.disabled} title=${JSON.stringify(putBack.title)})`,
+  );
+
+  // The other half of "exactly as before": a draft stranded at an OLDER revision restores nothing,
+  // so the editor is clean, yet Revert must stay lit (it is the only thing that can clear it). Made
+  // the way a crash between a revision's write and its carry would leave it: a draft stamped one
+  // revision back (the document may still be at revision 1, in which case that is revision 0; the
+  // server only compares the stamp with the current revision and does not require it to exist).
+  const stranded = await evaluate(
+    cdp,
+    `(async () => {
+        const docId = window.__foldDoc;
+        const d = await (await fetch('/wbedit/documents/' + docId)).json();
+        const loc = wbState('books').fields[0].locator;
+        const put = await fetch('/wbedit/documents/' + docId + '/draft', {method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({revision: d.latest - 1, locator: loc, text: 'typed against an older revision'})});
+        await wbOpen('books', docId);
+        await ${NEXT_FRAME};
+        const btn = document.getElementById('wbRevertTop_books');
+        const lit = {latest: d.latest, put: put.status, total: wbState('books').draftTotal,
+                     disabled: btn.disabled, title: btn.title};
+        await fetch('/wbedit/documents/' + docId + '/draft', {method: 'DELETE'});     // leave the vault clean
+        await wbOpen('books', docId);
+        return lit;
+    })()`,
+  );
+  ok(
+    stranded.put === 200 && stranded.total === 1 && stranded.disabled === false && /earlier revision/.test(stranded.title),
+    `a draft stranded at an older revision still lights Revert, with the earlier-revision tooltip (${JSON.stringify(stranded)})`,
+  );
 }
 
 // Update the live diff as the user edits, showing additions and removals beside the original text.
@@ -7331,15 +7419,34 @@ ok(await evaluate(cdp, CTRL_F), 'and coming back to SillyTavern hands the key to
 // nor `running` and takes its terminal branch — the real code path, on a real timer, in seconds.
 {
   const GHOST = 'SpecGhost.png';
+  // 🔴 A BIN THAT CANNOT BE READ SAYS SO (2026-10-22). Its read failing used to leave the bin
+  // unpainted in silence, which looks exactly like an empty bin. Every `GET /wbedit/dismissed` is
+  // made to fail until the check is done (every one, not just the next: a books-pane reload still
+  // in flight reads the same list), then the real fetch is put back. The failure is said in the bin
+  // itself, not on the message line, so the next roster load (with the real fetch) repaints it.
+  await evaluate(
+    cdp,
+    `(() => { const real = window.fetch; window.__wbBinRealFetch = real; window.fetch = (u, o) =>
+        String(u).includes('/wbedit/dismissed') && !(o && o.method)
+          ? Promise.reject({ message: 'Failed to fetch' }) : real(u, o); })()`,
+  );
+  await evaluate(cdp, `wbLoadLib('cards')`);
+  ok(
+    await waitFor(cdp, `/Could not read the deleted list/.test(document.getElementById('wbDismissed_cards')?.textContent || '')`, 6000),
+    '🔴 a recycle bin that cannot be read says so, rather than looking empty',
+  );
+  await evaluate(cdp, `(() => { window.fetch = window.__wbBinRealFetch; delete window.__wbBinRealFetch; })()`);
   // The fixture is seeded through the rollback route itself, which is the only door that can put a
   // ref in the bin without deleting a document — and a ref with NO document is exactly the state
   // that guarantees the import cannot bring it back, so the failing arm is reached deterministically
   // instead of by hoping SillyTavern stays silent.
-  await evaluate(
+  const seeded = await evaluate(
     cdp,
-    `(async () => { await fetch('/wbedit/dismissed', {method:'POST',
-        headers:{'Content-Type':'application/json'}, body: JSON.stringify({ref: '${GHOST}'})}); })()`,
+    `(async () => { const r = await fetch('/wbedit/dismissed', {method:'POST',
+        headers:{'Content-Type':'application/json'}, body: JSON.stringify({ref: '${GHOST}'})});
+        return r.status + ' ' + (await r.text()).slice(0, 200); })()`,
   );
+  ok(seeded.startsWith('200'), `the recycle-bin fixture is seeded (${seeded})`);
   await evaluate(cdp, `wbLoadLib('cards')`);
   const ROW = `document.querySelector('#wbDismissed_cards [data-ref="${GHOST}"]')`;
   // ⚠️ EVERY WAIT BELOW IS WRITTEN SO IT CANNOT THROW — `?.` on each hop and `|| []` on each list.
@@ -7353,7 +7460,41 @@ ok(await evaluate(cdp, CTRL_F), 'and coming back to SillyTavern hands the key to
   // exactly that way while mutation-proving this block, where the reverted handler produced
   // `worker 'gw0' crashed` instead of six red lines naming what broke. The gesture itself settles
   // in about three seconds (one 2 s sweep poll plus round trips), so these are generous.
-  ok(await waitFor(cdp, `!!${ROW}`, 6000), 'a deleted document shows a row in the recycle bin');
+  {
+    const shown = await waitFor(cdp, `!!${ROW}`, 6000);
+    // On a miss, say which of the three it was: the server never had it, the page could not read it
+    // (and the bin says why), or the page read it and still painted nothing.
+    const why = shown
+      ? ''
+      : ` (server has it: ${await evaluate(cdp, BINNED)}; the bin says: ` +
+        `"${await evaluate(cdp, `document.getElementById('wbDismissed_cards')?.textContent || ''`)}")`;
+    ok(shown, `a deleted document shows a row in the recycle bin${why}`);
+  }
+
+  // 🔴 …AND IT SHOWS WHEN THE LIBRARY IS EMPTY (2026-10-22). The bin was painted only after a
+  // non-empty roster, so deleting the only document left nothing to Undelete it from. The roster
+  // read (the card list only: the worldbook-filter list is read first) is answered empty, once,
+  // by a stand-in; the bin read is real. The bin painted above is removed first, as on a fresh page
+  // load: left in place, its old rows would satisfy this check against the code that never repaints.
+  await evaluate(
+    cdp,
+    `(() => { document.getElementById('wbDismissed_cards')?.remove();
+      const real = window.fetch; window.fetch = (u, o) => {
+        if (String(u).includes('/wbedit/documents?kind=card') && !(o && o.method)) {
+          window.fetch = real;
+          return Promise.resolve({ status: 200, ok: true, json: async () => ({ documents: [] }) }); }
+        return real(u, o); }; })()`,
+  );
+  await evaluate(cdp, `wbLoadLib('cards')`);
+  ok(
+    await waitFor(cdp, `/Nothing imported yet/.test(document.getElementById('wbLib_cards')?.textContent || '') && !!${ROW}`, 6000),
+    '🔴 the recycle bin still shows its rows when the library is empty',
+  );
+  await evaluate(cdp, `wbLoadLib('cards')`); // the real roster back before the Undelete gesture
+  ok(
+    await waitFor(cdp, `!/Nothing imported yet/.test(document.getElementById('wbLib_cards')?.textContent || '') && !!${ROW}`, 6000),
+    'and the real roster comes back with the bin row still there',
+  );
 
   await evaluate(cdp, `${ROW}.querySelector('.wbundel').click()`);
   // 🔴 THE ROW SURVIVES THE PRESS. This is the assertion that fails against the old code, where

@@ -687,6 +687,25 @@ def test_reconnect_reports_what_the_satellite_says_it_has(client, settings_file,
     assert body["reachable"] is True
 
 
+def test_reconnect_puts_the_satellites_worker_back_into_the_running_render(client, settings_file,
+                                                                         monkeypatch):
+    """Doug, 2026-10-22: after a mid-render satellite restart, ⟳ loaded the model on the satellite and the
+    render still never gave it a chunk. Reconnect now also puts its missing workers back into the
+    live pool, handing over the plan it just declared rather than declaring it a second time."""
+    from vocalis.runtime import pool as rt_pool
+    _test_satellite(client, monkeypatch, loaded={})
+    _save(client, [{"id": "cuda:0", "enabled": True},
+                   {"id": "test-satellite:cuda:0", "enabled": True}])
+    monkeypatch.setattr(sat_mod, "apply_plan", lambda p: None)
+    calls = []
+    monkeypatch.setattr(rt_pool, "rejoin_satellite",
+                        lambda name, pool=None, plan=None: calls.append((name, plan))
+                        or ["test-satellite:cuda:0"])
+    body = client.post("/satellites/test-satellite/reconnect").get_json()
+    assert calls == [("test-satellite", {"test-satellite:cuda:0": 1})], "with the plan it just declared"
+    assert body["rejoined"] == ["test-satellite:cuda:0"]
+
+
 def test_reconnect_to_a_satellite_that_is_off_says_so_instead_of_failing(client, settings_file,
                                                                         monkeypatch):
     """Not running is the normal steady state (§11.4), so this is a 200 reporting

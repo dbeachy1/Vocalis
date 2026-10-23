@@ -34,7 +34,15 @@ SAMPLES_PER_TOKEN = 960
 MAX_BATCH = 32
 
 # Free-memory reserve for other processes sharing the device.
-RESERVE_GB = 2.0
+#
+# 🔴 KEEP A FULL GIGABYTE BETWEEN THIS AND `VRAM_FLOOR_GB` (Doug, 2026-10-22). At 2.0 against a
+# 1.5 floor, the half gigabyte between what a batch is planned to leave free and where the watchdog
+# trips was all the room the desktop programs on a shared card had to grow into. On a 24 GB card that
+# evening a batch of 17 tripped at 1.35 GB free and crawled at 1.05x realtime for over two minutes
+# (S3Gen.inference cannot be interrupted), then a second batch tripped too. The floor went to 2.0
+# because the card was already crawling at 1.35, and this went to 3.0 with it: a floor at or above
+# the reserve would trip on a batch that used exactly what it was planned to use.
+RESERVE_GB = 3.0
 
 # ── KV-cache cost model ───────────────────────────────────────────────────────
 #
@@ -110,7 +118,8 @@ GB_PER_1K_VOCODER_TOKENS = 0.8
 # Some Windows drivers satisfy GPU allocations from host memory instead of raising an OOM,
 # causing extreme slowdown. The watchdog samples free VRAM during decode; the allocator cap
 # below provides a hard limit. Keep the OOM path as a fallback on systems that do raise.
-VRAM_FLOOR_GB = 1.5
+# 2.0 since 2026-10-22 (was 1.5): see `RESERVE_GB`, which must stay a gigabyte above it.
+VRAM_FLOOR_GB = 2.0
 
 # `mem_get_info` reports total free memory, not the largest contiguous allocation. Fragmentation
 # can therefore trigger system-memory fallback while the reported free total remains high. Bound
@@ -126,7 +135,9 @@ VRAM_FLOOR_GB = 1.5
 # The allocator cap addresses fragmentation-related paging that a total-free-memory threshold
 # cannot detect. High GPU utilization alone is not a stall signal; compare PCIe and memory
 # controller activity with a healthy pass before diagnosing paging.
-PROCESS_VRAM_HEADROOM_GB = 2.0
+# 3.0 since 2026-10-22 (was 2.0), with `RESERVE_GB`: at the watchdog's 2.0 floor, a cap leaving
+# only 2.0 free would trip every time torch legitimately grew to its own cap.
+PROCESS_VRAM_HEADROOM_GB = 3.0
 
 # Per-card process-memory ceiling configured by the client. It expresses a limit on what this
 # process may hold, not a target or reservation. Zero means uncapped; each card has its own cap.

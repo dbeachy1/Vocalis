@@ -5,7 +5,7 @@ PRODUCT_NAME = "Vocalis"
 # Bump this on every deploy; the value is shown in the startup banner, /health, and login page.
 # Keep release values monotonic, including milestone builds.
 
-VERSION = "12.1.1"
+VERSION = "12.2.1"
 
 
 class VocalisError(RuntimeError):
@@ -3173,16 +3173,22 @@ class WorkerPool:
             raise VocalisError("WorkerPool: no workers could be loaded on any device "
                              "(out of memory?). Use fewer --workers, --gpus cpu, or free VRAM.")
         self.sr = self._models[self.workers[0]["id"]].sr
+        # Satellite devices with no worker because that machine was not answering: skipped here,
+        # or dropped later by `_handle_job_error`. `rejoin` brings them back. OOM drops are not
+        # in it: a card that ran out of memory stays out of this pool.
+        self._sat_gone = set(satellites_asleep)
+        self._last_wid = wid - 1
         self._init_pool_state()
 
     def __len__(self):
         return len(self.workers)
 
     def _drop_worker(self, wid: int) -> None:
-        """Permanently remove a worker from the pool and free its replica. Called
-        when a worker OOMs or its satellite becomes unreachable at runtime.
-        Removing it from self.workers means the next run_chunks() won't resurrect
-        it (fixes the 'dropped worker reappears' bug)."""
+        """Remove a worker from the pool and free its replica. Called when a worker
+        OOMs or its satellite becomes unreachable at runtime. Removing it from
+        self.workers means the next run_chunks() won't resurrect it (fixes the
+        'dropped worker reappears' bug); a satellite comes back only through `rejoin`,
+        with a new worker and a fresh replica."""
         with self._lock:
             self.workers = [w for w in self.workers if w["id"] != wid]
             model = self._models.pop(wid, None)
@@ -3212,6 +3218,85 @@ class WorkerPool:
         self._started       = False
         self._threads       = []
         self._shutdown_flag = False
+        self._rejoin_lock   = threading.Lock()
+        self._sat_gone      = getattr(self, "_sat_gone", set())
+        self._sat_not_before = {}         # dev -> monotonic time before which it is not taken back
+        self._clock         = getattr(self, "_clock", time.monotonic)
+
+    # A satellite dropped because it TIMED OUT (it answered, then crawled; see
+    # `satellite_client.SatelliteTimedOut`) waits this long before it is offered for rejoin. It
+    # still answers health, so without the wait the watcher would take it back within seconds and
+    # hand it another chunk to crawl on. ⟳ Reconnect skips the wait: pressing it is the decision.
+    REJOIN_AFTER_TIMEOUT_S = 300.0
+
+    def satellites_gone(self, include_waiting: bool = False) -> dict:
+        """`{satellite name: [devices]}` whose workers are missing because that machine stopped
+        answering (or was off when this pool was built). Empty when every satellite is in. A device
+        still inside its after-timeout wait is left out unless `include_waiting`."""
+        now = self._clock()
+        with self._lock:
+            gone = sorted(d for d in self._sat_gone
+                          if include_waiting or self._sat_not_before.get(d, 0.0) <= now)
+        out = {}
+        for dev in gone:
+            out.setdefault(dev.split(":", 1)[0], []).append(dev)
+        return out
+
+    def _note_satellite_gone(self, dev: str, exc) -> None:
+        """Record a satellite device as gone (under `_lock`), with the after-timeout wait when it
+        timed out rather than stopped answering."""
+        from satellite_client import SatelliteTimedOut
+        with self._lock:
+            self._sat_gone.add(dev)
+            if isinstance(exc, SatelliteTimedOut):
+                self._sat_not_before[dev] = self._clock() + self.REJOIN_AFTER_TIMEOUT_S
+            else:
+                self._sat_not_before.pop(dev, None)
+
+    def rejoin(self, dev: str, force: bool = False) -> bool:
+        """Put a returning satellite's worker back into this pool, mid-render if one is running.
+
+        🔴 A SATELLITE THAT COMES BACK HAS TO GET WORK AGAIN. Doug, 2026-10-22: a desktop's satellite
+        was restarted during a book render; Vocalis dropped its worker ("no resurrection"), the satellite
+        came back up and showed online, and ⟳ reloaded the model there, but not one more chunk
+        went to it for the rest of the render, because nothing ever put a worker back into the
+        pool. Every worker pulls from the one shared queue, so a worker added here picks up the
+        render's remaining chunks like any other.
+
+        Only devices in `_sat_gone`. The model is loaded outside the pool's locks (a remote load
+        is network round trips); `_rejoin_lock` keeps the 10 s watcher and ⟳ from adding the same
+        device twice. `force` (⟳) skips the after-timeout wait. Returns True when a worker was
+        added."""
+        with self._rejoin_lock:
+            with self._lock:
+                if dev not in self._sat_gone or self.poisoned:
+                    return False
+                if not force and self._sat_not_before.get(dev, 0.0) > self._clock():
+                    return False
+            from satellite_client import SatelliteError    # only satellite devices reach here
+            try:
+                model = load_model(dev)
+            except SatelliteError as exc:                  # still down is the expected answer
+                if not _satellite_asleep(exc):
+                    logger.warning(f"[{dev}] could not rejoin the pool: {exc!r}")
+                return False
+            with self._start_lock:
+                if self._shutdown_flag:
+                    return False                           # this pool is being replaced
+                with self._lock:
+                    wid = max([w["id"] for w in self.workers] + [getattr(self, "_last_wid", -1)]) + 1
+                    self._last_wid = wid
+                    worker = {"id": wid, "device": dev}
+                    self._models[wid] = model
+                    self.workers.append(worker)
+                    self._sat_gone.discard(dev)
+                    self._sat_not_before.pop(dev, None)
+                if self._started:
+                    t = threading.Thread(target=self._worker_entry, args=(worker,), daemon=True)
+                    self._threads.append(t)
+                    t.start()
+        logger.info(f"worker {wid} → {dev}: satellite is back — rejoined the pool")
+        return True
 
     def _ensure_started(self):
         """Spawn the persistent worker threads on first use — one per replica, each
@@ -3954,12 +4039,16 @@ class WorkerPool:
             batch.progress.set()
             if is_oom or satellite_failed_over:
                 self._drop_worker(worker["id"])
+                if not is_oom:
+                    self._note_satellite_gone(dev, exc)   # `rejoin` brings it back
                 return True
             return False
 
         if is_oom or satellite_failed_over:
             self._requeue(job)                 # a survivor picks it up
-            self._drop_worker(worker["id"])    # frees the replica; no resurrection
+            self._drop_worker(worker["id"])    # frees the replica; an OOM card stays out
+            if not is_oom:
+                self._note_satellite_gone(dev, exc)    # `rejoin` brings it back
             reason = "OOM" if is_oom else "satellite_unreachable"
             msg = (f"[{dev}] {reason} on chunk {index + 1}{where}: {exc!r} — "
                    f"dropping this worker; its chunk was requeued for a survivor.")
@@ -4152,6 +4241,7 @@ class WorkerPool:
         pending work) and free their replicas. Call when the cached pool is replaced
         or the model is unloaded, so worker threads and VRAM don't leak."""
         with self._start_lock:
+            self._shutdown_flag = True     # also when never started: a rejoin in flight must not add
             if not self._started:
                 with self._lock:
                     self.workers, self._models = [], {}

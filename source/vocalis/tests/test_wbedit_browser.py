@@ -582,6 +582,11 @@ CHECKS = (
     'and Cancel keeps the unsaved text',
     'confirming puts the stored text back',
     'the draft is gone from the vault and the button grays out again',
+    # A field put back after a reopen: the page's own pending count must follow the server's.
+    'reopening a document that holds a draft lights Revert, as it always did',
+    "a field put back to its stored text after a reopen leaves the page's own pending count at 0",
+    'and Revert is grayed out again with the nothing-to-revert tooltip, not the earlier-revision one',
+    'a draft stranded at an older revision still lights Revert, with the earlier-revision tooltip',
 
     # §6.3 — the live typing diff. The green half had never been drawn: `wbDiff` returned an
     # `after` the pane computed and threw away, so the CSS for it shipped unreachable.
@@ -710,7 +715,11 @@ CHECKS = (
     '🔴 Ctrl+F on another tab is LEFT ALONE, so the browser opens its own find',
     'and coming back to SillyTavern hands the key to the editor again',
 
+    '🔴 a recycle bin that cannot be read says so, rather than looking empty',
+    'the recycle-bin fixture is seeded',
     'a deleted document shows a row in the recycle bin',
+    '🔴 the recycle bin still shows its rows when the library is empty',
+    'and the real roster comes back with the bin row still there',
     '🔴 pressing Undelete keeps the row on screen and says it is working',
     '…and disables ✕ Delete permanently beside it, so a purge cannot land mid-gesture',
     'the ref really is un-declined while the import runs',

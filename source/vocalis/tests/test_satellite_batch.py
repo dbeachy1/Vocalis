@@ -361,14 +361,24 @@ def test_the_card_reserve_is_not_charged_against_the_cap(monkeypatch):
     assert batch.spend_budget_gb("cuda:0") == 8.0
 
 
+def test_a_full_gigabyte_separates_what_a_batch_leaves_free_from_where_the_watchdog_trips():
+    """2026-10-22: the batch planner and the allocator cap aimed to leave 2.0 GB free and the
+    watchdog tripped at 1.5, so half a gigabyte of desktop programs growing on a shared desktop card
+    tripped two batches and crawled one for two minutes. Raising the floor alone would make it trip
+    on a batch that used exactly what was planned; both margins must stay a gigabyte above it."""
+    assert batch.VRAM_FLOOR_GB >= 2.0
+    assert batch.RESERVE_GB - batch.VRAM_FLOOR_GB >= 1.0
+    assert batch.PROCESS_VRAM_HEADROOM_GB - batch.VRAM_FLOOR_GB >= 1.0
+
+
 def test_the_card_still_binds_when_it_is_tighter_than_the_cap(monkeypatch):
     """Both limits apply, and the smaller wins. A generous cap does not license spending VRAM a
     co-tenant is already holding — that is what `RESERVE_GB` and the watchdog are for, and the cap
     does not get to override them."""
-    monkeypatch.setattr(batch, "free_gb", lambda d: 5.0)       # 3 spendable after the reserve
+    monkeypatch.setattr(batch, "free_gb", lambda d: 6.0)       # 3 spendable after the 3 GB reserve
     monkeypatch.setattr(batch, "reserved_gb", lambda d: 0.0)
     batch.set_vram_cap(40)
-    assert batch.spend_budget_gb("cuda:0") == 3.0
+    assert batch.spend_budget_gb("cuda:0") == 6.0 - batch.RESERVE_GB == 3.0
 
 
 def test_the_vocoder_slice_is_capped_too(monkeypatch):
@@ -1220,9 +1230,9 @@ def test_torch_is_capped_so_the_driver_is_never_asked_for_the_overflow(monkeypat
                         lambda: _fake_torch(free_gb=8.0, total_gb=24.0, reserved_gb=4.0,
                                             calls=calls))
     frac = batch.bound_process_memory("cuda:0")
-    # torch already holds 4 GB; of the 8 GB free, 2 stays outside its reach for the desktop.
-    assert calls == [(pytest.approx(10.0 / 24.0), 0)], f"nothing was capped: {calls}"
-    assert frac == pytest.approx(10.0 / 24.0)
+    # torch already holds 4 GB; of the 8 GB free, 3 stays outside its reach for the desktop.
+    assert calls == [(pytest.approx(9.0 / 24.0), 0)], f"nothing was capped: {calls}"
+    assert frac == pytest.approx((4.0 + 8.0 - batch.PROCESS_VRAM_HEADROOM_GB) / 24.0)
 
 
 def test_the_cap_leaves_the_desktop_its_headroom_even_when_the_card_is_tight(monkeypatch):

@@ -295,6 +295,282 @@ def test_unreachable_satellite_single_chunk_moves_to_local_cuda(monkeypatch):
     assert [w["device"] for w in pool.workers] == ["cuda:0"]
 
 
+def test_a_satellite_that_comes_back_rejoins_the_render_in_progress(monkeypatch):
+    """Doug, 2026-10-22: a satellite was restarted mid-render; its worker was dropped, it came
+    back and showed online, and not one more chunk went to it. After `rejoin`, the SAME render's
+    remaining chunks reach the new satellite worker, and the satellite is no longer listed gone."""
+    from satellite_client import SatelliteUnreachable
+
+    pool = _fake_pool(2)
+    old_sat, new_sat, local = object(), object(), object()
+    pool.workers[0]["device"] = 'test-satellite:cuda:0'
+    pool.workers[1]["device"] = "cuda:0"
+    pool._models = {0: old_sat, 1: local}
+    monkeypatch.setattr(torch.cuda, "set_device", lambda _idx: None)
+    monkeypatch.setattr(tts_utils, "device_mem_gb", lambda _dev: (None, None))
+    monkeypatch.setattr(tts_utils, "load_model", lambda dev: new_sat)
+    dropped, rejoined_rendered = threading.Event(), threading.Event()
+    rendered_by = {}
+
+    def make_fn(model, text, *args):
+        def render():
+            if model is old_sat:
+                raise SatelliteUnreachable("satellite stopped")
+            if model is new_sat:
+                rejoined_rendered.set()
+            else:
+                # The local card holds back until the rejoined satellite has taken a chunk, so
+                # the assertion below cannot pass by the local card simply finishing everything.
+                assert rejoined_rendered.wait(10)
+            rendered_by[text] = model
+            return torch.zeros(1, 200)
+        return render
+
+    def generate(text, make_fn, sr, label="", out=None):
+        return make_fn(text)(), len(text), 0.1, False
+
+    monkeypatch.setattr(tts_utils, "make_generate_fn", make_fn)
+    monkeypatch.setattr(tts_utils, "generate_with_retry", generate)
+    real_handle = pool._handle_job_error
+
+    # Signalled when `_handle_job_error` RETURNS, not from inside `_drop_worker`: the device is
+    # added to `_sat_gone` after the drop, so a signal from the drop let the assertion below race
+    # the worker thread (proved by holding the worker between the two; the check then saw {}).
+    def handle(*args):
+        gone = real_handle(*args)
+        if gone:
+            dropped.set()
+        return gone
+    monkeypatch.setattr(pool, "_handle_job_error", handle)
+
+    saved, save = _saver()
+    pool._started = True
+    batch = pool.submit([(i, f"c{i}") for i in range(6)], GenParams(), save=save, total=6)
+    pool._started = False
+    pool._ensure_started()
+    assert dropped.wait(10), "the satellite's first chunk fails and its worker leaves the pool"
+    assert pool.satellites_gone() == {"test-satellite": ['test-satellite:cuda:0']}
+
+    assert pool.rejoin('test-satellite:cuda:0') is True
+    pool.collect(batch, stall_timeout_s=10)
+
+    assert set(saved) == set(range(6))
+    assert new_sat in rendered_by.values(), "the returning satellite must get chunks of THIS render"
+    assert pool.satellites_gone() == {}
+    assert sorted(w["device"] for w in pool.workers) == ["cuda:0", 'test-satellite:cuda:0']
+    assert len({w["id"] for w in pool.workers}) == 2, "a rejoined worker gets a fresh id"
+
+
+def test_rejoin_adds_nothing_unless_the_satellite_left_and_now_answers(monkeypatch):
+    """Only a device that left because its machine stopped answering comes back, once, and only
+    when it answers; a pool being replaced takes nobody back."""
+    from satellite_client import SatelliteUnreachable
+
+    pool = _fake_pool(1)
+    pool.workers[0]["device"] = "cuda:0"
+    loads = []
+
+    def load(dev):
+        loads.append(dev)
+        if len(loads) == 1:
+            raise SatelliteUnreachable("still off")
+        return object()
+    monkeypatch.setattr(tts_utils, "load_model", load)
+
+    assert pool.rejoin('test-satellite:cuda:0') is False and loads == [], "never left: no load"
+    pool._sat_gone.add('test-satellite:cuda:0')
+    assert pool.rejoin('test-satellite:cuda:0') is False, "still down: stays out, stays gone"
+    assert pool.satellites_gone() == {"test-satellite": ['test-satellite:cuda:0']}
+    assert pool.rejoin('test-satellite:cuda:0') is True
+    assert pool.rejoin('test-satellite:cuda:0') is False, "a second call adds no second worker"
+    assert [w["device"] for w in pool.workers] == ["cuda:0", 'test-satellite:cuda:0']
+
+    pool._sat_gone.add('test-satellite:cuda:1')
+    pool._shutdown_flag = True
+    assert pool.rejoin('test-satellite:cuda:1') is False, "a pool being replaced takes nobody back"
+
+
+class _GonePool:
+    """The three things `rejoin_satellite` and the watcher ask of a pool, recorded."""
+    poisoned = False
+    _shutdown_flag = False
+
+    def __init__(self, gone):
+        self.gone = dict(gone)
+        self.worker_counts = {'test-satellite:cuda:0': 1, 'test-satellite:cuda:1': 1,
+                              "other:cuda:0": 1, "cuda:0": 1}
+        self.rejoined = []
+        self.fail = False
+
+    def satellites_gone(self, include_waiting=False):
+        return {k: list(v) for k, v in self.gone.items() if v}
+
+    def rejoin(self, dev, force=False):
+        self.rejoined.append((dev, force) if force else dev)
+        if self.fail:
+            return False
+        self.gone = {k: [d for d in v if d != dev] for k, v in self.gone.items()}
+        return True
+
+
+def test_rejoin_declares_that_satellites_whole_plan_then_adds_its_missing_workers(monkeypatch):
+    """The plan sent is that satellite's FULL plan from the pool (a card still working there must
+    not be zeroed by a plan naming only the missing one), never another satellite's."""
+    from vocalis.runtime import pool as rt_pool, satellites as sat
+    pool = _GonePool({"test-satellite": ['test-satellite:cuda:1']})
+    monkeypatch.setattr(rt_pool, "_pool", pool)
+    plans = []
+    monkeypatch.setattr(sat, "health", lambda name: {"reachable": True})
+    monkeypatch.setattr(sat, "apply_plan", lambda p: plans.append(dict(p)))
+
+    assert rt_pool.rejoin_satellite("test-satellite", pool) == ['test-satellite:cuda:1']
+    assert plans == [{'test-satellite:cuda:0': 1, 'test-satellite:cuda:1': 1}]
+    assert pool.rejoined == ['test-satellite:cuda:1']
+
+
+def test_rejoin_does_nothing_while_the_satellite_is_down_or_nothing_is_missing(monkeypatch):
+    from vocalis.runtime import pool as rt_pool, satellites as sat
+    asked = []
+    monkeypatch.setattr(sat, "health", lambda name: asked.append(name) or {"reachable": False})
+    monkeypatch.setattr(sat, "apply_plan", lambda p: pytest.fail("no plan for a satellite that is off"))
+
+    pool = _GonePool({"test-satellite": ['test-satellite:cuda:0']})
+    monkeypatch.setattr(rt_pool, "_pool", pool)
+    assert rt_pool.rejoin_satellite("test-satellite", pool) == []
+    assert pool.rejoined == []
+    assert rt_pool.rejoin_satellite("other", pool) == []
+    assert asked == ["test-satellite"], "a satellite with nothing missing is not even asked"
+
+
+def test_the_watcher_rejoins_while_its_pool_is_live_and_stops_when_it_is_replaced(monkeypatch):
+    """No page has to be open: the pool's own watcher tries every missing satellite each interval,
+    and ends when the pool is no longer the live one."""
+    from vocalis.runtime import pool as rt_pool, satellites as sat
+    pool = _GonePool({"test-satellite": ['test-satellite:cuda:0']})
+    monkeypatch.setattr(sat, "health", lambda name: {"reachable": True})
+    monkeypatch.setattr(sat, "apply_plan", lambda p: None)
+    monkeypatch.setattr(rt_pool, "_pool", pool)
+    ticks = []
+
+    def wait(seconds):
+        assert seconds == rt_pool.REJOIN_EVERY_S
+        ticks.append(seconds)
+        if len(ticks) == 2:
+            rt_pool._pool = None                     # replaced: the next check ends the thread
+
+    rt_pool._rejoin_watch(pool, wait=wait)
+    assert pool.rejoined == ['test-satellite:cuda:0']
+    assert len(ticks) == 2
+
+
+def test_reconnect_rejoins_only_cards_its_saved_plan_still_asks_for_and_skips_the_wait(monkeypatch):
+    """⟳ has just declared the SAVED plan itself, so nothing is declared again; a card unticked
+    since the pool was built (plan 0) is not put back; and the after-timeout wait is skipped."""
+    from vocalis.runtime import pool as rt_pool, satellites as sat
+    pool = _GonePool({"test-satellite": ['test-satellite:cuda:0', 'test-satellite:cuda:1']})
+    monkeypatch.setattr(rt_pool, "_pool", pool)
+    monkeypatch.setattr(sat, "health", lambda name: {"reachable": True})
+    monkeypatch.setattr(sat, "apply_plan", lambda p: pytest.fail("⟳ already declared its plan"))
+
+    added = rt_pool.rejoin_satellite("test-satellite", plan={'test-satellite:cuda:0': 1,
+                                                             'test-satellite:cuda:1': 0})
+    assert added == ['test-satellite:cuda:0']
+    assert pool.rejoined == [('test-satellite:cuda:0', True)], "forced, and only the ticked card"
+
+
+def test_the_watcher_backs_off_a_satellite_that_answers_but_will_not_load(monkeypatch):
+    """The desktop owner is gaming on the satellite's card: it answers, the load fails. It is
+    asked again less often each time, up to REJOIN_BACKOFF_MAX_S, and logged once, not every 10 s."""
+    from vocalis.runtime import pool as rt_pool, satellites as sat
+    pool = _GonePool({"test-satellite": ['test-satellite:cuda:0']})
+    pool.fail = True
+    monkeypatch.setattr(sat, "health", lambda name: {"reachable": True})
+    monkeypatch.setattr(sat, "apply_plan", lambda p: None)
+    monkeypatch.setattr(rt_pool, "_pool", pool)
+    warnings = []
+    monkeypatch.setattr(rt_pool.logger, "warning", lambda m, *a, **k: warnings.append(m))
+    clock = {"t": 0.0}
+
+    def wait(seconds):
+        clock["t"] += seconds
+        if clock["t"] >= 3000:
+            rt_pool._pool = None
+
+    rt_pool._rejoin_watch(pool, wait=wait, now=lambda: clock["t"])
+    attempts = len(pool.rejoined)
+    # Every 10 s for 3,000 s would be 300 attempts; doubling from 20 s to the 600 s cap is ~10.
+    assert 5 <= attempts <= 12, attempts
+    assert len(warnings) == 1, warnings
+
+
+def test_a_backoff_is_forgotten_once_the_satellite_is_back_in(monkeypatch):
+    """Backed off to the cap, then ⟳ puts it back; when it drops again later, the watcher's first
+    attempt comes on the next tick, not after the stale 600 s wait."""
+    from vocalis.runtime import pool as rt_pool, satellites as sat
+    pool = _GonePool({"test-satellite": ['test-satellite:cuda:0']})
+    pool.fail = True
+    monkeypatch.setattr(sat, "health", lambda name: {"reachable": True})
+    monkeypatch.setattr(sat, "apply_plan", lambda p: None)
+    monkeypatch.setattr(rt_pool, "_pool", pool)
+    clock = {"t": 0.0}
+    seen = {}
+
+    def wait(seconds):
+        clock["t"] += seconds
+        if clock["t"] == 3000:                       # backed off to the cap by now; ⟳ puts it back
+            pool.gone, pool.fail = {}, False
+        elif clock["t"] == 3010:                     # one tick later it drops again
+            pool.gone = {"test-satellite": ['test-satellite:cuda:0']}
+            seen["before"] = len(pool.rejoined)
+        elif clock["t"] >= 3020:
+            rt_pool._pool = None
+
+    rt_pool._rejoin_watch(pool, wait=wait, now=lambda: clock["t"])
+    assert len(pool.rejoined) == seen["before"] + 1, "tried on the very next tick"
+    assert pool.gone == {"test-satellite": []}
+
+
+def test_a_satellite_that_timed_out_waits_before_it_is_taken_back_unless_reconnect_says_so(monkeypatch):
+    """A crawling satellite still answers health; without the wait the watcher would hand it
+    another chunk to crawl on within seconds. A satellite that stopped answering has no wait."""
+    from satellite_client import SatelliteTimedOut, SatelliteUnreachable
+    pool = _fake_pool(1)
+    pool.workers[0]["device"] = "cuda:0"
+    clock = {"t": 1000.0}
+    pool._clock = lambda: clock["t"]
+    monkeypatch.setattr(tts_utils, "load_model", lambda dev: object())
+
+    pool._note_satellite_gone('test-satellite:cuda:0', SatelliteTimedOut("crawled"))
+    assert pool.satellites_gone() == {}, "inside the wait it is not offered to the watcher"
+    assert pool.satellites_gone(include_waiting=True) == {"test-satellite": ['test-satellite:cuda:0']}
+    assert pool.rejoin('test-satellite:cuda:0') is False
+    clock["t"] += pool.REJOIN_AFTER_TIMEOUT_S
+    assert pool.satellites_gone() == {"test-satellite": ['test-satellite:cuda:0']}
+    assert pool.rejoin('test-satellite:cuda:0') is True
+
+    pool._note_satellite_gone('test-satellite:cuda:1', SatelliteTimedOut("crawled"))
+    assert pool.rejoin('test-satellite:cuda:1', force=True) is True, "⟳ skips the wait"
+
+    pool._note_satellite_gone('test-satellite:cuda:2', SatelliteUnreachable("switched off"))
+    assert pool.satellites_gone() == {"test-satellite": ['test-satellite:cuda:2']}, "no wait"
+
+
+def test_an_oom_drop_is_not_offered_for_rejoin(monkeypatch):
+    """A card that ran out of memory stays out of the pool; only a satellite that stopped
+    answering is remembered as gone."""
+    import io
+    pool = _fake_pool(2)
+    pool.workers[0]["device"] = 'test-satellite:cuda:0'
+    pool.workers[1]["device"] = "cuda:0"
+    monkeypatch.setattr(tts_utils, "device_mem_gb", lambda _dev: (None, None))
+    batch = tts_utils._Batch(GenParams(), tts_utils.BATCH, None, 1, None, None, None)
+    batch.pending = 1
+    oom = torch.cuda.OutOfMemoryError("CUDA out of memory")
+    assert pool._handle_job_error(pool.workers[0], tts_utils._Job(0, "one", batch), oom,
+                                  'test-satellite:cuda:0', io.StringIO())
+    assert pool.satellites_gone() == {}
+
+
 def test_run_chunks_persistent_non_oom_chunk_isolated_others_saved(monkeypatch):
     """A chunk that always fails (non-OOM) is given up on after MAX_CHUNK_ATTEMPTS,
     but every OTHER chunk is saved and run_chunks raises (so the hole surfaces)."""

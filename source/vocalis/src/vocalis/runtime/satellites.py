@@ -638,9 +638,13 @@ def resync(name: str) -> dict:
 
     logger.info(f"satellite {name!r}: reconnect is declaring {plan}")
     apply_plan(plan)
+    # 🔴 AND PUT ITS WORKERS BACK INTO THE LIVE POOL (2026-10-22). Loading the model on the
+    # satellite was all this did, so after a mid-render restart ⟳ showed the satellite loaded and online
+    # while the render never gave it another chunk: its worker had left the pool for good.
+    rejoined = rt_pool.rejoin_satellite(name, plan=plan)
     h = health(name)
     return {"plan": plan, "reachable": bool(h.get("reachable")),
-            "loaded": dict(h.get("workers") or {})}
+            "loaded": dict(h.get("workers") or {}), "rejoined": rejoined}
 
 
 def unload_all() -> None:

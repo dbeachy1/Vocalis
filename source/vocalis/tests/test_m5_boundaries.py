@@ -355,7 +355,12 @@ handlers, not just to clear a failure."""
     # It wraps the satellite reconcile so a failure is logged with its traceback and the busy flag
     # is cleared and a pending newer plan still applied. It cannot touch the vault: it surrounds
     # only `satellites.reconcile`, and `VaultAuthError` (a BaseException) passes through it.
-    assert n <= 173, (
+    # 174, October 22, 2026: one reviewed handler in `runtime/pool.py::_rejoin_watch`. It keeps
+    # the satellite-rejoin watcher alive across one failed attempt (logged with its traceback), so
+    # a returning satellite is still taken back on the next tick. It surrounds only
+    # `rejoin_satellite` (a health request, a plan declaration and a remote replica load), never
+    # the vault, and `VaultAuthError` passes through it.
+    assert n <= 174, (
         f"{n} broad `except Exception:` handlers in src/. A wrong key could hide a failure if "
         f"VaultAuthError were caught; review new handlers before raising the ceiling. "
         f"Match handlers by function and body across refactors, not by file. "

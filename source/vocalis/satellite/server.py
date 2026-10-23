@@ -25,7 +25,7 @@ sys.path.insert(0, str(HERE))
 
 # The version is diagnostic only; clients select optional routes through `capabilities` and protocol fields.
 # Keep capability discovery backward-compatible so older clients can continue using single-chunk rendering.
-SATELLITE_VERSION = "2.1.0"
+SATELLITE_VERSION = "2.1.1"
 REQUIRES_SERVER = "5.3-m1"          # informational minimum; startup compatibility is not enforced
 
 # The line that ends one run in the log, so the next start is easy to find (Doug, October 11, 2026: "log me out a

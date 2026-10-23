@@ -437,7 +437,7 @@ def test_satellite_and_main_server_agree_on_what_a_client_hang_up_looks_like():
     assert server._WerkzeugToLoguru._TLS_OURS == main["_KEEP"]
 
 
-_START_LINE = "Vocalis satellite 2.1.0 starting: loading the speech libraries, which takes a few seconds"
+_START_LINE = "Vocalis satellite 2.1.1 starting: loading the speech libraries, which takes a few seconds"
 
 
 def _satellite_source():

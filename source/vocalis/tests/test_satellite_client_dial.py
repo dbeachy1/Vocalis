@@ -122,3 +122,57 @@ def test_gpustats_pins_both_timeout_halves_under_poll_up_s(monkeypatch):
     connect_s, read_s = captured["timeout"]
     assert connect_s < satstats.POLL_UP_S, "the connect half must fail well inside one 4 Hz tick"
     assert read_s < satstats.POLL_UP_S, "the read half must fail well inside one 4 Hz tick"
+
+
+class _BrokenStream:
+    """A 200 reply whose body fails after the headers, the way `iter_content` reports it."""
+    status_code = 200
+    headers = {"Content-Type": "application/octet-stream"}
+
+    def __init__(self, exc):
+        self.exc = exc
+
+    def iter_content(self, chunk_size=None):
+        raise self.exc
+        yield b""                                           # pragma: no cover — a generator
+
+    def close(self):
+        pass
+
+
+@pytest.mark.parametrize("exc, kind", [
+    # A read timeout mid-body: `iter_content` wraps urllib3's ReadTimeoutError in ConnectionError.
+    (requests.exceptions.ConnectionError(__import__("urllib3").exceptions.ReadTimeoutError(
+        None, None, "Read timed out.")), "SatelliteTimedOut"),
+    (requests.exceptions.ChunkedEncodingError("Connection broken: peer closed"), "SatelliteUnreachable"),
+], ids=["crawled-part-way", "stopped-part-way"])
+def test_a_reply_that_fails_part_way_is_reported_as_the_satellite(monkeypatch, exc, kind):
+    """2026-10-22: a satellite that stopped or crawled after its first frame raised a raw
+    `requests` error, so the pool kept the worker and retried on it. It is now the same satellite
+    error as a failure before the reply: dropped for a survivor, and taken back when it recovers
+    (after the five-minute wait when it crawled)."""
+    monkeypatch.setattr(sc, "ipv4_url", lambda url: 'https://192.0.2.182:7880')
+    monkeypatch.setattr(requests, "post", lambda *a, **k: _BrokenStream(exc))
+    status, frames = _client()._post_stream("/satellite/stream", b"{}", sc.READ_TIMEOUT)
+    assert status == 200
+    with pytest.raises(sc.SatelliteUnreachable) as caught:
+        list(frames)
+    assert type(caught.value).__name__ == kind
+
+
+def test_a_plain_reply_that_times_out_after_its_headers_is_timed_out_and_keeps_the_address(
+        monkeypatch):
+    """`_post` is not streamed: `requests.post` reads the body itself, and a read timeout after
+    the headers arrives as a ConnectionError wrapping urllib3's ReadTimeoutError. That is the
+    satellite being slow, not gone: SatelliteTimedOut, and the dial cache is not thrown away."""
+    import urllib3
+    monkeypatch.setattr(sc, "ipv4_url", lambda url: 'https://192.0.2.182:7880')
+
+    def post(*a, **k):
+        raise requests.exceptions.ConnectionError(
+            urllib3.exceptions.ReadTimeoutError(None, None, "Read timed out."))
+    monkeypatch.setattr(requests, "post", post)
+    client = _client()
+    with pytest.raises(sc.SatelliteTimedOut):
+        client._post("/satellite/render", b"{}", sc.READ_TIMEOUT)
+    assert client._dial == 'https://192.0.2.182:7880', "a slow satellite keeps its address"

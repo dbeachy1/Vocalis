@@ -76,9 +76,110 @@ def get_pool(devices: list, workers) -> WorkerPool:
                     _sat.apply_plan(dict(sig))
                 _pool = WorkerPool(devices, workers)
                 _pool_sig = sig
+                if any(not str(d).startswith("cuda") and str(d) != "cpu" for d in devices):
+                    threading.Thread(target=_rejoin_watch, args=(_pool,), daemon=True,
+                                     name="vocalis-satellite-rejoin").start()
             finally:
                 _model_loading = False
         return _pool
+
+
+# How often a pool with a missing satellite asks whether it is back. One health request per
+# missing satellite per interval, and nothing at all while every satellite is in.
+REJOIN_EVERY_S = 10.0
+
+
+# A satellite that ANSWERS but whose card will not load (the desktop owner is gaming on it, the
+# card is gone, a load error) is not asked every 10 s for the rest of the pool's life: each failed
+# attempt doubles the wait, up to this. One that is simply off costs only a health request, so its
+# retries stay at `REJOIN_EVERY_S`.
+REJOIN_BACKOFF_MAX_S = 600.0
+
+
+def _pool_live(pool) -> bool:
+    # Read WITHOUT `_pool_lock`, as `model_ready()` does: `get_pool` holds that lock for a whole
+    # pool build (minutes). A rebuild sets `_pool` to None first.
+    return _pool is pool and not getattr(pool, "_shutdown_flag", False) \
+        and not getattr(pool, "poisoned", False)
+
+
+def _rejoin(name: str, pool, plan=None):
+    """One attempt for satellite `name`. Returns `(reachable, wanted, added)`.
+
+    Without `plan` (the watcher): only devices past their after-timeout wait; that satellite's
+    full plan from the pool is declared first. With `plan` (⟳ Reconnect, which has just declared
+    the SAVED plan itself): nothing is declared again, the wait is skipped, and a device the plan
+    now asks zero of is left out, so ⟳ never puts back a card unticked since the pool was built."""
+    from satellite_client import split_device
+    from vocalis.runtime import satellites as _sat
+    gone = pool.satellites_gone(include_waiting=plan is not None).get(name) or []
+    wanted = [d for d in gone if plan is None or int(plan.get(d, 0)) > 0]
+    if not wanted or not _sat.health(name).get("reachable"):
+        return False if wanted else None, wanted, []
+    if plan is None:
+        # Checked again here, after the health round trip: an ⏏ Unload in between released the
+        # satellite's replica, and declaring the plan now would load it back for nobody.
+        if not _pool_live(pool):
+            return None, wanted, []         # not a failed load: no backoff, no warning
+        _sat.apply_plan({d: n for d, n in pool.worker_counts.items() if split_device(d)[0] == name})
+    return True, wanted, [d for d in wanted if pool.rejoin(d, force=plan is not None)]
+
+
+def rejoin_satellite(name: str, pool=None, plan=None) -> list:
+    """Bring satellite `name`'s missing workers back into the live pool. Returns the devices added.
+
+    Used by the pool's own watcher (`_rejoin_watch`) and by ⟳ Reconnect (`satellites.resync`, with
+    the saved `plan` it has just declared), so a satellite that is restarted mid-render gets work
+    again whether or not anyone has the Settings page open. A satellite still down returns []."""
+    if pool is None:
+        pool = _pool                    # see `_pool_live`: never wait out a pool build here
+    if pool is None or not _pool_live(pool):
+        return []
+    return _rejoin(name, pool, plan)[2]
+
+
+def _rejoin_watch(pool, wait=None, now=None):
+    """While `pool` is the live pool, try every missing satellite each `REJOIN_EVERY_S`, backing
+    off one that answers but will not load. `wait` and `now` are injectable for tests; the thread
+    ends when the pool is replaced, shut down or poisoned. Logs on a change of state only."""
+    import time
+    wait = wait or time.sleep
+    now = now or time.monotonic
+    state = {}                          # name -> {"delay": s, "next": t, "failing": bool}
+    while True:
+        wait(REJOIN_EVERY_S)
+        if not _pool_live(pool):
+            return
+        names = list(pool.satellites_gone())
+        # A satellite no longer missing (⟳ put it back, or it is inside its after-timeout wait)
+        # forgets its backoff: left in place, a later drop would sit out a stale wait of up to
+        # REJOIN_BACKOFF_MAX_S before the first attempt, and "loaded again" would be logged.
+        for name in [n for n in state if n not in names]:
+            del state[name]
+        for name in names:
+            st = state.setdefault(name, {"delay": REJOIN_EVERY_S, "next": 0.0, "failing": False})
+            if now() < st["next"]:
+                continue
+            try:
+                reachable, wanted, added = _rejoin(name, pool)
+            except Exception:                                   # noqa: BLE001 — the watcher must
+                logger.exception(f"satellite {name!r}: rejoin attempt failed")  # outlive one failure
+                reachable, wanted, added = True, [None], []
+            if not reachable:
+                st.update(delay=REJOIN_EVERY_S, next=0.0)       # off: cheap to keep asking
+            elif len(added) < len(wanted):
+                st["delay"] = min(st["delay"] * 2, REJOIN_BACKOFF_MAX_S) if st["failing"] \
+                    else REJOIN_EVERY_S * 2
+                st["next"] = now() + st["delay"]
+                if not st["failing"]:
+                    logger.warning(f"satellite {name!r} answers but its card did not load — "
+                                   f"trying again, less often each time (up to every "
+                                   f"{REJOIN_BACKOFF_MAX_S / 60:g} min)")
+                st["failing"] = True
+            else:
+                if st["failing"]:
+                    logger.info(f"satellite {name!r}: loaded again after earlier failures")
+                state.pop(name, None)
 
 
 def model_ready() -> bool:

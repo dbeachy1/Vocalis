@@ -326,7 +326,7 @@ def _report_crash_evidence(d):
         except OSError:
             continue
         why = ("  (EMPTY = killed from outside, NOT a fault — see conftest's crash block)"
-               if size == 0 else "  (a C-level traceback, per thread)")
+               if size == 0 else "  (a stack per thread: a native fault, or a deliberate os._exit)")
         print(f"[crash]   {pth.name} — {size} bytes{why}")
 
 
@@ -355,7 +355,14 @@ def _record_deliberate_exits(crash_file) -> None:
     `os._exit`. After this, an empty file can only mean the process was ended from OUTSIDE.
 
     A clean run is unaffected: `pytest_sessionfinish` closes the file first, the write below then
-    fails, and the exit goes ahead."""
+    fails, and the exit goes ahead.
+
+    🔴 EVERY THREAD, NOT ONLY THE CALLER. When pytest-timeout fires, the caller is its own timer
+    thread, and the test that hung is on another one. 2026-10-22, full run at 12.2.0: gw3 was
+    killed during `test_transcode_normalize_outputs_wav` and its file held only the timer's stack,
+    so where the test was blocked was never recorded. pytest-timeout dumps all threads itself, but
+    to the worker's stdout, which execnet points at NUL. Thread names are written too: subprocess's
+    reader threads are `Thread-N (_readerthread)`, so a wait on a child process reads at a glance."""
     import traceback
     real_exit = os._exit
 
@@ -363,6 +370,13 @@ def _record_deliberate_exits(crash_file) -> None:
         try:
             crash_file.write(f"os._exit({code}) called by thread {threading.current_thread().name}:\n")
             traceback.print_stack(file=crash_file)
+            names = {t.ident: t.name for t in threading.enumerate()}
+            me = threading.get_ident()
+            for ident, frame in sys._current_frames().items():
+                if ident == me:
+                    continue
+                crash_file.write(f"\nThread {names.get(ident, '?')} ({ident}), most recent call last:\n")
+                traceback.print_stack(frame, file=crash_file)
             crash_file.flush()
         except Exception:
             pass

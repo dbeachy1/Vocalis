@@ -178,6 +178,31 @@ function wbDraftTurn(kind, job) {
 export function wbDraftsSettled(kind) {
   return wbDraftQueue[kind] || Promise.resolve();
 }
+// 🔴 THE PAGE'S OWN DRAFT COUNT FOLLOWS EVERY DRAFT WRITE, NOT ONLY THE OPEN AND THE REVERT.
+// `st.draftTotal` ("drafts the server holds for this document, stranded ones included") was set
+// only by `wbRestoreDrafts` at open and zeroed by `wbDiscard`. A field edited, saved as a draft,
+// reloaded, opened and then put back cleared the draft on the server and the roster row, but left
+// this at 1: Revert stayed lit with the "typed against an earlier revision" tooltip, and clicking
+// it offered to throw away an edit that no longer existed (found in a live run, 2026-10-12; the
+// defect is old, it is in 12.1.0 too).
+//
+// ⚠️ `res.pending` IS THAT SAME NUMBER, so no second source is invented. `put_draft` returns
+// `len(fields)` of the file as it stands after the write, and `draft_count` (what the open's
+// `total` is) is `len(fields)` of the same file. A write stamped with a different revision than the
+// file's replaces the file, so a stranded draft is gone from both numbers at once.
+//
+// Called only once the write is known to belong to the document still on screen (the caller's
+// `wbStale` check), and repaints Revert, because the `input` that put the text back ran its own
+// repaint BEFORE this answer arrived.
+/**
+ * @param {string} kind
+ * @param {ReturnType<typeof wbState>} st
+ * @param {number} n - the server's own pending-edit count, from the draft write's answer.
+ */
+function wbNoteDraftTotal(kind, st, n) {
+  st.draftTotal = n;
+  wbSaveShow(kind);
+}
 /**
  * @param {string} kind
  * @param {Element} ta - the field's `<textarea>`, reached by `.closest`/`querySelector` — see
@@ -222,6 +247,7 @@ export async function wbSaveDraft(kind, ta) {
       // a field that happened to share a locator was then skipped as "nothing new".
       if (wbStale(kind, seq)) return;
       wbDraftRecord(st, key, text);
+      wbNoteDraftTotal(kind, st, +res.pending || 0);
     } catch (e) {
       // 🔴 A FAILED DRAFT MUST NOT EAT HIS TYPING OR SHOUT AT HIM. The text is still in the box
       // and Save still works; this is a safety net failing, not the edit. Say it once, quietly.
@@ -343,6 +369,7 @@ export async function wbSaveSetDraft(kind, lab) {
       wbSyncRowPending(kind, docId, +res.pending || 0);
       if (wbStale(kind, seq)) return;
       wbDraftRecord(st, key, text);
+      wbNoteDraftTotal(kind, st, +res.pending || 0);
     } catch (e) {
       wbSay(kind, 'could not stash the pending edit — it is still in the box, and Save still works', true);
     }

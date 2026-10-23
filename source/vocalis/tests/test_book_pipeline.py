@@ -324,6 +324,155 @@ def test_parse_docx_toc_skipped(tmp_path):
     assert "Chapter 1...........1" not in sections[0]["text"]
 
 
+def _wrap_in_content_control(paragraphs, gallery=None, placeholder=False):
+    """Move these paragraphs into one block content control, the way Word stores it: a plain one as
+    in Doug's "Come Find Me", a Word-built table of contents when `gallery` is given, or one still
+    showing its grey prompt when `placeholder` is true."""
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    sdt, pr, content = OxmlElement("w:sdt"), OxmlElement("w:sdtPr"), OxmlElement("w:sdtContent")
+    if placeholder:
+        pr.append(OxmlElement("w:showingPlcHdr"))
+    if gallery:
+        obj, gal = OxmlElement("w:docPartObj"), OxmlElement("w:docPartGallery")
+        gal.set(qn("w:val"), gallery)
+        obj.append(gal)
+        pr.append(obj)
+    else:
+        ident = OxmlElement("w:id")
+        ident.set(qn("w:val"), "-1984997786")
+        pr.append(ident)
+    sdt.append(pr)
+    sdt.append(content)
+    paragraphs[0]._p.addprevious(sdt)
+    for p in paragraphs:
+        content.append(p._p)
+
+
+def test_parse_docx_reads_chapters_inside_a_content_control(tmp_path):
+    """Doug, 2026-10-22: Chapters 12 to 25 of "Come Find Me" sat inside one hidden content control.
+    The parser read only paragraphs directly in the body, so the render spoke "Chapter 12" with
+    no body, skipped every chapter in the control, and went on at Part Three."""
+    from docx import Document
+    from book_to_audio import parse_docx
+
+    doc = Document()
+    doc.add_heading("Part Two", level=1)
+    doc.add_heading("Chapter 12", level=2)
+    inside = [doc.add_paragraph("Savannah had never been west of Alabama."),
+              doc.add_heading("Chapter 13", level=2),
+              doc.add_paragraph("The road ran on past Shreveport.")]
+    doc.add_heading("Part Three", level=1)
+    doc.add_paragraph("Back home again.")
+    _wrap_in_content_control(inside)
+    path = tmp_path / "control.docx"
+    doc.save(str(path))
+
+    sections = parse_docx(path)
+    assert [s["title"] for s in sections] == ["Part Two", "Chapter 12", "Chapter 13", "Part Three"]
+    assert "west of Alabama" in sections[1]["text"]
+    assert "past Shreveport" in sections[2]["text"]
+    assert "Back home again" in sections[3]["text"]
+
+
+def test_parse_docx_does_not_narrate_an_unfilled_content_control(tmp_path):
+    """A content control left from a template still shows Word's grey prompt. That prompt is not
+    the book: it is skipped, whether the control holds whole paragraphs or sits inside one."""
+    from docx import Document
+    from docx.oxml import OxmlElement
+    from book_to_audio import parse_docx
+
+    doc = Document()
+    doc.add_heading("Chapter 1", level=2)
+    _wrap_in_content_control([doc.add_paragraph("Click or tap here to enter text.")], placeholder=True)
+    para = doc.add_paragraph("She waited. ")
+    run = para.add_run("Choose an item.")
+    sdt, content = OxmlElement("w:sdt"), OxmlElement("w:sdtContent")
+    pr = OxmlElement("w:sdtPr")
+    pr.append(OxmlElement("w:showingPlcHdr"))
+    sdt.append(pr)
+    sdt.append(content)
+    run._r.addprevious(sdt)
+    content.append(run._r)
+    path = tmp_path / "placeholder.docx"
+    doc.save(str(path))
+
+    (section,) = parse_docx(path)
+    assert "She waited." in section["text"]
+    assert "Click or tap" not in section["text"]
+    assert "Choose an item" not in section["text"]
+
+    # The flag is an on/off value: switched off, the control holds real text and is read.
+    from docx.oxml.ns import qn
+    pr.find(qn("w:showingPlcHdr")).set(qn("w:val"), "0")
+    doc.save(str(path))
+    (section,) = parse_docx(path)
+    assert "Choose an item" in section["text"]
+
+
+def test_parse_docx_reads_text_in_a_content_control_inside_a_paragraph(tmp_path):
+    """"Come Find Me" Chapter 1's subtitle, "Presentable", was in a content control inside its
+    paragraph. The parser took only the runs directly in the paragraph and lost it."""
+    from docx import Document
+    from docx.oxml import OxmlElement
+    from book_to_audio import parse_docx
+
+    doc = Document()
+    doc.add_heading("Chapter 1", level=2)
+    para = doc.add_paragraph()
+    run = para.add_run("Presentable")
+    sdt, content = OxmlElement("w:sdt"), OxmlElement("w:sdtContent")
+    sdt.append(OxmlElement("w:sdtPr"))
+    sdt.append(content)
+    run._r.addprevious(sdt)
+    content.append(run._r)
+    doc.add_paragraph("Everyone in Mercer Falls agreed.")
+    path = tmp_path / "inline.docx"
+    doc.save(str(path))
+
+    (section,) = parse_docx(path)
+    assert "Presentable" in section["text"]
+
+
+def test_parse_docx_reads_table_text_in_reading_order(tmp_path):
+    """Text in a table cell is part of the book too (a letter or a sign set in a box)."""
+    from docx import Document
+    from book_to_audio import parse_docx
+
+    doc = Document()
+    doc.add_heading("Chapter 1", level=2)
+    doc.add_paragraph("Before the note.")
+    doc.add_table(rows=1, cols=1).cell(0, 0).text = "Meet me at the pier."
+    doc.add_paragraph("After the note.")
+    path = tmp_path / "table.docx"
+    doc.save(str(path))
+
+    (section,) = parse_docx(path)
+    text = section["text"]
+    assert text.index("Before the note") < text.index("Meet me at the pier") < text.index("After the note")
+
+
+def test_parse_docx_still_skips_a_word_built_table_of_contents(tmp_path):
+    """Word's own table of contents is a content control. It stays out whole, and it must not
+    swallow a dedication between it and the first chapter."""
+    from docx import Document
+    from book_to_audio import parse_docx
+
+    doc = Document()
+    toc = [doc.add_paragraph("Contents"), doc.add_paragraph("Chapter 1 .......... 1")]
+    doc.add_paragraph("For Grandma.")
+    doc.add_heading("Chapter 1", level=2)
+    doc.add_paragraph("Real body text here.")
+    _wrap_in_content_control(toc, gallery="Table of Contents")
+    path = tmp_path / "toc_control.docx"
+    doc.save(str(path))
+
+    sections = parse_docx(path)
+    assert [s["title"] for s in sections] == ["Front Matter", "Chapter 1"]
+    assert "For Grandma" in sections[0]["text"]
+    assert ".........." not in "".join(s["text"] for s in sections)
+
+
 def test_list_styles_exits_zero(tmp_path):
     """--list-styles should exit 0 and print style info without loading the model."""
     docx = tmp_path / "test.docx"

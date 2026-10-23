@@ -86,7 +86,7 @@ Installation requirements:
 3. Leave **Enabled** checked, enter your Vocalis server URL, which is the
    address you open Vocalis at (for the Docker package on the same computer,
    `http://127.0.0.1:18770` unless you chose another port), click **Test** →
-   expect `OK — Vocalis v12.1.1, model ready` (or "model cold" — it loads on the
+   expect `OK — Vocalis v12.2.1, model ready` (or "model cold" — it loads on the
    first request). The Docker package answers only on its own computer; to
    reach it from another one, put it behind a reverse proxy with TLS (the
    package's setup reference, `packaging/README.md`, has the details), and the

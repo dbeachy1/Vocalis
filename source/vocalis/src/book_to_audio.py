@@ -140,6 +140,85 @@ def is_toc_style(style_lower: str, extra_toc_styles: set = None) -> bool:
             or style_lower in TOC_STYLE_EXACT)
 
 
+_W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+# Wrappers Word puts around runs inside a paragraph whose text is shown: content controls, tracked
+# insertions and moves, smart tags, simple fields, hyperlinks. Tracked deletions (`w:del`,
+# `w:moveFrom`) are not shown, so they are not here.
+_INLINE_WRAPPERS = {_W + t for t in ("hyperlink", "sdt", "sdtContent", "ins", "moveTo", "smartTag",
+                                     "customXml", "fldSimple", "dir", "bdo")}
+
+
+def _showing_placeholder(sdt) -> bool:
+    """A content control nobody filled in shows Word's grey prompt ("Click or tap here to enter
+    text."), which is not the book's text and is not narrated. The flag is an OOXML on/off value:
+    Word writes it bare, but `w:val="0"` (or "false"/"off") from another program means the control
+    holds real text, and reading it as on would silently drop that text."""
+    flag = sdt.find(f"{_W}sdtPr/{_W}showingPlcHdr")
+    return flag is not None and flag.get(_W + "val", "true").lower() not in ("0", "false", "off")
+
+
+def _paragraph_text(p) -> str:
+    """The text Word shows for one paragraph. python-docx's `Paragraph.text` joins only runs that
+    sit directly in the paragraph or a hyperlink; "Come Find Me" Chapter 1's subtitle,
+    "Presentable", was in a content control inside its paragraph and came out empty."""
+    parts = []
+
+    def walk(el):
+        for child in el:
+            if child.tag == _W + "r":
+                parts.append(child.text)      # python-docx's run text: tabs and breaks included
+            elif child.tag == _W + "sdt" and _showing_placeholder(child):
+                continue
+            elif child.tag in _INLINE_WRAPPERS:
+                walk(child)
+
+    walk(p)
+    return "".join(parts)
+
+
+def iter_book_paragraphs(doc) -> list:
+    """Every paragraph of the book's text, in reading order, as (style name, text) pairs.
+
+    🔴 NOT `doc.paragraphs`. That is only the paragraphs sitting directly in the body, and Word can
+    wrap any block of text in a content control (or a table), which `doc.paragraphs` steps over
+    without a word. Doug, 2026-10-22, "Come Find Me": Chapters 12 to 25 were inside one rich-text
+    content control with its border set to hidden, so Word showed nothing unusual and copy and
+    paste carried it into a fresh document. The render spoke "Part Two", then "Chapter 12" with an
+    empty body, and went straight on to Part Three: about 530,000 characters were never narrated.
+
+    So this takes every paragraph that is not inside another paragraph: those in content controls
+    and table cells, at any depth. Paragraphs inside a paragraph are text-box contents, which
+    Word also stores a second time as a fallback copy, so they stay out as they always were.
+
+    A table of contents Word built is itself a content control. It is left out whole, as it was
+    before: its entries would be skipped by their TOC styles anyway, but they would also switch
+    on `in_toc` and swallow an epigraph or dedication between the contents and the first heading.
+    """
+    from docx.text.paragraph import Paragraph
+    out = []
+
+    def walk(el):
+        for child in el:
+            if child.tag == _W + "p":
+                out.append((Paragraph(child, doc._body).style.name, _paragraph_text(child)))
+            elif child.tag == _W + "sdt":
+                gallery = child.find(f"{_W}sdtPr/{_W}docPartObj/{_W}docPartGallery")
+                if gallery is not None and gallery.get(_W + "val", "").lower() == "table of contents":
+                    continue
+                if _showing_placeholder(child):
+                    continue
+                content = child.find(_W + "sdtContent")
+                if content is not None:
+                    walk(content)
+            elif child.tag in (_W + "tbl", _W + "tr", _W + "tc", _W + "customXml"):
+                walk(child)
+
+    walk(doc.element.body)
+    return out
+
+
 # ── Style listing (--list-styles) ─────────────────────────────────────────────
 def cmd_list_styles(docx_path: Path, section_break_styles: set = None,
                     extra_toc_styles: set = None):
@@ -147,9 +226,9 @@ def cmd_list_styles(docx_path: Path, section_break_styles: set = None,
         section_break_styles = SECTION_BREAK_STYLES
     doc = open_docx(docx_path)
     counts = {}
-    for p in doc.paragraphs:
-        if p.text.strip():
-            counts[p.style.name] = counts.get(p.style.name, 0) + 1
+    for style, text in iter_book_paragraphs(doc):
+        if text.strip():
+            counts[style] = counts.get(style, 0) + 1
     logger.info(f"\nParagraph styles in the document:\n")
     for style, count in sorted(counts.items(), key=lambda x: -x[1]):
         sl = style.lower()
@@ -200,9 +279,8 @@ def parse_docx(docx_path: Path, section_break_styles: set = None,
         current_title   = None
         current_body    = []
 
-    for para in doc.paragraphs:
-        raw   = para.text.strip()
-        style = para.style.name
+    for style, text in iter_book_paragraphs(doc):
+        raw   = text.strip()
         sl    = style.lower()
 
         if not raw:
